@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHUEGUK 음운 변동 4회</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(180deg, #f0faf6 0%, #e8f4ef 100%);
+    min-height: 100vh;
+    padding: 14px;
+    padding-bottom: 100px;
+    color: #1f3a32;
+    -webkit-text-size-adjust: 100%;
+}
+.container { max-width: 580px; margin: 0 auto; }
+
+/* 헤더 */
+.header {
+    text-align: center;
+    margin-bottom: 12px;
+    padding: 18px 16px 14px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(45, 128, 104, 0.08);
+    border: 2px solid #c8e4d8;
+}
+.header .logo {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 5px;
+    color: #5fb8a8;
+    margin-bottom: 6px;
+}
+.header h1 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 21px;
+    font-weight: 800;
+    color: #1f5a48;
+    letter-spacing: -0.5px;
+    line-height: 1.3;
+}
+.header .round {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #2d8068;
+    background: #d4ede2;
+    padding: 4px 12px;
+    border-radius: 999px;
+}
+
+/* 모드 라디오 트릭 */
+.tab-radio { display: none; }
+.mode-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+.mode-label {
+    padding: 12px;
+    background: white;
+    border: 2px solid #c8e4d8;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+#tab-study-radio:checked ~ .container .mode-label[for="tab-study-radio"] {
+    background: #2d8068; color: white; border-color: #2d8068;
+}
+#tab-study-radio:checked ~ .container .test-section { display: none; }
+#tab-study-radio:checked ~ .container .study-section { display: block; }
+#tab-test-radio:checked ~ .container .mode-label[for="tab-test-radio"] {
+    background: #2d8068; color: white; border-color: #2d8068;
+}
+#tab-test-radio:checked ~ .container .study-section { display: none; }
+#tab-test-radio:checked ~ .container .test-section { display: block; }
+#tab-test-radio:checked ~ .submit-bar { display: block; }
+
+/* 카테고리 라디오 트릭 */
+.cat-radio { display: none; }
+.category-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-bottom: 10px;
+}
+.cat-label {
+    padding: 10px 4px;
+    background: white;
+    border: 1.5px solid #d6e7e0;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #5a7a70;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+#cat-a-radio:checked ~ .container .cat-label[for="cat-a-radio"],
+#cat-b-radio:checked ~ .container .cat-label[for="cat-b-radio"],
+#cat-c-radio:checked ~ .container .cat-label[for="cat-c-radio"] {
+    background: #e9f5ef; border-color: #5fb8a8; color: #1f5a48;
+}
+.cat-content { display: none; }
+#cat-a-radio:checked ~ .container .cat-a { display: block; }
+#cat-b-radio:checked ~ .container .cat-b { display: block; }
+#cat-c-radio:checked ~ .container .cat-c { display: block; }
+
+/* 개념 카드 */
+.vocab-card {
+    background: white;
+    border-radius: 18px;
+    padding: 18px;
+    border: 2px solid #ecf5f0;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 10px rgba(45, 128, 104, 0.04);
+}
+.vocab-word {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #1f3a32;
+    margin-bottom: 4px;
+}
+.vocab-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    color: #2d8068;
+    background: #d4ede2;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+.vocab-meaning {
+    font-size: 13px;
+    line-height: 1.7;
+    background: #e9f5ef;
+    padding: 11px 13px;
+    border-radius: 10px;
+    border-left: 3px solid #5fb8a8;
+    margin: 8px 0;
+}
+.vocab-example {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #5a7a70;
+    padding: 9px 12px;
+    background: #f4faf7;
+    border-radius: 8px;
+    font-style: italic;
+}
+.vocab-example b { font-style: normal; font-weight: 800; color: #2d8068; margin-right: 6px; }
+.note-box {
+    background: #fff7ed; border: 1.5px solid #f0c89a; color: #8a5a1f;
+    font-size: 12px; line-height: 1.6; padding: 11px 13px; border-radius: 10px; margin-bottom: 10px;
+}
+
+/* 테스트 영역 */
+.test-section { display: none; }
+.study-section { display: block; }
+
+.progress-bar {
+    display: flex;
+    justify-content: space-between;
+    background: white;
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1.5px solid #c8e4d8;
+}
+.progress-bar .filled { color: #2d8068; font-weight: 800; }
+.progress-bar .lbl { color: #5a7a70; }
+
+.q-card {
+    background: white;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border: 2px solid #ecf5f0;
+}
+.q-card.correct { border-color: #5fbb8a; background: #f3fbf6; }
+.q-card.wrong { border-color: #f08a8a; background: #fef6f6; }
+.q-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.q-num {
+    display: inline-block;
+    background: #2d8068; color: white;
+    font-size: 11px; font-weight: 800;
+    padding: 3px 8px; border-radius: 6px;
+}
+.q-start {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 19px; font-weight: 800; color: #1f3a32;
+}
+.q-start .arrow { color: #5fb8a8; font-size: 15px; margin-left: 6px; }
+.section-label {
+    font-size: 12px; font-weight: 800; color: #1f5a48;
+    background: #d4ede2; padding: 8px 12px; border-radius: 8px; margin: 14px 0 8px;
+}
+
+.step-row { display: flex; align-items: center; gap: 6px; margin: 7px 0; }
+.step-badge {
+    flex: 0 0 22px; height: 22px; line-height: 22px; text-align: center;
+    background: #e9f5ef; color: #2d8068; border-radius: 6px;
+    font-size: 11px; font-weight: 800;
+}
+.step-arrow { flex: 0 0 auto; color: #5fb8a8; font-weight: 800; }
+.rule-select {
+    flex: 1 1 50%; min-width: 0; padding: 10px 24px 10px 10px;
+    font-size: 13px; font-family: inherit; font-weight: 700;
+    border: 2px solid #d6e7e0; border-radius: 9px; outline: none;
+    color: #1f3a32; background: white; -webkit-appearance: none; appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235fb8a8' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat; background-position: right 8px center; background-size: 14px;
+}
+.form-input {
+    flex: 1 1 40%; min-width: 0; width: 100%; padding: 10px;
+    font-size: 14px; font-family: inherit; font-weight: 700; text-align: center;
+    border: 2px solid #d6e7e0; border-radius: 9px; outline: none;
+    color: #1f3a32; background: white; -webkit-appearance: none;
+}
+.rule-select:focus, .form-input:focus { border-color: #5fb8a8; }
+.step-final .form-input { border-color: #5fb8a8; background: #f4faf7; }
+.final-tag { flex: 0 0 auto; font-size: 10px; font-weight: 800; color: #2d8068; }
+.rule-select.ok, .form-input.ok { border-color: #5fbb8a; background: #dcf5e8; }
+.rule-select.ng, .form-input.ng { border-color: #f08a8a; background: #fde8e8; }
+
+.feedback {
+    margin-top: 8px; padding: 9px 12px; border-radius: 9px;
+    font-size: 12px; line-height: 1.6; display: none;
+}
+.feedback.show { display: block; }
+.feedback.correct { background: #dcf5e8; color: #1a5c3a; border: 1.5px solid #5fbb8a; }
+.feedback.wrong { background: #fde8e8; color: #8a1f1f; border: 1.5px solid #f08a8a; }
+.feedback b { font-weight: 800; }
+.feedback .chain { font-family: 'Nanum Myeongjo', serif; }
+
+/* 학생 정보 */
+.student-info { background: white; border-radius: 14px; padding: 16px; margin-bottom: 10px; border: 2px solid #c8e4d8; }
+.student-info .si-title { font-size: 13px; font-weight: 800; color: #1f5a48; margin-bottom: 10px; }
+.student-info .si-title .req { font-size: 11px; font-weight: 700; color: #e07a5f; margin-left: 5px; }
+.si-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.si-field { flex: 1; }
+.si-field.small { flex: 0 0 92px; }
+.si-field label { display: block; font-size: 11px; font-weight: 700; color: #5a7a70; margin-bottom: 3px; }
+.si-field input, .si-field select {
+    width: 100%; padding: 10px; font-size: 14px; font-family: inherit; font-weight: 700;
+    border: 2px solid #d6e7e0; border-radius: 9px; outline: none; color: #1f3a32; background: white; -webkit-appearance: none;
+}
+.si-field input:focus, .si-field select:focus { border-color: #5fb8a8; }
+.si-field select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235fb8a8' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat; background-position: right 8px center; background-size: 14px; padding-right: 26px;
+}
+
+/* 최종 결과 */
+.final { display: none; text-align: center; background: white; padding: 24px 18px; border-radius: 20px; border: 3px solid #5fb8a8; margin: 12px 0; }
+.final.show { display: block; }
+.final .score-big { font-family: 'Nanum Myeongjo', serif; font-size: 42px; font-weight: 800; color: #2d8068; }
+.final .total { font-size: 18px; color: #94a3b8; }
+.final .msg { font-size: 13px; color: #5a7a70; margin: 8px 0 14px; line-height: 1.6; }
+.send-btn { display: inline-block; background: #2d8068; color: white; border: none; padding: 14px 22px; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; text-decoration: none; margin: 4px; -webkit-tap-highlight-color: transparent; }
+.send-btn.reset { background: white; color: #2d8068; border: 2px solid #2d8068; }
+.send-status-box { font-size: 13px; font-weight: 700; padding: 12px 14px; border-radius: 10px; margin: 4px 0 10px; line-height: 1.5; }
+.send-status-box.sending { background: #f4faf7; color: #5a7a70; border: 1.5px solid #d6e7e0; }
+.send-status-box.done { background: #dcf5e8; color: #1a5c3a; border: 1.5px solid #5fbb8a; }
+.send-status-box.fail { background: #fde8e8; color: #8a1f1f; border: 1.5px solid #f08a8a; }
+
+/* 하단 제출 바 */
+.submit-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 2px solid #c8e4d8; padding: 12px 14px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 14px rgba(45, 128, 104, 0.1); z-index: 50; display: none; }
+.submit-inner { max-width: 580px; margin: 0 auto; display: flex; gap: 8px; align-items: center; }
+.submit-status { flex: 1; font-size: 12px; font-weight: 700; color: #5a7a70; }
+.submit-status .num { color: #2d8068; font-weight: 800; font-size: 14px; }
+.submit-btn { background: #2d8068; color: white; border: none; padding: 12px 22px; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+</style>
+</head>
+<body>
+
+<!-- 모드 라디오 -->
+<input type="radio" name="mode" id="tab-study-radio" class="tab-radio">
+<input type="radio" name="mode" id="tab-test-radio" class="tab-radio" checked>
+
+<!-- 카테고리 라디오 -->
+<input type="radio" name="cat" id="cat-a-radio" class="cat-radio" checked>
+<input type="radio" name="cat" id="cat-b-radio" class="cat-radio">
+<input type="radio" name="cat" id="cat-c-radio" class="cat-radio">
+
+<div class="container">
+    <div class="header">
+        <div class="logo">SHUEGUK</div>
+        <h1>음운 변동, 과정을 직접 써 보자.</h1>
+        <div class="round">문법 4회 · 음운 변동 실습 (127~168)</div>
+    </div>
+
+    <div class="mode-tabs">
+        <label class="mode-label" for="tab-study-radio">📚 개념 정리</label>
+        <label class="mode-label" for="tab-test-radio">✏️ 실습 모드</label>
+    </div>
+
+    <!-- 개념 정리 -->
+    <div class="study-section">
+        <div class="category-tabs">
+            <label class="cat-label" for="cat-a-radio">교체</label>
+            <label class="cat-label" for="cat-b-radio">탈락</label>
+            <label class="cat-label" for="cat-c-radio">첨가·기타</label>
+        </div>
+
+        <div class="cat-content cat-a">
+            <div class="vocab-card"><div class="vocab-word">음절의 끝소리 규칙<span class="vocab-tag">교체</span></div><div class="vocab-meaning">받침은 ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, ㅇ 일곱 대표음으로만 발음돼요.</div><div class="vocab-example"><b>예)</b>꽃[꼳], 부엌[부억], 옷[옫], 앞[압]</div></div>
+            <div class="vocab-card"><div class="vocab-word">비음화<span class="vocab-tag">교체</span></div><div class="vocab-meaning">비음이 아닌 소리가 비음(ㄴ, ㅁ, ㅇ)을 만나 비음으로 바뀌어요.</div><div class="vocab-example"><b>예)</b>국물[궁물], 닫는[단는], 밥물[밤물]</div></div>
+            <div class="vocab-card"><div class="vocab-word">유음화<span class="vocab-tag">교체</span></div><div class="vocab-meaning">ㄴ이 유음 ㄹ의 앞이나 뒤에서 ㄹ로 바뀌어요.</div><div class="vocab-example"><b>예)</b>신라[실라], 칼날[칼랄], 천 리[철리]</div></div>
+            <div class="vocab-card"><div class="vocab-word">구개음화<span class="vocab-tag">교체</span></div><div class="vocab-meaning">받침 ㄷ, ㅌ이 모음 ㅣ를 만나 구개음 ㅈ, ㅊ으로 바뀌어요.</div><div class="vocab-example"><b>예)</b>굳이[구지], 같이[가치], 해돋이[해도지]</div></div>
+            <div class="vocab-card"><div class="vocab-word">된소리되기<span class="vocab-tag">교체</span></div><div class="vocab-meaning">예사소리(ㄱ,ㄷ,ㅂ,ㅅ,ㅈ)가 일정 환경에서 된소리로 바뀌어요.</div><div class="vocab-example"><b>예)</b>국밥[국빱], 입도[입또], 일시[일씨]</div></div>
+            <div class="vocab-card"><div class="vocab-word">거센소리되기<span class="vocab-tag">축약</span></div><div class="vocab-meaning">ㅎ이 ㄱ, ㄷ, ㅂ, ㅈ과 만나 하나의 거센소리 ㅋ, ㅌ, ㅍ, ㅊ으로 합쳐져요.</div><div class="vocab-example"><b>예)</b>좋고[조코], 잡히다[자피다], 굽히다[구피다]</div></div>
+        </div>
+
+        <div class="cat-content cat-b">
+            <div class="vocab-card"><div class="vocab-word">자음군 단순화<span class="vocab-tag">탈락</span></div><div class="vocab-meaning">음절 끝 겹받침 중 하나가 탈락해요.</div><div class="vocab-example"><b>예)</b>값[갑], 닭[닥], 여덟[여덜], 흙[흑]</div></div>
+            <div class="vocab-card"><div class="vocab-word">ㅎ 탈락<span class="vocab-tag">탈락</span></div><div class="vocab-meaning">받침 ㅎ이 모음으로 시작하는 어미·접미사 앞에서 탈락해요.</div><div class="vocab-example"><b>예)</b>좋아[조아], 쌓이다[싸이다], 많이[마니]</div></div>
+            <div class="vocab-card"><div class="vocab-word">ㄹ 탈락 / 모음 탈락<span class="vocab-tag">탈락</span></div><div class="vocab-meaning">ㄹ이나 어간 끝 모음(ㅡ·동일모음)이 일정 환경에서 탈락해요.</div><div class="vocab-example"><b>예)</b>울+는→[우는], 크+어→[커], 가+아서→[가서]</div></div>
+        </div>
+
+        <div class="cat-content cat-c">
+            <div class="vocab-card"><div class="vocab-word">ㄴ 첨가<span class="vocab-tag">첨가</span></div><div class="vocab-meaning">합성어·파생어에서 앞말 받침 뒤, 뒷말이 ‘ㅣ’나 반모음으로 시작할 때 ㄴ이 더해져요.</div><div class="vocab-example"><b>예)</b>솜이불[솜니불], 봄여름[봄녀름], 맨입[맨닙]</div></div>
+            <div class="vocab-card"><div class="vocab-word">반모음 첨가<span class="vocab-tag">첨가</span></div><div class="vocab-meaning">모음으로 끝난 뒤 모음이 이어질 때 반모음이 덧붙어 발음될 수 있어요.</div><div class="vocab-example"><b>예)</b>되어[되여], 기어서[기여서]</div></div>
+            <div class="note-box"><b>연음은 음운 ‘변동’이 아니에요.</b> 받침이 뒤 음절 첫소리(모음) 자리로 자연스럽게 옮겨 발음되는 것일 뿐, 소리 자체가 바뀌지는 않습니다. 그래서 변동 종류를 고를 때 <b>연음</b>과 실제 변동(비음화·구개음화 등)을 구분하는 게 핵심이에요.</div>
+            <div class="vocab-card"><div class="vocab-word">연음<span class="vocab-tag">이어 발음</span></div><div class="vocab-meaning">받침이 뒤 모음에 이어져 발음돼요. (음운 변동 아님)</div><div class="vocab-example"><b>예)</b>밭에[바테], 곧이어[고디어], 낱알[나달]</div></div>
+            <div class="vocab-card"><div class="vocab-word">사잇소리 현상<span class="vocab-tag">기타</span></div><div class="vocab-meaning">합성어에서 뒷말 첫소리가 된소리로 나거나 ㄴ(ㄴㄴ) 소리가 덧나요.</div><div class="vocab-example"><b>예)</b>잿더미[재떠미/잳떠미], 빗살[비쌀/빋쌀]</div></div>
+        </div>
+    </div>
+
+    <!-- 실습 모드 -->
+    <div class="test-section">
+        <div class="student-info">
+            <div class="si-title">학생 정보<span class="req">* 제출 전 꼭 입력해 주세요</span></div>
+            <div class="si-row">
+                <div class="si-field"><label for="si-name">이름</label><input type="text" id="si-name" placeholder="홍길동" autocomplete="off"></div>
+            </div>
+            <div class="si-row">
+                <div class="si-field"><label for="si-school">학교</label><input type="text" id="si-school" placeholder="○○중 또는 ○○고" autocomplete="off"></div>
+                <div class="si-field small"><label for="si-grade">학년</label>
+                    <select id="si-grade"><option value="">선택</option><option value="중1">중1</option><option value="중2">중2</option><option value="중3">중3</option><option value="고1">고1</option><option value="고2">고2</option><option value="고3">고3</option></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <span class="lbl">완료한 문항: <span class="filled" id="filled-count">0</span> / 42</span>
+            <span id="result-display"></span>
+        </div>
+
+        <div class="section-label">127~168 각 단어의 음운 변동 과정을 순서대로 완성하시오. 단계마다 <b>변동 종류를 선택</b>하고 <b>바뀐 형태를 직접 입력</b>하세요. 마지막 칸이 최종 발음입니다. (대괄호 없이 한글만)</div>
+
+        <div id="quiz-list"></div>
+
+        <div id="final" class="final"></div>
+    </div>
+</div>
+
+<div class="submit-bar">
+    <div class="submit-inner">
+        <div class="submit-status"><span class="num" id="bar-filled">0</span> / 42 완료</div>
+        <button type="button" class="submit-btn" id="submit-btn">전체 제출</button>
+    </div>
+</div>
+
+<script>
+(function() {
+    /* ============ 회차/전송 설정 ============ */
+    var ROUND_NUMBER = 4;                 // 세트(회차) 번호. 2회차부터는 이 숫자와 아래 QUIZ 데이터만 교체.
+    var UNIT_NAME = '음운 변동';           // 단원 이름 (시트 구분용)
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzikteq7gR2ezi_NXc2of8PTvUj5XouJ5ZcZOEWv0YWgjQjs8dZqogQjSr0-LSqneXF/exec';
+
+    /* ============ 변동 종류 선택지 ============ */
+    var RULE_OPTIONS = ["음절의 끝소리 규칙","비음화","유음화","구개음화","된소리되기","거센소리되기","자음군 단순화","ㅎ 탈락","ㄹ 탈락","ㄴ 첨가","반모음 첨가","연음","사잇소리 현상","모음 탈락","변동 없음"];
+
+    /* ============ 4회차 문항 (자료 127~168번, 순서 동일) ============ */
+    var QUIZ = [{"n":127,"start":"울- + -는","steps":[{"accept":["ㄹ 탈락"],"form":"우는"}]},{"n":128,"start":"국민","steps":[{"accept":["비음화"],"form":"궁민"}]},{"n":129,"start":"논밭","steps":[{"accept":["음절의 끝소리 규칙"],"form":"논받"}]},{"n":130,"start":"삶도","steps":[{"accept":["자음군 단순화"],"form":"삼도"}]},{"n":131,"start":"칼날","steps":[{"accept":["유음화"],"form":"칼랄"}]},{"n":132,"start":"닿아서","steps":[{"accept":["ㅎ 탈락"],"form":"다아서"}]},{"n":133,"start":"되어","steps":[{"accept":["반모음 첨가"],"form":"되어/되여"}]},{"n":134,"start":"봄바람","steps":[{"accept":["된소리되기"],"form":"봄빠람"}]},{"n":135,"start":"익명","steps":[{"accept":["비음화"],"form":"잉명"}]},{"n":136,"start":"결단력","steps":[{"accept":["비음화"],"form":"결딴녁"}]},{"n":137,"start":"비윤리적","steps":[{"accept":["유음화"],"form":"비율리적"}]},{"n":138,"start":"국사","steps":[{"accept":["된소리되기"],"form":"국싸"}]},{"n":139,"start":"몸짓","steps":[{"accept":["음절의 끝소리 규칙"],"form":"몸짇"},{"accept":["된소리되기"],"form":"몸찓"}]},{"n":140,"start":"영업용","steps":[{"accept":["ㄴ 첨가"],"form":"영업뇽"},{"accept":["비음화"],"form":"영엄뇽"}]},{"n":141,"start":"물엿","steps":[{"accept":["ㄴ 첨가"],"form":"물녓"},{"accept":["유음화"],"form":"물렷"},{"accept":["음절의 끝소리 규칙"],"form":"물렫"}]},{"n":142,"start":"능력","steps":[{"accept":["비음화"],"form":"능녁"}]},{"n":143,"start":"발전","steps":[{"accept":["된소리되기"],"form":"발쩐"}]},{"n":144,"start":"끓나","steps":[{"accept":["자음군 단순화"],"form":"끌나"},{"accept":["유음화"],"form":"끌라"}]},{"n":145,"start":"긋는","steps":[{"accept":["음절의 끝소리 규칙"],"form":"귿는"},{"accept":["비음화"],"form":"근는"}]},{"n":146,"start":"축하","steps":[{"accept":["거센소리되기"],"form":"추카"}]},{"n":147,"start":"따뜻하다","steps":[{"accept":["음절의 끝소리 규칙"],"form":"따뜯하다"},{"accept":["거센소리되기"],"form":"따뜨타다"}]},{"n":148,"start":"흙을","steps":[{"accept":["연음"],"form":"흘글"}]},{"n":149,"start":"고깃국","steps":[{"accept":["음절의 끝소리 규칙"],"form":"고긷국"},{"accept":["된소리되기"],"form":"고긷꾹"}]},{"n":150,"start":"않은","steps":[{"accept":["자음군 단순화","ㅎ 탈락"],"form":"안은"},{"accept":["연음"],"form":"아는"}]},{"n":151,"start":"굶는다","steps":[{"accept":["자음군 단순화"],"form":"굼는다"}]},{"n":152,"start":"책가방","steps":[{"accept":["된소리되기"],"form":"책까방"}]},{"n":153,"start":"끝인사","steps":[{"accept":["음절의 끝소리 규칙"],"form":"끋인사"},{"accept":["연음"],"form":"끄딘사"}]},{"n":154,"start":"여덟이","steps":[{"accept":["연음"],"form":"여덜비"}]},{"n":155,"start":"다섯째","steps":[{"accept":["된소리되기"],"form":"다섣째"}]},{"n":156,"start":"놓이다","steps":[{"accept":["ㅎ 탈락"],"form":"노이다"}]},{"n":157,"start":"밭이랑","steps":[{"accept":["음절의 끝소리 규칙"],"form":"받이랑"},{"accept":["ㄴ 첨가"],"form":"받니랑"},{"accept":["비음화"],"form":"반니랑"}]},{"n":158,"start":"기슭에는","steps":[{"accept":["연음"],"form":"기슬게는"}]},{"n":159,"start":"늙는","steps":[{"accept":["자음군 단순화"],"form":"늑는"},{"accept":["비음화"],"form":"능는"}]},{"n":160,"start":"신- + -고","steps":[{"accept":["된소리되기"],"form":"신꼬"}]},{"n":161,"start":"발야구","steps":[{"accept":["ㄴ 첨가"],"form":"발냐구"},{"accept":["유음화"],"form":"발랴구"}]},{"n":162,"start":"붓하고","steps":[{"accept":["음절의 끝소리 규칙"],"form":"붇하고"},{"accept":["거센소리되기"],"form":"부타고"}]},{"n":163,"start":"불꽃","steps":[{"accept":["음절의 끝소리 규칙"],"form":"불꼳"}]},{"n":164,"start":"삯일꾼","steps":[{"accept":["ㄴ 첨가"],"form":"삯닐꾼"},{"accept":["자음군 단순화"],"form":"삭닐꾼"},{"accept":["비음화"],"form":"상닐꾼"}]},{"n":165,"start":"곧이듣다","steps":[{"accept":["구개음화"],"form":"고지듣다"},{"accept":["된소리되기"],"form":"고지듣따"}]},{"n":166,"start":"닫히다","steps":[{"accept":["거센소리되기"],"form":"다티다"},{"accept":["구개음화"],"form":"다치다"}]},{"n":167,"start":"물난리","steps":[{"accept":["유음화"],"form":"물랄리"}]},{"n":168,"start":"쌓아","steps":[{"accept":["ㅎ 탈락"],"form":"싸아"}]}];
+
+    var TOTAL = QUIZ.length;
+    var submitted = false;
+    function $(id){ return document.getElementById(id); }
+    function norm(s){ return (s||'').replace(/[\[\]\s]/g,'').trim(); }
+
+    /* ====== 문항 렌더링 ====== */
+    function optionsHTML(){
+        var h = '<option value="">— 변동 종류 —</option>';
+        for (var i=0;i<RULE_OPTIONS.length;i++){ h += '<option value="'+RULE_OPTIONS[i]+'">'+RULE_OPTIONS[i]+'</option>'; }
+        return h;
+    }
+    function render(){
+        var list = $('quiz-list'); var html = '';
+        for (var qi=0; qi<QUIZ.length; qi++){
+            var q = QUIZ[qi]; var num = (q.n<10?'0'+q.n:''+q.n);
+            html += '<div class="q-card" id="card-'+qi+'">';
+            html += '<div class="q-head"><span class="q-num">'+num+'</span><span class="q-start">'+q.start+'<span class="arrow">→ ?</span></span></div>';
+            for (var si=0; si<q.steps.length; si++){
+                var isFinal = (si === q.steps.length-1);
+                html += '<div class="step-row'+(isFinal?' step-final':'')+'">';
+                html += '<span class="step-badge">'+(si+1)+'</span>';
+                html += '<select class="rule-select" id="sel-'+qi+'-'+si+'">'+optionsHTML()+'</select>';
+                html += '<span class="step-arrow">→</span>';
+                html += '<input type="text" class="form-input" id="frm-'+qi+'-'+si+'" placeholder="'+(isFinal?'최종 발음':'바뀐 형태')+'" autocomplete="off" autocorrect="off" autocapitalize="off">';
+                if (isFinal) html += '<span class="final-tag">[발음]</span>';
+                html += '</div>';
+            }
+            html += '<div class="feedback" id="fb-'+qi+'"></div>';
+            html += '</div>';
+        }
+        list.innerHTML = html;
+    }
+
+    function itemComplete(qi){
+        var q = QUIZ[qi];
+        for (var si=0; si<q.steps.length; si++){
+            if (!$('sel-'+qi+'-'+si).value) return false;
+            if (!$('frm-'+qi+'-'+si).value.trim()) return false;
+        }
+        return true;
+    }
+    function updateProgress(){
+        var done = 0;
+        for (var qi=0; qi<QUIZ.length; qi++){ if (itemComplete(qi)) done++; }
+        $('bar-filled').textContent = done;
+        $('filled-count').textContent = done;
+    }
+
+    function correctChain(q){
+        var s = q.start;
+        for (var si=0; si<q.steps.length; si++){
+            var st = q.steps[si];
+            var label = st.accept.join('/');
+            var f = (si===q.steps.length-1) ? '['+st.form+']' : st.form;
+            s += ' → ('+label+') → '+f;
+        }
+        return s;
+    }
+
+    function pad(n){ return n<10 ? '0'+n : ''+n; }
+    function nowStr(){ var d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
+
+    function submit(){
+        if (submitted) return;
+        var sName=($('si-name').value||'').trim(), sSchool=($('si-school').value||'').trim(), sGrade=$('si-grade').value||'';
+        if (!sName || !sSchool || !sGrade){ alert('제출 전에 이름·학교·학년을 모두 입력해 주세요!'); $('si-name').scrollIntoView({block:'center'}); return; }
+
+        submitted = true;
+        var score = 0; var details = [];
+
+        for (var qi=0; qi<QUIZ.length; qi++){
+            var q = QUIZ[qi]; var card = $('card-'+qi); var fb = $('fb-'+qi);
+            var itemOK = true;
+            for (var si=0; si<q.steps.length; si++){
+                var st = q.steps[si];
+                var sel = $('sel-'+qi+'-'+si), frm = $('frm-'+qi+'-'+si);
+                var ruleOK = st.accept.indexOf(sel.value) >= 0;
+                var formOK = st.form.split('/').some(function(f){ return norm(f) === norm(frm.value); });
+                sel.className = 'rule-select ' + (ruleOK?'ok':'ng');
+                frm.className = 'form-input ' + (formOK?'ok':'ng');
+                sel.disabled = true; frm.disabled = true;
+                if (!(ruleOK && formOK)) itemOK = false;
+            }
+            if (itemOK){
+                score++;
+                card.className = 'q-card correct';
+                fb.className = 'feedback show correct';
+                fb.innerHTML = '<b>✓ 정답</b> 잘했어요!';
+                details.push(q.n + '. ✓');
+            } else {
+                card.className = 'q-card wrong';
+                fb.className = 'feedback show wrong';
+                fb.innerHTML = '<b>✗ 정답 과정</b><br><span class="chain">' + correctChain(q) + '</span>';
+                details.push(q.n + '. ✗ → ' + correctChain(q));
+            }
+        }
+
+        var pct = Math.round((score/TOTAL)*100);
+        var msg;
+        if (pct===100) msg='완벽해요! 4회차 음운 변동 과정 완전 정복 🌿';
+        else if (pct>=80) msg='훌륭해요! 틀린 과정만 다시 짚어 봐요.';
+        else if (pct>=60) msg='잘했어요. 오답 과정을 중심으로 복습해 봐요.';
+        else if (pct>=40) msg='개념 정리 탭으로 돌아가 규칙을 다시 확인해 볼까요?';
+        else msg='괜찮아요. 개념 정리부터 천천히 다시 익혀 봐요.';
+
+        var finalEl = $('final');
+        finalEl.innerHTML =
+            '<div><span class="score-big">'+score+'</span><span class="total"> / '+TOTAL+'</span></div>' +
+            '<div class="msg">'+msg+'</div>' +
+            '<div id="send-status" class="send-status-box sending">📤 선생님께 결과 전송 중…</div>' +
+            '<button type="button" id="retry-btn" class="send-btn" style="display:none;">다시 전송하기</button>' +
+            '<br><button type="button" class="send-btn reset" onclick="location.reload()">처음부터 다시</button>';
+        finalEl.className = 'final show';
+
+        var payload = { time:nowStr(), name:sName, school:sSchool, grade:sGrade, unit:UNIT_NAME, round:ROUND_NUMBER, score:score+' / '+TOTAL, details:details.join('\n') };
+        sendResult(payload);
+        var rb=$('retry-btn'); if (rb) rb.addEventListener('click', function(){ sendResult(payload); });
+
+        $('result-display').innerHTML = '<span class="filled">맞힌 문항: '+score+' / '+TOTAL+'</span>';
+        document.querySelector('.submit-bar').style.display = 'none';
+        setTimeout(function(){ finalEl.scrollIntoView({block:'center'}); }, 300);
+    }
+
+    function sendResult(payload){
+        var box=$('send-status'), rb=$('retry-btn');
+        if (box){ box.className='send-status-box sending'; box.innerHTML='📤 선생님께 결과 전송 중…'; }
+        if (rb) rb.style.display='none';
+        fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload) })
+        .then(function(){ if (box){ box.className='send-status-box done'; box.innerHTML='✅ 선생님께 결과가 전송되었어요!'; } })
+        .catch(function(){ if (box){ box.className='send-status-box fail'; box.innerHTML='⚠️ 전송에 실패했어요. 인터넷 확인 후 아래 버튼을 눌러주세요.'; } if (rb) rb.style.display='inline-block'; });
+    }
+
+    function attach(){
+        render();
+        var list = $('quiz-list');
+        list.addEventListener('input', updateProgress);
+        list.addEventListener('change', updateProgress);
+        $('submit-btn').addEventListener('click', submit);
+        updateProgress();
+    }
+    if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', attach); else attach();
+})();
+</script>
+</body>
+</html>
