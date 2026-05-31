@@ -3,11 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>문법 퀴즈 확인</title>
-<meta property="og:title" content="문법 퀴즈 확인">
-<meta property="og:description" content="GRAMMA 문법 퀴즈 결과 확인">
-<meta property="og:image" content="https://coke4497-sys.github.io/shueguk-gramma/icon-512.png">
-<meta property="og:url" content="https://coke4497-sys.github.io/shueguk-gramma/shueguk-teacher-dashboard.html">
+<title>GRAMMA · 교사 결과 확인</title>
 <meta name="theme-color" content="#2d8068">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -68,7 +64,7 @@ tbody tr:hover { background: #f4faf7; }
 <div class="container">
     <div class="header">
         <div class="logo">SHUEGUK</div>
-        <h1>문법 퀴즈 확인</h1>
+        <h1>교사 결과 확인</h1>
     </div>
 
     <div class="summary">
@@ -136,9 +132,30 @@ tbody tr:hover { background: #f4faf7; }
         function cleanup(){ try { delete window[cb]; } catch(e){ window[cb] = undefined; } var el = $(cb + '_s'); if (el) el.remove(); }
     }
 
+    function fmtTime(raw){
+        raw = '' + (raw==null ? '' : raw);
+        if (!raw) return '';
+        // 시트가 날짜로 변환해 ISO(UTC)로 넘어온 경우 → 한국 시간으로 표시
+        if (raw.indexOf('T') >= 0 || raw.indexOf('Z') >= 0) {
+            var d = new Date(raw);
+            if (!isNaN(d.getTime())) {
+                try {
+                    var o = {};
+                    new Intl.DateTimeFormat('ko-KR', {
+                        timeZone: 'Asia/Seoul', hourCycle: 'h23',
+                        year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit'
+                    }).formatToParts(d).forEach(function(p){ o[p.type] = p.value; });
+                    return o.year + '-' + o.month + '-' + o.day + ' ' + o.hour + ':' + o.minute;
+                } catch (e) {}
+            }
+        }
+        return raw;   // 이미 보기 좋은 문자열이면 그대로
+    }
     function normalizeRow(r){
         var sc = parseScore(r.score);
-        return { time: '' + (r.time||''), name: '' + (r.name||''), school: '' + (r.school||''), grade: '' + (r.grade||''),
+        return { time: '' + (r.time||''), timeDisplay: fmtTime(r.time),
+                 name: '' + (r.name||''), school: '' + (r.school||''), grade: '' + (r.grade||''),
                  unit: '' + (r.unit||''), round: '' + (r.round||''), score: '' + (r.score||''),
                  details: '' + (r.details||''), correct: sc.correct, total: sc.total, pct: sc.pct };
     }
@@ -183,7 +200,7 @@ tbody tr:hover { background: #f4faf7; }
         rows.forEach(function(r, i){
             var tr = document.createElement('tr');
             tr.innerHTML =
-                '<td>' + esc(r.time) + '</td><td><b>' + esc(r.name) + '</b></td><td>' + esc(r.school) + '</td>' +
+                '<td>' + esc(r.timeDisplay) + '</td><td><b>' + esc(r.name) + '</b></td><td>' + esc(r.school) + '</td>' +
                 '<td>' + esc(r.grade) + '</td><td>' + esc(r.unit) + '</td><td>' + esc(r.round) + '</td>' +
                 '<td class="score-cell">' + esc(r.score) + '</td>' +
                 '<td>' + (r.pct===null ? '–' : '<span class="pct ' + pctClass(r.pct) + '">' + r.pct + '%</span>') + '</td>' +
@@ -211,7 +228,7 @@ tbody tr:hover { background: #f4faf7; }
         var head = ['제출시각','이름','학교','학년','단원','회차','점수','정답률','상세'];
         function q(v){ v = '' + (v==null?'':v); return '"' + v.replace(/"/g,'""') + '"'; }
         var lines = [head.map(q).join(',')];
-        rows.forEach(function(r){ lines.push([r.time,r.name,r.school,r.grade,r.unit,r.round,r.score,(r.pct===null?'':r.pct+'%'),r.details].map(q).join(',')); });
+        rows.forEach(function(r){ lines.push([r.timeDisplay,r.name,r.school,r.grade,r.unit,r.round,r.score,(r.pct===null?'':r.pct+'%'),r.details].map(q).join(',')); });
         return '\ufeff' + lines.join('\r\n');   // BOM: 엑셀 한글 깨짐 방지
     }
     function downloadCSV(){
