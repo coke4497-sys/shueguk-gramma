@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHUEGUK 문법</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700;800&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif; background: #C6D5D2; min-height: 100vh; padding: 14px; padding-bottom: 100px; color: #2C2F2D; -webkit-text-size-adjust: 100%; }
+.container { max-width: 580px; margin: 0 auto; }
+
+.header { text-align: center; margin-bottom: 12px; padding: 18px 16px 14px; background: white; border-radius: 20px; box-shadow: 0 4px 16px rgba(45,128,104,0.08); border: 2px solid #C6D5D2; }
+.header .logo { font-family: 'Nanum Myeongjo', serif; font-size: 11px; font-weight: 800; letter-spacing: 5px; color: #A6C1BB; margin-bottom: 6px; }
+.header h1 { font-family: 'Nanum Myeongjo', serif; font-size: 21px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; line-height: 1.3; }
+.header .round { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 800; color: #628C83; background: #E0EAE7; padding: 4px 12px; border-radius: 999px; }
+
+.mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+.mode-label { padding: 12px; background: white; border: 2px solid #C6D5D2; border-radius: 12px; font-size: 13px; font-weight: 800; color: #8B928C; text-align: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.mode-label.active { background: #628C83; color: white; border-color: #628C83; }
+.mode-label .m-ic { width: 16px; height: 16px; vertical-align: -3px; margin-right: 6px; }
+
+.category-tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; margin-bottom: 10px; }
+.cat-label { padding: 10px 4px; background: white; border: 1.5px solid #E8EAE7; border-radius: 8px; font-size: 12px; font-weight: 700; color: #6A716C; text-align: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.cat-label.active { background: #E9F0EF; border-color: #A6C1BB; color: #3A544E; }
+
+.vocab-card { background: white; border-radius: 18px; padding: 18px; border: 2px solid #F1F6F4; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(45,128,104,0.04); }
+.vocab-word { font-family: 'Nanum Myeongjo', serif; font-size: 20px; font-weight: 800; color: #2C2F2D; margin-bottom: 4px; }
+.vocab-tag { display: inline-block; font-size: 10px; font-weight: 800; color: #628C83; background: #E0EAE7; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
+.vocab-meaning { font-size: 13px; line-height: 1.7; background: #E9F0EF; padding: 11px 13px; border-radius: 10px; margin: 8px 0; }
+.vocab-example { font-size: 12px; line-height: 1.6; color: #6A716C; padding: 9px 12px; background: #F4F5F3; border-radius: 8px; font-style: italic; }
+.vocab-example b { font-style: normal; font-weight: 800; color: #628C83; margin-right: 6px; }
+.note-box { background: #FBEECF; border: 1.5px solid #F5B23C; color: #8F630F; font-size: 12px; line-height: 1.6; padding: 11px 13px; border-radius: 10px; margin-bottom: 10px; }
+
+.progress-bar { display: flex; justify-content: space-between; background: white; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 12px; font-weight: 700; border: 1.5px solid #C6D5D2; }
+.progress-bar .filled { color: #628C83; font-weight: 800; }
+.progress-bar .lbl { color: #6A716C; }
+
+.q-card { background: white; border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; border: 2px solid #F1F6F4; }
+.q-card.correct { border-color: #3E9B74; background: #F1F6F4; }
+.q-card.wrong { border-color: #EFA9A5; background: #FBE8E7; }
+.q-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.q-num { display: inline-block; background: #628C83; color: white; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+.q-start { font-family: 'Nanum Myeongjo', serif; font-size: 19px; font-weight: 800; color: #2C2F2D; }
+.q-start .arrow { color: #A6C1BB; font-size: 15px; margin-left: 6px; }
+.q-stem { font-size: 13px; line-height: 1.6; margin-bottom: 8px; }
+.q-example { font-size: 12px; color: #6A716C; background: #F4F5F3; padding: 8px 11px; border-radius: 8px; margin: 6px 0; font-style: italic; }
+.blank { display: inline-block; min-width: 50px; padding: 0 8px; border-bottom: 2px solid #628C83; color: #628C83; font-weight: 800; font-style: normal; }
+.section-label { font-size: 12px; font-weight: 800; color: #3A544E; background: #E0EAE7; padding: 8px 12px; border-radius: 8px; margin: 14px 0 8px; }
+.chosung { display: inline-block; background: #E9F0EF; border: 1.5px solid #A6C1BB; color: #3A544E; padding: 1px 8px; border-radius: 6px; font-weight: 800; margin-right: 5px; }
+.boxki { background: #E9F0EF; border: 1.5px dashed #A6C1BB; border-radius: 10px; padding: 10px 12px; margin: 6px 0; font-size: 12px; color: #3A544E; }
+.boxki b { display: block; margin-bottom: 4px; font-size: 11px; }
+.boxki-words { display: flex; flex-wrap: wrap; gap: 6px; }
+.boxki-word { background: white; border: 1.5px solid #A6C1BB; color: #3A544E; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+
+/* 과정형(음운 변동 실습) 문항 */
+.step-row { display: flex; align-items: center; gap: 6px; margin: 7px 0; }
+.step-badge { flex: 0 0 22px; height: 22px; line-height: 22px; text-align: center; background: #E9F0EF; color: #628C83; border-radius: 6px; font-size: 11px; font-weight: 800; }
+.step-arrow { flex: 0 0 auto; color: #A6C1BB; font-weight: 800; }
+.rule-select { flex: 1 1 50%; min-width: 0; padding: 10px 24px 10px 10px; font-size: 13px; font-family: inherit; font-weight: 700; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; background: white; -webkit-appearance: none; appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235fb8a8' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat; background-position: right 8px center; background-size: 14px; }
+.form-input { flex: 1 1 40%; min-width: 0; width: 100%; padding: 10px; font-size: 14px; font-family: inherit; font-weight: 700; text-align: center; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; background: white; -webkit-appearance: none; }
+.rule-select:focus, .form-input:focus { border-color: #A6C1BB; }
+.step-final .form-input { border-color: #A6C1BB; background: #F4F5F3; }
+.final-tag { flex: 0 0 auto; font-size: 10px; font-weight: 800; color: #628C83; }
+.rule-select.ok, .form-input.ok { border-color: #3E9B74; background: #E4F1EA; }
+.rule-select.ng, .form-input.ng { border-color: #EFA9A5; background: #FADED9; }
+
+/* 단답/OX/선택 문항 */
+.answer-input { width: 100%; padding: 12px; font-size: 15px; font-family: inherit; font-weight: 700; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; -webkit-appearance: none; background: white; }
+.answer-input:focus { border-color: #A6C1BB; }
+.ox-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+.ox-label { background: white; border: 2px solid #E8EAE7; padding: 14px; border-radius: 9px; font-size: 17px; font-weight: 800; color: #6A716C; text-align: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.ox-label.active { background: #E0EAE7; border-color: #628C83; color: #3A544E; }
+.opt-buttons { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.opt-label { background: white; border: 2px solid #E8EAE7; padding: 11px 13px; border-radius: 9px; font-size: 13px; font-weight: 700; color: #2C2F2D; text-align: left; line-height: 1.5; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.opt-label.active { background: #E0EAE7; border-color: #628C83; color: #3A544E; }
+.opt-label .opt-num { font-weight: 800; color: #628C83; margin-right: 6px; }
+
+.feedback { margin-top: 8px; padding: 9px 12px; border-radius: 9px; font-size: 12px; line-height: 1.6; display: none; }
+.feedback.show { display: block; }
+.feedback.correct { background: #E4F1EA; color: #276B4E; border: 1.5px solid #3E9B74; }
+.feedback.wrong { background: #FADED9; color: #992F20; border: 1.5px solid #EFA9A5; }
+.feedback b { font-weight: 800; }
+.feedback .chain { font-family: 'Nanum Myeongjo', serif; }
+
+.student-info { background: white; border-radius: 14px; padding: 16px; margin-bottom: 10px; border: 2px solid #C6D5D2; }
+.student-info .si-title { font-size: 13px; font-weight: 800; color: #3A544E; margin-bottom: 10px; }
+.student-info .si-title .req { font-size: 11px; font-weight: 700; color: #EE7455; margin-left: 5px; }
+.si-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.si-row:last-child { margin-bottom: 0; }
+.si-field { flex: 1; }
+.si-field.small { flex: 0 0 92px; }
+.si-field label { display: block; font-size: 11px; font-weight: 700; color: #6A716C; margin-bottom: 3px; }
+.si-field input, .si-field select { width: 100%; padding: 10px; font-size: 14px; font-family: inherit; font-weight: 700; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; background: white; -webkit-appearance: none; }
+.si-field input:focus, .si-field select:focus { border-color: #A6C1BB; }
+.si-field select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235fb8a8' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 8px center; background-size: 14px; padding-right: 26px; }
+
+.final { display: none; text-align: center; background: white; padding: 24px 18px; border-radius: 20px; border: 3px solid #A6C1BB; margin: 12px 0; }
+.final.show { display: block; }
+.final .score-big { font-family: 'Nanum Myeongjo', serif; font-size: 42px; font-weight: 800; color: #628C83; }
+.final .total { font-size: 18px; color: #8B928C; }
+.final .msg { font-size: 13px; color: #6A716C; margin: 8px 0 14px; line-height: 1.6; }
+.send-btn { display: inline-block; background: #628C83; color: white; border: none; padding: 14px 22px; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; text-decoration: none; margin: 4px; -webkit-tap-highlight-color: transparent; }
+.send-btn.reset { background: white; color: #628C83; border: 2px solid #628C83; }
+.send-status-box { font-size: 13px; font-weight: 700; padding: 12px 14px; border-radius: 10px; margin: 4px 0 10px; line-height: 1.5; }
+.send-status-box .s-ic { width: 15px; height: 15px; vertical-align: -2px; margin-right: 5px; }
+.send-status-box.sending { background: #F4F5F3; color: #6A716C; border: 1.5px solid #E8EAE7; }
+.send-status-box.done { background: #E4F1EA; color: #276B4E; border: 1.5px solid #3E9B74; }
+.send-status-box.fail { background: #FADED9; color: #992F20; border: 1.5px solid #EFA9A5; }
+
+.submit-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 2px solid #C6D5D2; padding: 12px 14px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 14px rgba(45,128,104,0.1); z-index: 50; display: none; }
+.submit-inner { max-width: 580px; margin: 0 auto; display: flex; gap: 8px; align-items: center; }
+.submit-status { flex: 1; font-size: 12px; font-weight: 700; color: #6A716C; }
+.submit-status .num { color: #628C83; font-weight: 800; font-size: 14px; }
+.submit-btn { background: #628C83; color: white; border: none; padding: 12px 22px; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+.loading-msg { text-align: center; padding: 40px 20px; color: #6A716C; font-weight: 700; }
+.loading-msg .s-ic { width: 16px; height: 16px; vertical-align: -3px; margin-right: 5px; }
+.loading-msg.fail { color: #992F20; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="loading" class="loading-msg">불러오는 중…</div>
+
+<div class="container hidden" id="app">
+    <div class="header">
+        <div class="logo">SHUEGUK</div>
+        <h1 id="h-title">문법, 개념이 힘이다.</h1>
+        <div class="round" id="h-round"></div>
+    </div>
+
+    <div class="mode-tabs" id="mode-tabs">
+        <div class="mode-label active" id="tab-study"><svg class="m-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>개념 정리</div>
+        <div class="mode-label" id="tab-test"><svg class="m-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>테스트 모드</div>
+    </div>
+
+    <!-- 개념 정리 -->
+    <div class="study-section" id="study-section">
+        <div class="category-tabs" id="cat-tabs"></div>
+        <div id="study-body"></div>
+    </div>
+
+    <!-- 테스트 모드 -->
+    <div class="test-section hidden" id="test-section">
+        <div class="student-info">
+            <div class="si-title">학생 정보<span class="req">* 제출 전 꼭 입력해 주세요</span></div>
+            <div class="si-row">
+                <div class="si-field"><label for="si-name">이름</label><input type="text" id="si-name" placeholder="홍길동" autocomplete="off"></div>
+            </div>
+            <div class="si-row">
+                <div class="si-field"><label for="si-school">학교</label><input type="text" id="si-school" placeholder="○○중 또는 ○○고" autocomplete="off"></div>
+                <div class="si-field small"><label for="si-grade">학년</label><select id="si-grade"></select></div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <span class="lbl">완료: <span class="filled" id="filled-count">0</span> / <span id="total-count">0</span></span>
+            <span id="result-display"></span>
+        </div>
+
+        <div id="questions"></div>
+        <div id="final" class="final"></div>
+    </div>
+</div>
+
+<div class="submit-bar" id="submit-bar">
+    <div class="submit-inner">
+        <div class="submit-status"><span class="num" id="bar-filled">0</span> / <span id="bar-total">0</span> 완료</div>
+        <button type="button" class="submit-btn" id="submit-btn">전체 제출</button>
+    </div>
+</div>
+
+<script src="manifest.js"></script>
+<script>
+(function() {
+    /* ===== 설정 ===== */
+    // 문법 결과·배정을 담당하는 Apps Script 배포 주소 (apps-script/Code.gs)
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzikteq7gR2ezi_NXc2of8PTvUj5XouJ5ZcZOEWv0YWgjQjs8dZqogQjSr0-LSqneXF/exec';
+    var GRADES = ['중1','중2','중3','고1','고2','고3'];
+
+    function ic(inner, cls) { return '<svg class="' + (cls || 's-ic') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>'; }
+    var IC = {
+        send:  ic('<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>'),
+        check: ic('<path d="M20 6L9 17l-5-5"/>'),
+        alert: ic('<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>')
+    };
+
+    function $(id) { return document.getElementById(id); }
+    function esc(s) { return ('' + (s == null ? '' : s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function normalize(s) {
+        s = (s || '').replace(/\s/g, '').replace(/[,，、]/g, '').trim();
+        var map = { '①':'1','②':'2','③':'3','④':'4','⑤':'5','⑥':'6','⑦':'7','⑧':'8','⑨':'9','⑩':'10' };
+        return s.replace(/[①-⑩]/g, function(c) { return map[c] || c; });
+    }
+    // 과정형: 대괄호·공백 제거 (기존 음운 변동 페이지의 norm과 동일)
+    function normForm(s) { return (s || '').replace(/[\[\]\s]/g, '').trim(); }
+    // "기어서/기여서"처럼 빗금으로 복수 표기된 형태는 어느 쪽을 써도 정답
+    function formOK(user, form) {
+        var u = normForm(user);
+        if (!u) return false;
+        if (u === normForm(form)) return true;
+        var alts = ('' + form).split('/');
+        if (alts.length < 2) return false;
+        return alts.some(function(a) { return normForm(a) && normForm(a) === u; });
+    }
+    function circ(n) { var s = '①②③④⑤⑥⑦⑧⑨⑩'; n = parseInt(n, 10); return (n >= 1 && n <= 10) ? s.charAt(n - 1) : ('(' + n + ')'); }
+    function pad2(n) { n = '' + n; return n.length < 2 ? '0' + n : n; }
+
+    var params = new URLSearchParams(location.search);
+    var catCode = params.get('c') || '';
+    var round = params.get('r') || '';
+    var preview = params.get('preview') === '1';   // 티쳐스 미리보기 — 배정 확인 생략
+
+    var CAT_LABEL = '';
+    if (window.GRAMMA && GRAMMA.categories) {
+        GRAMMA.categories.forEach(function(x) { if (x.code === catCode) CAT_LABEL = x.label; });
+    }
+
+    function fail(msg) {
+        var el = $('loading');
+        el.className = 'loading-msg fail';
+        el.innerHTML = IC.alert + msg;
+    }
+
+    if (!catCode || !round) { fail('주소가 올바르지 않습니다. (카테고리·회차 정보 없음)'); return; }
+
+    /* ===== 데이터 로드 ===== */
+    fetch('data/' + catCode + '-' + round + '.json', { cache: 'no-store' })
+        .then(function(r) { if (!r.ok) throw new Error('not found'); return r.json(); })
+        .then(function(data) { init(data); })
+        .catch(function() { fail('아직 등록되지 않은 테스트입니다. (' + esc(CAT_LABEL || catCode) + ' ' + esc(round) + '회)'); });
+
+    var DATA, QUESTIONS, TOTAL, RULES, submitted = false;
+
+    function init(data) {
+        DATA = data;
+        QUESTIONS = data.questions || [];
+        TOTAL = data.total || QUESTIONS.length;
+        RULES = data.ruleOptions || [];
+        if (!CAT_LABEL) CAT_LABEL = data.category || catCode;
+
+        $('h-title').textContent = data.title || '문법, 개념이 힘이다.';
+        $('h-round').textContent = CAT_LABEL + ' ' + round + '회' + (data.subtitle ? ' · ' + data.subtitle : '');
+        document.title = 'SHUEGUK 문법 ' + CAT_LABEL + ' ' + round + '회';
+        $('total-count').textContent = TOTAL;
+        $('bar-total').textContent = TOTAL;
+
+        var gradeSel = $('si-grade');
+        gradeSel.innerHTML = '<option value="">선택</option>';
+        GRADES.forEach(function(label) {
+            var o = document.createElement('option');
+            o.value = label; o.textContent = label;
+            gradeSel.appendChild(o);
+        });
+
+        // 배정 확인 페이지(index.html)에서 넘어온 학생 정보로 미리 채움
+        var pName = (params.get('name') || '').trim();
+        var pSchool = (params.get('school') || '').trim();
+        var pGrade = (params.get('grade') || '').trim();
+        if (pName) $('si-name').value = pName;
+        if (pSchool) $('si-school').value = pSchool;
+        if (pGrade && GRADES.indexOf(pGrade) >= 0) gradeSel.value = pGrade;
+
+        buildStudy(data.study || {});
+        buildQuestions();
+        attachListeners();
+
+        // 개념 카드가 없는 회차는 테스트 모드로 바로 시작
+        if ($('study-section').classList.contains('hidden')) {
+            $('mode-tabs').classList.add('hidden');
+            setMode('test');
+        }
+
+        $('loading').classList.add('hidden');
+        $('app').classList.remove('hidden');
+    }
+
+    /* ===== 개념 정리 ===== */
+    function buildStudy(study) {
+        var tabsData = study.tabs || [];
+        var tabs = $('cat-tabs'), body = $('study-body');
+        if (!tabsData.length) { $('study-section').classList.add('hidden'); return; }
+
+        tabsData.forEach(function(d, idx) {
+            var t = document.createElement('div');
+            t.className = 'cat-label' + (idx === 0 ? ' active' : '');
+            t.textContent = d.label;
+            t.setAttribute('data-cat', idx);
+            tabs.appendChild(t);
+
+            var wrap = document.createElement('div');
+            wrap.id = 'cat-' + idx;
+            wrap.className = 'cat-content' + (idx === 0 ? '' : ' hidden');
+            (d.items || []).forEach(function(v) {
+                var c = document.createElement('div');
+                if (v.note) {
+                    c.className = 'note-box';
+                    c.innerHTML = v.note; // 데이터 파일의 안내문(자체 제작 콘텐츠 — <b> 강조 허용)
+                } else {
+                    c.className = 'vocab-card';
+                    c.innerHTML =
+                        '<div class="vocab-word">' + esc(v.word) + (v.tag ? '<span class="vocab-tag">' + esc(v.tag) + '</span>' : '') + '</div>' +
+                        '<div class="vocab-meaning">' + esc(v.meaning) + '</div>' +
+                        (v.example ? '<div class="vocab-example"><b>예)</b>' + esc(v.example) + '</div>' : '');
+                }
+                wrap.appendChild(c);
+            });
+            body.appendChild(wrap);
+        });
+
+        tabs.querySelectorAll('.cat-label').forEach(function(t) {
+            t.addEventListener('click', function() {
+                tabs.querySelectorAll('.cat-label').forEach(function(x) { x.classList.remove('active'); });
+                t.classList.add('active');
+                tabsData.forEach(function(_, idx) { $('cat-' + idx).classList.add('hidden'); });
+                $('cat-' + t.getAttribute('data-cat')).classList.remove('hidden');
+            });
+        });
+    }
+
+    /* ===== 문항 렌더링 ===== */
+    function blankify(text) { return esc(text).replace(/___+/g, '<span class="blank">　　　</span>'); }
+    function ruleOptionsHTML() {
+        var h = '<option value="">— 변동 종류 —</option>';
+        RULES.forEach(function(r) { h += '<option value="' + esc(r) + '">' + esc(r) + '</option>'; });
+        return h;
+    }
+
+    function buildQuestions() {
+        var box = $('questions');
+        if (DATA.instruction) {
+            var il = document.createElement('div');
+            il.className = 'section-label';
+            il.innerHTML = DATA.instruction; // 데이터 파일의 지시문(자체 제작 콘텐츠 — <b> 강조 허용)
+            box.appendChild(il);
+        }
+        QUESTIONS.forEach(function(q, i) {
+            if (q.section) {
+                var sl = document.createElement('div');
+                sl.className = 'section-label';
+                sl.textContent = q.section;
+                box.appendChild(sl);
+            }
+            if (q.boxki && q.boxki.length) {
+                var bk = document.createElement('div');
+                bk.className = 'boxki';
+                bk.innerHTML = '<b>&lt;보기&gt;</b><div class="boxki-words">' +
+                    q.boxki.map(function(w) { return '<span class="boxki-word">' + esc(w) + '</span>'; }).join('') + '</div>';
+                box.appendChild(bk);
+            }
+            var card = document.createElement('div');
+            card.className = 'q-card';
+            card.id = 'card-' + i;
+            if (q.type === 'process') {
+                var h = '<div class="q-head"><span class="q-num">' + esc(pad2(q.num)) + '</span><span class="q-start">' + esc(q.start) + '<span class="arrow">→ ?</span></span></div>';
+                (q.steps || []).forEach(function(st, si) {
+                    var isFinal = (si === q.steps.length - 1);
+                    h += '<div class="step-row' + (isFinal ? ' step-final' : '') + '">' +
+                        '<span class="step-badge">' + (si + 1) + '</span>' +
+                        '<select class="rule-select" id="sel-' + i + '-' + si + '">' + ruleOptionsHTML() + '</select>' +
+                        '<span class="step-arrow">→</span>' +
+                        '<input type="text" class="form-input" id="frm-' + i + '-' + si + '" placeholder="' + (isFinal ? '최종 발음' : '바뀐 형태') + '" autocomplete="off" autocorrect="off" autocapitalize="off">' +
+                        (isFinal ? '<span class="final-tag">[발음]</span>' : '') +
+                        '</div>';
+                });
+                card.innerHTML = h + '<div class="feedback" id="feedback-' + i + '"></div>';
+            } else {
+                var head = '<div><span class="q-num">' + esc(pad2(q.num)) + '</span>' +
+                    (q.chosung ? '<span class="chosung">' + esc(q.chosung) + '</span>' : '') + '</div>' +
+                    '<div class="q-stem">' + esc(q.stem) + '</div>' +
+                    (q.example ? '<div class="q-example">' + blankify(q.example) + '</div>' : '');
+                if (q.type === 'ox') {
+                    card.innerHTML = head +
+                        '<div class="ox-buttons">' +
+                        '<div class="ox-label" data-ox="O" data-i="' + i + '">O</div>' +
+                        '<div class="ox-label" data-ox="X" data-i="' + i + '">X</div></div>' +
+                        '<div class="feedback" id="feedback-' + i + '"></div>';
+                } else if (q.type === 'choice') {
+                    var opts = (q.options || []).map(function(opt, oi) {
+                        return '<div class="opt-label" data-opt="' + (oi + 1) + '" data-i="' + i + '"><span class="opt-num">' + circ(oi + 1) + '</span>' + esc(opt) + '</div>';
+                    }).join('');
+                    card.innerHTML = head + '<div class="opt-buttons">' + opts + '</div>' +
+                        '<div class="feedback" id="feedback-' + i + '"></div>';
+                } else {
+                    card.innerHTML = head +
+                        '<input type="text" class="answer-input" id="input-' + i + '" placeholder="답을 입력하세요" autocomplete="off" autocorrect="off" autocapitalize="off">' +
+                        '<div class="feedback" id="feedback-' + i + '"></div>';
+                }
+            }
+            box.appendChild(card);
+        });
+    }
+
+    /* ===== 진행/입력 ===== */
+    var oxChoice = {}, choiceSel = {};
+    function itemFilled(q, i) {
+        if (q.type === 'process') {
+            for (var si = 0; si < q.steps.length; si++) {
+                if (!$('sel-' + i + '-' + si).value) return false;
+                if (!$('frm-' + i + '-' + si).value.trim()) return false;
+            }
+            return true;
+        }
+        if (q.type === 'ox') return !!oxChoice[i];
+        if (q.type === 'choice') return !!choiceSel[i];
+        var inp = $('input-' + i);
+        return !!(inp && inp.value.trim());
+    }
+    function updateProgress() {
+        var filled = 0;
+        QUESTIONS.forEach(function(q, i) { if (itemFilled(q, i)) filled++; });
+        $('bar-filled').textContent = filled;
+        $('filled-count').textContent = filled;
+    }
+
+    function attachListeners() {
+        QUESTIONS.forEach(function(q, i) {
+            if (q.type === 'ox') {
+                $('card-' + i).querySelectorAll('.ox-label').forEach(function(b) {
+                    b.addEventListener('click', function() {
+                        if (submitted) return;
+                        oxChoice[i] = b.getAttribute('data-ox');
+                        $('card-' + i).querySelectorAll('.ox-label').forEach(function(x) { x.classList.remove('active'); });
+                        b.classList.add('active');
+                        updateProgress();
+                    });
+                });
+            } else if (q.type === 'choice') {
+                $('card-' + i).querySelectorAll('.opt-label').forEach(function(b) {
+                    b.addEventListener('click', function() {
+                        if (submitted) return;
+                        choiceSel[i] = b.getAttribute('data-opt');
+                        $('card-' + i).querySelectorAll('.opt-label').forEach(function(x) { x.classList.remove('active'); });
+                        b.classList.add('active');
+                        updateProgress();
+                    });
+                });
+            }
+        });
+        var qbox = $('questions');
+        qbox.addEventListener('input', updateProgress);
+        qbox.addEventListener('change', updateProgress);
+        $('tab-study').addEventListener('click', function() { setMode('study'); });
+        $('tab-test').addEventListener('click', function() { setMode('test'); });
+        $('submit-btn').addEventListener('click', submit);
+    }
+
+    function setMode(m) {
+        var study = m === 'study';
+        $('tab-study').classList.toggle('active', study);
+        $('tab-test').classList.toggle('active', !study);
+        $('study-section').classList.toggle('hidden', !study);
+        $('test-section').classList.toggle('hidden', study);
+        $('submit-bar').style.display = (!study && !submitted) ? 'block' : 'none';
+    }
+
+    /* ===== 채점/제출 ===== */
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    function nowStr() {
+        var d = new Date();
+        return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    }
+    function correctChain(q) {
+        var s = q.start;
+        (q.steps || []).forEach(function(st, si) {
+            var label = st.accept.join('/');
+            var f = (si === q.steps.length - 1) ? '[' + st.form + ']' : st.form;
+            s += ' → (' + label + ') → ' + f;
+        });
+        return s;
+    }
+
+    function submit() {
+        if (submitted) return;
+        var sName = ($('si-name').value || '').trim();
+        var sSchool = ($('si-school').value || '').trim();
+        var sGrade = $('si-grade').value || '';
+        if (!sName || !sSchool || !sGrade) {
+            alert('제출 전에 이름·학교·학년을 모두 입력해 주세요!');
+            $('si-name').scrollIntoView({ block: 'center' });
+            return;
+        }
+        if (preview) { doSubmit(sName, sSchool, sGrade); return; }
+        /* 제출 시점에 배정 확인 — 선생님이 학년·학교·개인에게 배정한 테스트만 제출을 받는다.
+         * 확인 자체가 실패하면(순간 장애·배정 기능 미배포) 시험은 받아준다(어휘의 열린 주차 확인과 같은 방침). */
+        var btn = $('submit-btn');
+        btn.disabled = true; btn.textContent = '확인 중…';
+        fetch(SCRIPT_URL + '?action=myAssign&grade=' + encodeURIComponent(sGrade) + '&school=' + encodeURIComponent(sSchool) + '&name=' + encodeURIComponent(sName) + '&t=' + Date.now(), { cache: 'no-store' })
+            .then(function(r) { return r.json(); })
+            .then(function(st) {
+                if (st && st.ok === true && st.kind === 'assign') {
+                    var hit = (st.items || []).some(function(a) { return '' + a.cat === '' + catCode && '' + a.round === '' + round; });
+                    if (!hit) {
+                        btn.disabled = false; btn.textContent = '전체 제출';
+                        alert('지금 나에게 배정된 테스트가 아니에요.\n배정 확인 페이지에서 내 테스트를 다시 확인해 주세요.');
+                        return;
+                    }
+                }
+                doSubmit(sName, sSchool, sGrade);
+            })
+            .catch(function() { doSubmit(sName, sSchool, sGrade); });
+    }
+
+    function doSubmit(sName, sSchool, sGrade) {
+        if (submitted) return;
+        submitted = true;
+        var score = 0, details = [];
+
+        QUESTIONS.forEach(function(q, i) {
+            var card = $('card-' + i), fb = $('feedback-' + i), qNum = q.num;
+            var isCorrect = false;
+            if (q.type === 'process') {
+                var itemOK = true;
+                q.steps.forEach(function(st, si) {
+                    var sel = $('sel-' + i + '-' + si), frm = $('frm-' + i + '-' + si);
+                    var ruleOK = st.accept.indexOf(sel.value) >= 0;
+                    var fOK = formOK(frm.value, st.form);
+                    sel.className = 'rule-select ' + (ruleOK ? 'ok' : 'ng');
+                    frm.className = 'form-input ' + (fOK ? 'ok' : 'ng');
+                    sel.disabled = true; frm.disabled = true;
+                    if (!(ruleOK && fOK)) itemOK = false;
+                });
+                isCorrect = itemOK;
+                fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
+                if (isCorrect) {
+                    fb.innerHTML = '<b>✓ 정답</b> 잘했어요!';
+                    details.push(qNum + '. ✓');
+                } else {
+                    fb.innerHTML = '<b>✗ 정답 과정</b><br><span class="chain">' + esc(correctChain(q)) + '</span>';
+                    details.push(qNum + '. ✗ → ' + correctChain(q));
+                }
+            } else if (q.type === 'ox') {
+                var choice = oxChoice[i] || null;
+                isCorrect = (choice === q.answer);
+                card.querySelectorAll('.ox-label').forEach(function(x) { x.style.pointerEvents = 'none'; });
+                fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
+                fb.innerHTML = '<b>' + (isCorrect ? '✓' : '✗') + ' 정답 ' + esc(q.answer) + '</b> ' + esc(q.explanation || '');
+                details.push(qNum + '. ' + (isCorrect ? '✓ ' : '✗ ') + (choice || '(미선택)') + (isCorrect ? '' : ' → 정답: ' + q.answer));
+            } else if (q.type === 'choice') {
+                var sel2 = choiceSel[i] || null;
+                isCorrect = (sel2 === ('' + q.answer));
+                card.querySelectorAll('.opt-label').forEach(function(x) { x.style.pointerEvents = 'none'; });
+                fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
+                fb.innerHTML = '<b>' + (isCorrect ? '✓' : '✗') + ' 정답 ' + circ(q.answer) + '</b> ' + esc(q.explanation || '');
+                details.push(qNum + '. ' + (isCorrect ? '✓ ' : '✗ ') + (sel2 ? circ(sel2) : '(미선택)') + (isCorrect ? '' : ' → 정답: ' + circ(q.answer)));
+            } else {
+                var inp = $('input-' + i);
+                var user = normalize(inp.value);
+                var accept = (q.answers && q.answers.length) ? q.answers : [q.answer];
+                isCorrect = !!user && accept.some(function(a) { return normalize(a) === user; });
+                if (!isCorrect && q.contains && user.indexOf(normalize(q.contains)) !== -1) isCorrect = true;
+                if (!isCorrect && user) {
+                    isCorrect = accept.some(function(a) {
+                        var groups = ('' + (a == null ? '' : a)).split(/[,，]/).map(normalize).filter(function(g) { return g; });
+                        if (groups.length < 2) return false;
+                        return groups.every(function(g) { return user.indexOf(g) !== -1; });
+                    });
+                }
+                inp.disabled = true;
+                fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
+                if (isCorrect) {
+                    fb.innerHTML = '<b>✓ 정답</b> 잘했어요!';
+                    details.push(qNum + '. ✓ ' + inp.value);
+                } else {
+                    var up = inp.value.trim() ? '입력: <b>' + esc(inp.value) + '</b>　→　' : '<b>미입력</b>　→　';
+                    fb.innerHTML = '<b>✗</b> ' + up + '정답: <b>' + esc(q.answer) + '</b>';
+                    details.push(qNum + '. ✗ ' + (inp.value || '(미입력)') + ' → 정답: ' + q.answer);
+                }
+            }
+            card.className = 'q-card ' + (isCorrect ? 'correct' : 'wrong');
+            if (isCorrect) score++;
+        });
+
+        var pct = Math.round((score / TOTAL) * 100), msg;
+        if (pct === 100) msg = '완벽해요! ' + CAT_LABEL + ' ' + round + '회 완전 정복입니다';
+        else if (pct >= 80) msg = '훌륭해요! 틀린 문항만 다시 짚어 봐요.';
+        else if (pct >= 60) msg = '잘 풀었어요. 오답을 중심으로 복습해 봐요.';
+        else if (pct >= 40) msg = '개념 정리 탭으로 돌아가 개념을 다시 확인해 볼까요?';
+        else msg = '괜찮아요. 개념 정리부터 천천히 다시 익혀 봐요.';
+
+        var finalEl = $('final');
+        finalEl.innerHTML =
+            '<div><span class="score-big">' + score + '</span><span class="total"> / ' + TOTAL + '</span></div>' +
+            '<div class="msg">' + msg + '</div>' +
+            '<div id="send-status" class="send-status-box sending">' + IC.send + '선생님께 결과 전송 중…</div>' +
+            '<button type="button" id="retry-btn" class="send-btn" style="display:none;">다시 전송하기</button>' +
+            '<br><button type="button" class="send-btn reset" onclick="location.reload()">처음부터 다시</button>';
+        finalEl.className = 'final show';
+
+        var payload = {
+            time: nowStr(), name: sName, school: sSchool, grade: sGrade,
+            unit: CAT_LABEL, round: round, score: score + ' / ' + TOTAL, details: details.join('\n')
+        };
+        sendResult(payload);
+        var retryBtn = $('retry-btn');
+        if (retryBtn) retryBtn.addEventListener('click', function() { sendResult(payload); });
+
+        $('result-display').innerHTML = '<span class="filled">맞힌 문항: ' + score + ' / ' + TOTAL + '</span>';
+        $('submit-bar').style.display = 'none';
+        setTimeout(function() { finalEl.scrollIntoView({ block: 'center' }); }, 300);
+    }
+
+    function sendResult(payload) {
+        var box = $('send-status'), retryBtn = $('retry-btn');
+        if (box) { box.className = 'send-status-box sending'; box.innerHTML = IC.send + '선생님께 결과 전송 중…'; }
+        if (retryBtn) retryBtn.style.display = 'none';
+        fetch(SCRIPT_URL, {
+            method: 'POST', mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        }).then(function() {
+            if (box) { box.className = 'send-status-box done'; box.innerHTML = IC.check + '선생님께 결과가 전송되었어요!'; }
+        }).catch(function() {
+            if (box) { box.className = 'send-status-box fail'; box.innerHTML = IC.alert + '전송에 실패했어요. 인터넷 확인 후 아래 버튼을 눌러주세요.'; }
+            if (retryBtn) retryBtn.style.display = 'inline-block';
+        });
+    }
+})();
+</script>
+</body>
+</html>
