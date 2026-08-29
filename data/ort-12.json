@@ -5,21 +5,165 @@
  "subtitle": "제3장 제6절 겹쳐 나는 소리 (1)",
  "instruction": "제13항: 한 단어 안에서 같은 음절이나 비슷한 음절이 겹쳐 나는 부분은 같은 글자로 적는다.",
  "total": 15,
+ "study": {
+  "tabs": [
+   {
+    "label": "제13항 겹쳐 나는 소리",
+    "items": [
+     {
+      "word": "같은 글자로 적음",
+      "tag": "제13항",
+      "meaning": "한 단어 안에서 같은 음절이나 비슷한 음절이 겹쳐 나는 부분은 같은 글자로 적는다.",
+      "example": "딱딱, 쌕쌕, 씩씩, 똑딱똑딱, 쓱싹쓱싹, 연연불망, 유유상종, 누누이, 꼿꼿하다, 눅눅하다, 밋밋하다, 싹싹하다, 쌉쌀하다, 씁쓸하다, 짭짤하다"
+     },
+     {
+      "note": "<b>다만</b> 그 밖의 한자어는 둘째 음절 이하에서 본음대로 적는다 — 낭랑(朗朗)하다, 냉랭(冷冷)하다, 녹록(碌碌)하다, 늠름(凜凜)하다, 연년생(年年生), 염념불망(念念不忘), 역력(歷歷)하다, 적나라(赤裸裸)하다"
+     }
+    ]
+   }
+  ]
+ },
  "questions": [
-  { "type": "ox", "num": 1, "stem": "한 단어 안에서 같은 음절이나 비슷한 음절이 겹쳐 나는 부분은 같은 글자로 적는다.", "answer": "O", "explanation": "제13항." },
-  { "type": "choice", "num": 2, "stem": "바른 표기는?", "options": ["딱딱", "딱닥", "닥딱", "딱땋"], "answer": 1, "explanation": "제13항." },
-  { "type": "short", "num": 3, "stem": "틀린 표기 '씩식하다'를 바르게 고쳐 쓰시오.", "answer": "씩씩하다", "explanation": "제13항." },
-  { "type": "choice", "num": 4, "stem": "바른 표기는?", "options": ["똑딱똑딱", "똑닥똑닥", "똑딱똑닥", "똑닥똑딱"], "answer": 1, "explanation": "제13항." },
-  { "type": "ox", "num": 5, "stem": "'유유상종(類類相從)'이 바른 표기이다.", "answer": "O", "explanation": "제13항." },
-  { "type": "short", "num": 6, "stem": "틀린 표기 '누루이'(여러 번 반복하여)를 바르게 고쳐 쓰시오.", "answer": "누누이", "explanation": "제13항." },
-  { "type": "choice", "num": 7, "stem": "바른 표기는?", "options": ["꼿꼿하다", "꼿곳하다", "꽂꽂하다", "꼳꼳하다"], "answer": 1, "explanation": "제13항." },
-  { "type": "ox", "num": 8, "stem": "'눅눅하다'가 바른 표기이다.", "answer": "O", "explanation": "제13항." },
-  { "type": "choice", "num": 9, "stem": "바른 표기는?", "options": ["씁쓸하다", "씁슬하다", "습쓸하다", "씁쑬하다"], "answer": 1, "explanation": "제13항." },
-  { "type": "short", "num": 10, "stem": "틀린 표기 '짭잘하다'를 바르게 고쳐 쓰시오.", "answer": "짭짤하다", "explanation": "제13항." },
-  { "type": "ox", "num": 11, "stem": "'연연불망(戀戀不忘)'은 겹침을 살려 '연연'으로 적는다.", "answer": "O", "explanation": "제13항." },
-  { "type": "choice", "num": 12, "stem": "바른 표기는?", "options": ["밋밋하다", "민밋하다", "밑밋하다", "믿밋하다"], "answer": 1, "explanation": "제13항." },
-  { "type": "short", "num": 13, "stem": "틀린 표기 '쌉살하다'를 바르게 고쳐 쓰시오.", "answer": "쌉쌀하다", "explanation": "제13항." },
-  { "type": "ox", "num": 14, "stem": "'싹싹하다'가 바른 표기이다.", "answer": "O", "explanation": "제13항." },
-  { "type": "choice", "num": 15, "stem": "'쌕쌕'과 같은 원리(겹치는 부분을 같은 글자로)로 적은 것은?", "options": ["쓱싹쓱싹", "냉랭하다", "연년생", "낭랑하다"], "answer": 1, "explanation": "'냉랭하다·연년생·낭랑하다'는 둘째 음절 이하를 본음대로 적는 경우(제13항 다만)." }
+  {
+   "type": "ox",
+   "num": 1,
+   "stem": "한 단어 안에서 같은 음절이나 비슷한 음절이 겹쳐 나는 부분은 같은 글자로 적는다.",
+   "answer": "O",
+   "explanation": "제13항."
+  },
+  {
+   "type": "choice",
+   "num": 2,
+   "stem": "바른 표기는?",
+   "options": [
+    "딱딱",
+    "딱닥",
+    "닥딱",
+    "딱땋"
+   ],
+   "answer": 1,
+   "explanation": "제13항."
+  },
+  {
+   "type": "short",
+   "num": 3,
+   "stem": "틀린 표기 '씩식하다'를 바르게 고쳐 쓰시오.",
+   "answer": "씩씩하다",
+   "explanation": "제13항."
+  },
+  {
+   "type": "choice",
+   "num": 4,
+   "stem": "바른 표기는?",
+   "options": [
+    "똑딱똑딱",
+    "똑닥똑닥",
+    "똑딱똑닥",
+    "똑닥똑딱"
+   ],
+   "answer": 1,
+   "explanation": "제13항."
+  },
+  {
+   "type": "ox",
+   "num": 5,
+   "stem": "'유유상종(類類相從)'이 바른 표기이다.",
+   "answer": "O",
+   "explanation": "제13항."
+  },
+  {
+   "type": "short",
+   "num": 6,
+   "stem": "틀린 표기 '누루이'(여러 번 반복하여)를 바르게 고쳐 쓰시오.",
+   "answer": "누누이",
+   "explanation": "제13항."
+  },
+  {
+   "type": "choice",
+   "num": 7,
+   "stem": "바른 표기는?",
+   "options": [
+    "꼿꼿하다",
+    "꼿곳하다",
+    "꽂꽂하다",
+    "꼳꼳하다"
+   ],
+   "answer": 1,
+   "explanation": "제13항."
+  },
+  {
+   "type": "ox",
+   "num": 8,
+   "stem": "'눅눅하다'가 바른 표기이다.",
+   "answer": "O",
+   "explanation": "제13항."
+  },
+  {
+   "type": "choice",
+   "num": 9,
+   "stem": "바른 표기는?",
+   "options": [
+    "씁쓸하다",
+    "씁슬하다",
+    "습쓸하다",
+    "씁쑬하다"
+   ],
+   "answer": 1,
+   "explanation": "제13항."
+  },
+  {
+   "type": "short",
+   "num": 10,
+   "stem": "틀린 표기 '짭잘하다'를 바르게 고쳐 쓰시오.",
+   "answer": "짭짤하다",
+   "explanation": "제13항."
+  },
+  {
+   "type": "ox",
+   "num": 11,
+   "stem": "'연연불망(戀戀不忘)'은 겹침을 살려 '연연'으로 적는다.",
+   "answer": "O",
+   "explanation": "제13항."
+  },
+  {
+   "type": "choice",
+   "num": 12,
+   "stem": "바른 표기는?",
+   "options": [
+    "밋밋하다",
+    "민밋하다",
+    "밑밋하다",
+    "믿밋하다"
+   ],
+   "answer": 1,
+   "explanation": "제13항."
+  },
+  {
+   "type": "short",
+   "num": 13,
+   "stem": "틀린 표기 '쌉살하다'를 바르게 고쳐 쓰시오.",
+   "answer": "쌉쌀하다",
+   "explanation": "제13항."
+  },
+  {
+   "type": "ox",
+   "num": 14,
+   "stem": "'싹싹하다'가 바른 표기이다.",
+   "answer": "O",
+   "explanation": "제13항."
+  },
+  {
+   "type": "choice",
+   "num": 15,
+   "stem": "'쌕쌕'과 같은 원리(겹치는 부분을 같은 글자로)로 적은 것은?",
+   "options": [
+    "쓱싹쓱싹",
+    "냉랭하다",
+    "연년생",
+    "낭랑하다"
+   ],
+   "answer": 1,
+   "explanation": "'냉랭하다·연년생·낭랑하다'는 둘째 음절 이하를 본음대로 적는 경우(제13항 다만)."
+  }
  ]
 }
