@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>문법 링크 발송 · 슈국 티쳐스</title>
-<meta name="description" content="이수경국어 문법 테스트 — 음운 변동 회차별 학생 발송 링크 복사" />
+<meta name="description" content="이수경국어 문법 테스트 — 카테고리·회차별 학생 발송 링크 복사" />
 <link rel="apple-touch-icon" href="icon-180.png" />
 <link rel="icon" type="image/png" href="icon-192.png" />
 <style>
@@ -57,46 +57,67 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   <div class="header">
     <div class="logo">SHUEGUK</div>
     <h1>문법 링크 발송</h1>
-    <p class="intro">회차별 학생 응시 링크입니다.<br />"링크 복사"를 눌러 학생에게 보내세요.</p>
+    <p class="intro">카테고리·회차별 학생 응시 링크입니다.<br />"링크 복사"를 눌러 학생에게 보내세요.<br />배정한 학생에게는 아래 '내 문법 테스트' 링크 하나면 돼요.</p>
   </div>
 
-  <div class="unit-title" id="unit-title"></div>
-  <div class="list" id="list"></div>
+  <div id="sections"></div>
 
   <footer>이수경국어 Shueguk · 교사용</footer>
 </div>
 
+<script src="manifest.js"></script>
 <script>
 (function(){
-  /* ===== 설정 — 회차가 늘면 ROUNDS만 조정하세요 ===== */
   var BASE_URL = 'https://coke4497-sys.github.io/shueguk-gramma/';
-  var UNIT = { label: '음운 변동', rounds: 10, file: function(n){ return 'shueguk-phonology-' + n + '-student.html'; } };
 
   function $(id){ return document.getElementById(id); }
-  function studentUrl(n){ return BASE_URL + UNIT.file(n); }
   function escapeHtml(s){ return ('' + s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-  $('unit-title').textContent = UNIT.label + ' · 전체 ' + UNIT.rounds + '회';
-
-  var list = $('list');
-  for (var n = 1; n <= UNIT.rounds; n++){
-    var url = studentUrl(n);
-    var row = document.createElement('div');
-    row.className = 'row';
-    row.innerHTML =
-      '<span class="rd">' + n + '회</span>' +
-      '<span class="ttl">' + escapeHtml(UNIT.label) + ' ' + n + '회</span>' +
+  function rowHtml(rd, ttl, url){
+    return '<div class="row">' +
+      '<span class="rd">' + escapeHtml(rd) + '</span>' +
+      '<span class="ttl">' + escapeHtml(ttl) + '</span>' +
       '<span class="acts">' +
         '<a class="open" href="' + url + '" target="_blank" rel="noopener">미리보기' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
-        '<button type="button" class="copy" data-url="' + url + '">' +
+        '<button type="button" class="copy" data-url="' + url.replace(/&preview=1$/, '') + '">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
           '링크 복사</button>' +
-      '</span>';
-    list.appendChild(row);
+      '</span></div>';
   }
 
-  list.querySelectorAll('.copy').forEach(function(btn){
+  var box = $('sections');
+  var html = '';
+
+  // 학생 공통 입구 — 배정 확인 페이지
+  html += '<div class="unit-title">학생 공통 입구</div><div class="list">' +
+    rowHtml('입구', '내 문법 테스트 (배정 확인·응시)', BASE_URL + 'index.html') + '</div>';
+
+  var cats = (window.GRAMMA && GRAMMA.categories) || [];
+  var tests = (window.GRAMMA && GRAMMA.tests) || {};
+  var pending = [];
+  cats.forEach(function(c){
+    var rounds = [];
+    Object.keys(tests).forEach(function(k){
+      var m = k.match(/^(.+)-(\d+)$/);
+      if (m && m[1] === c.code) rounds.push(parseInt(m[2],10));
+    });
+    rounds.sort(function(a,b){ return a-b; });
+    if (!rounds.length){ pending.push(c.label); return; }
+    html += '<div class="unit-title">' + escapeHtml(c.label) + ' · 전체 ' + rounds.length + '회</div><div class="list">';
+    rounds.forEach(function(n){
+      var t = tests[c.code + '-' + n];
+      var url = BASE_URL + 'test.html?c=' + c.code + '&r=' + n + '&preview=1';
+      html += rowHtml(n + '회', c.label + ' ' + n + '회' + (t && t.title ? ' · ' + t.title : ''), url);
+    });
+    html += '</div>';
+  });
+  if (pending.length){
+    html += '<div class="unit-title">준비 중</div><div class="list"><div class="row"><span class="ttl">' +
+      escapeHtml(pending.join(' · ')) + ' — 문항이 등록되면 여기에 나타납니다.</span></div></div>';
+  }
+  box.innerHTML = html;
+
+  box.querySelectorAll('.copy').forEach(function(btn){
     btn.addEventListener('click', function(){ copyText(btn.getAttribute('data-url'), btn); });
   });
 

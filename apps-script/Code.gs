@@ -64,15 +64,26 @@ function doPost(e) {
   }
 }
 
-/* 교사 대시보드 (JSONP GET) — 조회 / 삭제 */
+/* 교사 대시보드 (JSONP GET) — 조회 / 삭제 / 배정 관리
+ * myAssign 만 학생 공개(키 불필요), 나머지는 ACCESS_KEY 필요. */
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var cb = p.callback || '';
   var payload;
-  if (p.key !== ACCESS_KEY) {
+  if (p.action === 'myAssign') {
+    payload = myAssign_(p);
+  } else if (p.key !== ACCESS_KEY) {
     payload = { ok: false, error: 'unauthorized' };
   } else if (p.action === 'delete') {
     payload = deleteRows_(p.ids || '');
+  } else if (p.action === 'assignList') {
+    payload = assignList_();
+  } else if (p.action === 'assignAdd') {
+    payload = assignAdd_(p);
+  } else if (p.action === 'assignSet') {
+    payload = assignSet_(p);
+  } else if (p.action === 'assignDel') {
+    payload = assignDel_(p);
   } else {
     payload = { ok: true, rows: readRows_() };
   }
@@ -130,6 +141,130 @@ function deleteRows_(idsStr) {
     lock.releaseLock();
   }
 }
+
+/***************************************************************
+ * 배정 — 학년 / 학교 / 개인에게 테스트 지정 ('배정' 탭)
+ *  A:기록일시 B:대상구분(학년|학교|개인) C:대상 D:카테고리코드
+ *  E:카테고리 F:회차 G:메모 H:상태(진행|마감)
+ *  - 교사(키 필요): assignList / assignAdd / assignSet / assignDel
+ *  - 학생(공개):   myAssign&grade=&school=&name= → 상태 '진행'인
+ *                  배정 중 그 학생에게 해당하는 것만 반환
+ ***************************************************************/
+var ASSIGN_SHEET = '배정';
+var ASSIGN_HEADERS = ['기록일시', '대상구분', '대상', '카테고리코드', '카테고리', '회차', '메모', '상태'];
+
+function assignSheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(ASSIGN_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(ASSIGN_SHEET);
+    sh.appendRow(ASSIGN_HEADERS);
+    // 기록일시·회차가 날짜/숫자로 자동 변환되지 않게 텍스트 강제
+    sh.getRange(1, 1, sh.getMaxRows(), ASSIGN_HEADERS.length).setNumberFormat('@');
+  }
+  if (sh.getLastRow() === 0) sh.appendRow(ASSIGN_HEADERS);
+  return sh;
+}
+
+function assignRows_() {
+  var sh = assignSheet_();
+  var values = sh.getDataRange().getValues();
+  var rows = [];
+  for (var i = 1; i < values.length; i++) {
+    var v = values[i];
+    rows.push({
+      time: txt_(v[0]), ttype: txt_(v[1]), target: txt_(v[2]),
+      cat: txt_(v[3]), catLabel: txt_(v[4]), round: txt_(v[5]),
+      memo: txt_(v[6]), status: txt_(v[7]) || '진행', _row: i + 1
+    });
+  }
+  return rows;
+}
+
+function assignList_() {
+  return { ok: true, kind: 'assign', rows: assignRows_() };
+}
+
+function assignAdd_(p) {
+  var ttype = txt_(p.ttype), target = txt_(p.target);
+  var cat = txt_(p.cat), catLabel = txt_(p.catLabel), round = txt_(p.round);
+  if (['학년', '학교', '개인'].indexOf(ttype) < 0) return { ok: false, error: 'bad_ttype' };
+  if (!target || !cat || !round) return { ok: false, error: 'missing' };
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(20000); } catch (e) { return { ok: false, error: 'busy' }; }
+  try {
+    var sh = assignSheet_();
+    var ts = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
+    var row = [ts, ttype, target, cat, catLabel, round, txt_(p.memo), '진행'];
+    sh.getRange(sh.getLastRow() + 1, 1, 1, row.length).setNumberFormat('@').setValues([row]);
+    return { ok: true, kind: 'assign', time: ts };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* 상태 변경 (진행↔마감). row + time(기록일시)을 대조해 행이 밀렸으면 거절. */
+function assignSet_(p) {
+  var status = txt_(p.status);
+  if (['진행', '마감'].indexOf(status) < 0) return { ok: false, error: 'bad_status' };
+  return assignTouch_(p, function(sh, rn) {
+    sh.getRange(rn, 8).setNumberFormat('@').setValue(status);
+  });
+}
+
+function assignDel_(p) {
+  return assignTouch_(p, function(sh, rn) { sh.deleteRow(rn); });
+}
+
+function assignTouch_(p, fn) {
+  var rn = parseInt(p.row, 10);
+  if (!(rn >= 2)) return { ok: false, error: 'bad_row' };
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(20000); } catch (e) { return { ok: false, error: 'busy' }; }
+  try {
+    var sh = assignSheet_();
+    if (rn > sh.getLastRow()) return { ok: false, error: 'stale' };
+    var ts = txt_(sh.getRange(rn, 1).getValue());
+    if (ts !== txt_(p.time)) return { ok: false, error: 'stale' };
+    fn(sh, rn);
+    return { ok: true, kind: 'assign' };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* 학생 조회 — 상태 '진행'인 배정 중 이 학생에게 해당하는 것만.
+ *  학년: 대상 == 학생 학년 / 개인: 이름 일치(공백 제거)
+ *  학교: 표기가 다를 수 있어("화정고"·"화정고등학교") 한쪽이 다른 쪽을 포함하면 인정 */
+function myAssign_(p) {
+  var grade = squeeze_(p.grade), school = squeeze_(p.school), name = squeeze_(p.name);
+  var items = assignRows_().filter(function(r) {
+    if (r.status !== '진행') return false;
+    var t = squeeze_(r.target);
+    if (r.ttype === '학년') return !!grade && t === grade;
+    if (r.ttype === '개인') return !!name && t === name;
+    if (r.ttype === '학교') {
+      if (!school || !t) return false;
+      return t === school || t.indexOf(school) === 0 || school.indexOf(t) === 0;
+    }
+    return false;
+  }).map(function(r) {
+    return { cat: r.cat, catLabel: r.catLabel, round: r.round, ttype: r.ttype, memo: r.memo, time: r.time };
+  });
+  return { ok: true, kind: 'assign', items: items };
+}
+
+function txt_(v) {
+  if (Object.prototype.toString.call(v) === '[object Date]') {
+    return Utilities.formatDate(v, 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
+  }
+  return ('' + (v == null ? '' : v)).trim();
+}
+function squeeze_(v) { return ('' + (v == null ? '' : v)).replace(/\s/g, ''); }
 
 /* 행 내용 해시 (MD5 앞 10자리) — Date는 epoch ms 로 정규화 */
 function rowSig_(vals) {
