@@ -83,11 +83,18 @@ ok(r2.ok === true, '학교 배정 추가');
 let r3 = GET({ ...KEY, action: 'assignAdd', ttype: '개인', target: '홍길동', cat: 'mor', catLabel: '형태소', round: '1' });
 ok(r3.ok === true, '개인 배정 추가');
 ok(GET({ ...KEY, action: 'assignAdd', ttype: '반', target: 'x', cat: 'pho', round: '1' }).error === 'bad_ttype', '잘못된 대상구분 거절');
+let r4 = GET({ ...KEY, action: 'assignAdd', ttype: '일부', target: '박보검, 김철수', cat: 'ort', catLabel: '한글 맞춤법', round: '3' });
+ok(r4.ok === true, '일부 학생 배정 추가');
+ok(GET({ action: 'myAssign', grade: '', school: '', name: '김철수' }).items.some(a => a.cat === 'ort'), '일부 학생 매칭 (김철수)');
+ok(GET({ action: 'myAssign', grade: '', school: '', name: '박 보검' }).items.some(a => a.cat === 'ort'), '일부 학생 매칭 (공백 무시)');
+ok(!GET({ action: 'myAssign', grade: '', school: '', name: '이영희' }).items.some(a => a.cat === 'ort'), '명단에 없는 학생은 제외');
+{ let rows0 = GET({ ...KEY, action: 'assignList' }).rows; let some = rows0.find(r => r.ttype === '일부');
+  ok(GET({ ...KEY, action: 'assignDel', row: some._row, time: some.time }).ok === true, '일부 배정 삭제(정리)'); }
 ok(GET({ ...KEY, action: 'assignAdd', ttype: '학년', target: '', cat: 'pho', round: '1' }).error === 'missing', '빈 대상 거절');
 
 /* 3) 목록 */
 let list = GET({ ...KEY, action: 'assignList' });
-ok(list.kind === 'assign' && list.rows.length === 3, '배정 목록 3건');
+ok(list.kind === 'assign' && list.rows.length === 3, '배정 목록 3건(일부 배정 정리 후)');
 ok(list.rows[0].status === '진행', '기본 상태 진행');
 
 /* 4) 학생 조회 매칭 */

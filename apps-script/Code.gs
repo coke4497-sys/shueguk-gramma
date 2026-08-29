@@ -16,7 +16,7 @@
 
 var ACCESS_KEY = 'shueguk2026';   // 대시보드와 동일하게 유지
 var SHEET_NAME = '';              // 결과 시트 이름. 비워두면 첫 번째 시트를 사용
-var HEADERS = ['time', 'name', 'school', 'grade', 'unit', 'round', 'score', 'details'];
+var HEADERS = ['time', 'name', 'school', 'grade', 'phone8', 'unit', 'round', 'score', 'details'];
 
 /* 결과 시트 가져오기 (완전히 빈 시트면 헤더 생성) */
 function getSheet_() {
@@ -188,7 +188,7 @@ function assignList_() {
 function assignAdd_(p) {
   var ttype = txt_(p.ttype), target = txt_(p.target);
   var cat = txt_(p.cat), catLabel = txt_(p.catLabel), round = txt_(p.round);
-  if (['학년', '학교', '개인'].indexOf(ttype) < 0) return { ok: false, error: 'bad_ttype' };
+  if (['학년', '학교', '일부', '개인'].indexOf(ttype) < 0) return { ok: false, error: 'bad_ttype' };
   if (!target || !cat || !round) return { ok: false, error: 'missing' };
   var lock = LockService.getScriptLock();
   try { lock.waitLock(20000); } catch (e) { return { ok: false, error: 'busy' }; }
@@ -247,6 +247,12 @@ function myAssign_(p) {
     var t = squeeze_(r.target);
     if (r.ttype === '학년') return !!grade && t === grade;
     if (r.ttype === '개인') return !!name && t === name;
+    if (r.ttype === '일부') {
+      if (!name) return false;
+      return ('' + r.target).split(/[\s,，·、]+/).some(function (tok) {
+        return squeeze_(tok) && squeeze_(tok) === name;
+      });
+    }
     if (r.ttype === '학교') {
       if (!school || !t) return false;
       return t === school || t.indexOf(school) === 0 || school.indexOf(t) === 0;
@@ -287,6 +293,7 @@ function canon_(h) {
     'name': 'name', '이름': 'name',
     'school': 'school', '학교': 'school',
     'grade': 'grade', '학년': 'grade',
+    'phone8': 'phone8', '전화8': 'phone8', '학부모전화8': 'phone8', '학부모님전화8자리': 'phone8',
     'unit': 'unit', '단원': 'unit',
     'round': 'round', '회차': 'round', '주차': 'round',
     'score': 'score', '점수': 'score',

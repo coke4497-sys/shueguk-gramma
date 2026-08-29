@@ -63,7 +63,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   const dialogs = [];
   page.on('dialog', d => { dialogs.push(d.message()); d.accept(); });
 
-  await page.goto(`http://localhost:${PORT}/test.html?c=pho&r=1&name=박검증&school=화정고&grade=고1`);
+  await page.goto(`http://localhost:${PORT}/test.html?c=pho&r=1&name=박검증&school=화정고&grade=고1&p8=12345678`);
   await page.waitForSelector('#app:not(.hidden)');
   ok((await page.textContent('#h-round')).includes('음운 1회'), '헤더에 카테고리·회차 표시');
   ok((await page.$$('.cat-label')).length === 3, '개념 정리 탭 3개(교체/탈락/첨가·기타)');
@@ -72,6 +72,8 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await page.$$('.q-card')).length === 42, '문항 42개 렌더');
   ok(await page.inputValue('#si-name') === '박검증', '학생 정보 미리 채움');
   ok(await page.inputValue('#si-grade') === '고1', '학년 미리 선택');
+  ok(await page.inputValue('#si-phone8') === '12345678', '학부모 전화 8자리 미리 채움');
+  ok(await page.$eval('#student-info', el => el.classList.contains('collapsed')), '넷 다 채워지면 학생 정보 한 줄 접힘');
 
   // 1번 문항 정답 입력 → 진행 카운트
   await page.selectOption('#sel-0-0', '비음화');
@@ -95,7 +97,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   const fb = await page.textContent('#feedback-1');
   ok(fb.includes('정답 과정') && fb.includes('잡히다'), '오답 문항에 정답 과정 표시');
   await page.waitForFunction(() => true);
-  ok(lastPost && lastPost.unit === '음운' && '' + lastPost.round === '1' && lastPost.score === '1 / 42' && lastPost.name === '박검증', '제출 payload (unit=음운, round=1, score=1/42)');
+  ok(lastPost && lastPost.unit === '음운' && '' + lastPost.round === '1' && lastPost.score === '1 / 42' && lastPost.name === '박검증' && lastPost.phone8 === '12345678', '제출 payload (unit·round·score·phone8)');
   ok(lastPost.details.split('\n')[0] === '1. ✓', '상세 첫 줄 1. ✓');
 
   /* ========== 3) test.html — preview는 게이트 생략 ========== */
@@ -105,7 +107,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p2.goto(`http://localhost:${PORT}/test.html?c=pho&r=5&preview=1`);
   await p2.waitForSelector('#app:not(.hidden)');
   await p2.click('#tab-test');
-  await p2.fill('#si-name', '미리보기'); await p2.fill('#si-school', '슈국'); await p2.selectOption('#si-grade', '고2');
+  await p2.fill('#si-name', '미리보기'); await p2.fill('#si-school', '슈국'); await p2.selectOption('#si-grade', '고2'); await p2.fill('#si-phone8', '87654321');
   await p2.click('#submit-btn');
   await p2.waitForSelector('.final.show');
   ok(!reqLog.slice(prevReqs).some(q => q.action === 'myAssign'), 'preview=1 은 배정 확인 생략');
@@ -123,14 +125,14 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   const p4 = await ctx.newPage();
   p4.on('dialog', d => d.accept());
   await p4.goto(`http://localhost:${PORT}/index.html`);
-  await p4.fill('#si-name', '박검증'); await p4.fill('#si-school', '화정고'); await p4.selectOption('#si-grade', '고1');
+  await p4.fill('#si-name', '박검증'); await p4.fill('#si-school', '화정고'); await p4.selectOption('#si-grade', '고1'); await p4.fill('#si-phone8', '12345678');
   await p4.click('#check-btn');
   await p4.waitForSelector('.assign-card');
   const cards = await p4.$$('.assign-card');
   ok(cards.length === 2, '배정 카드 2장');
   ok((await p4.textContent('.assign-card .assign-title')).includes('음운 3회'), '카드에 카테고리·회차·제목');
   const href = await p4.getAttribute('.assign-card .assign-go', 'href');
-  ok(href.includes('test.html?c=pho&r=3') && href.includes('name=') && decodeURIComponent(href).includes('박검증'), '응시 링크에 학생 정보 전달');
+  ok(href.includes('test.html?c=pho&r=3') && href.includes('name=') && decodeURIComponent(href).includes('박검증') && href.includes('p8=12345678'), '응시 링크에 학생 정보·전화 8자리 전달');
   // 배정 없음 안내
   assignItems = [];
   await p4.click('#check-btn');
@@ -173,11 +175,23 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p7.click('#rounds .row .abtn.assign');
   await p7.waitForSelector('#form-card.show');
   ok((await p7.textContent('#f-title')).includes('한글 맞춤법 1회'), '배정 폼에 회차 표시');
+  ok((await p7.$$('#f-ttype option')).length === 4, '대상 구분 4가지(학년/학교/일부 학생/개인)');
+  // 일부 학생 배정 저장 파라미터
+  await p7.selectOption('#f-ttype', '일부');
+  await p7.fill('#f-text', '박보검, 김철수');
+  await p7.click('#f-add');
+  await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 2);
+  const someReq = reqLog.find(q => q.action === 'assignAdd' && q.ttype === '일부');
+  ok(someReq && someReq.target === '박보검, 김철수', "'일부 학생' assignAdd 파라미터");
+  ok((await p7.textContent('#a-tbody')).includes('일부 학생'), "현황에 '일부 학생' 표시");
+  // 다시 배정 폼 열어 학교 대상 저장
+  await p7.click('#rounds .row .abtn.assign');
+  await p7.waitForSelector('#form-card.show');
   await p7.selectOption('#f-ttype', '학교');
   await p7.fill('#f-text', '능곡고');
   await p7.click('#f-add');
-  await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 2);
-  const addReq = reqLog.find(q => q.action === 'assignAdd');
+  await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 3);
+  const addReq = reqLog.find(q => q.action === 'assignAdd' && q.ttype === '학교');
   ok(addReq && addReq.ttype === '학교' && addReq.target === '능곡고' && addReq.cat === 'ort' && addReq.round === '1', 'assignAdd 파라미터');
   ok((await p7.textContent('#a-tbody')).includes('능곡고'), '추가된 배정 표시');
   // 마감 → 삭제
@@ -185,7 +199,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p7.waitForFunction(() => document.getElementById('a-tbody').textContent.includes('마감'));
   ok(reqLog.some(q => q.action === 'assignSet' && q.status === '마감'), '마감 요청');
   await p7.click('#a-tbody .a-del');
-  await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 1);
+  await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 2);
   ok(reqLog.some(q => q.action === 'assignDel'), '삭제 요청·목록 갱신');
   await p7.close();
 
