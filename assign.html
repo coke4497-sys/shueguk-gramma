@@ -62,6 +62,11 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .abtn.stat { color: #3A544E; background: white; border: 1.5px solid #E8EAE7; }
 .abtn.stat:hover { border-color: #A6C1BB; }
 
+/* 회차 화면 머리줄 + 학생 배정으로 이동 바 */
+.sec-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 6px 2px 10px; }
+.gobar { display: block; width: 100%; margin-bottom: 14px; padding: 12px; border: 1.5px solid #D9CCE8; border-radius: 12px; background: #EDE4F4; color: #635A7D; font: inherit; font-size: 13.5px; font-weight: 800; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.gobar:hover { background: #E3D6EF; }
+
 /* 담은 테스트 칩 */
 .sel-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 4px; }
 .sel-chip { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 800; color: #635A7D; background: #EDE4F4; border: 1.5px solid #D9CCE8; border-radius: 16px; padding: 5px 8px 5px 11px; }
@@ -152,12 +157,48 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   <div class="header">
     <div class="logo">SHUEGUK</div>
     <h1>배정하기</h1>
-    <p class="intro">카테고리에서 배정할 회차를 [담기]로 골라 담으세요 — 여러 회차를 한 번에 담을 수 있어요.<br />그다음 아래 '학생 배정'에서 학생을 선택해 배정합니다 (전 학년 · 학년 · 개인 · 일부).<br />배정된 학생은 '내 문법 테스트' 페이지에서 확인하고 응시합니다.</p>
+    <p class="intro">① 아래 카테고리에서 회차를 [담기]로 골라 배정할 테스트를 확정하고<br />② 그 아래 '학생 배정'에서 학생을 선택해 한 번에 배정합니다 (전 학년 · 학년 · 개인 · 일부).<br />배정된 학생은 '내 문법 테스트' 페이지에서 확인하고 응시합니다.</p>
   </div>
 
-  <!-- 학생 배정 (페이지 공통 — H WORK 배정과 같은 구성, 담은 회차를 한 번에 배정) -->
+  <div id="home-view">
+  <!-- 학생 공통 입구 -->
+  <div class="list">
+    <div class="row">
+      <span class="rd">입구</span>
+      <span class="ttl">내 문법 테스트 (학생용 — 배정 확인·응시)</span>
+      <span class="acts">
+        <a class="abtn preview" id="entry-open" href="index.html" target="_blank" rel="noopener">열어 보기
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <button type="button" class="abtn copy" id="entry-copy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          링크 복사</button>
+      </span>
+    </div>
+  </div>
+
+  <!-- 1단계: 카테고리 목록 -->
+  <div class="unit-title">1단계 · 배정할 테스트 고르기 <span class="muted" style="font-weight:400;">— 카테고리를 눌러 회차를 담으세요</span></div>
+  <div class="cats" id="cats"></div>
+  </div>
+
+  <!-- 회차 목록 (카테고리를 누르면) -->
+  <div id="round-view" class="hidden">
+    <button type="button" class="cat-back" id="cat-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+      카테고리로 돌아가기</button>
+    <div class="sec-line">
+      <div class="unit-title" id="sec-title" style="margin:0;"></div>
+      <button type="button" class="abtn assign" id="sec-all">전체 회차 담기</button>
+    </div>
+    <div class="list" id="rounds"></div>
+  </div>
+
+  <!-- 담은 테스트 → 학생 배정으로 이동 -->
+  <button type="button" class="gobar" id="go-assign" hidden></button>
+
+  <!-- 2단계: 학생 배정 (H WORK 배정과 같은 구성 — 담은 회차를 한 번에 배정) -->
   <div class="form-card" id="assign-card" style="display:block;">
-    <div class="f-title">학생 배정 <span class="muted" style="font-weight:400;">— 담은 테스트를 아래에서 고른 학생들에게 한 번에 배정해요.</span></div>
+    <div class="f-title">2단계 · 학생 배정 <span class="muted" style="font-weight:400;">— 담은 테스트를 아래에서 고른 학생들에게 한 번에 배정해요.</span></div>
     <div class="s-title" style="font-size:12px;font-weight:800;color:#6A716C;margin-bottom:6px;">배정할 테스트</div>
     <div id="sel-box"></div>
     <div id="picker" style="margin-top:12px;"></div>
@@ -178,36 +219,6 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
       <button class="fbtn ghost" type="button" id="st-load">다시 불러오기</button>
       <button class="fbtn ghost" type="button" id="st-close">닫기</button>
     </div>
-  </div>
-
-  <div id="home-view">
-  <!-- 학생 공통 입구 -->
-  <div class="list">
-    <div class="row">
-      <span class="rd">입구</span>
-      <span class="ttl">내 문법 테스트 (학생용 — 배정 확인·응시)</span>
-      <span class="acts">
-        <a class="abtn preview" id="entry-open" href="index.html" target="_blank" rel="noopener">열어 보기
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        <button type="button" class="abtn copy" id="entry-copy">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          링크 복사</button>
-      </span>
-    </div>
-  </div>
-
-  <!-- 카테고리 목록 (첫 화면) -->
-  <div class="unit-title">카테고리</div>
-  <div class="cats" id="cats"></div>
-  </div>
-
-  <!-- 회차 목록 (카테고리를 누르면) -->
-  <div id="round-view" class="hidden">
-    <button type="button" class="cat-back" id="cat-back">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
-      카테고리로 돌아가기</button>
-    <div class="unit-title" id="sec-title"></div>
-    <div class="list" id="rounds"></div>
   </div>
 
   <!-- 배정 현황 -->
@@ -267,27 +278,16 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   }
 
   /* ===== 카테고리 목록 → 회차 목록 (파고들기) ===== */
-  // 카테고리별 무채색 라인 아이콘 (가는 스트로크 SVG — 브랜드 지침)
-  function ico(inner){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>'; }
-  var CAT_ICONS = {
-    pho: ico('<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9.5 9.5 0 0 1 0 14"/>'),                                     // 음운 — 소리
-    mor: ico('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'), // 형태소 — 조각
-    pos: ico('<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>'),             // 품사 — 이름표
-    wfm: ico('<circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/>'),                                                  // 단어 형성법 — 합쳐짐
-    sen: ico('<line x1="21" y1="6" x2="3" y2="6"/><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/>'), // 문장 — 글줄
-    hon: ico('<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'),                                                           // 높임법 — 사람
-    cap: ico('<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>'), // 사동과 피동 — 주고받음
-    ten: ico('<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'),                                                                          // 시제 — 시계
-    ort: ico('<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>'),                                     // 한글 맞춤법 — 바르게 확인
-    mid: ico('<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>')                                     // 중세 국어 — 옛 책
-  };
+  // 카테고리 공통 무채색 라인 아이콘 — 전 카테고리 동일한 체크 사각형 (2026-08-29 사용자 확정)
+  var CAT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
+    '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
   var catWrap = $('cats');
   CATS.forEach(function(c){
     var n = roundsOf(c.code).length;
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'cat-card';
-    b.innerHTML = '<span class="cico">' + (CAT_ICONS[c.code] || ico('<circle cx="12" cy="12" r="9"/>')) + '</span>' +
+    b.innerHTML = '<span class="cico">' + CAT_ICON + '</span>' +
       '<span class="cbody"><span class="cname" style="display:block;">' + esc(c.label) + '</span><span class="ccnt" style="display:block;">' + (n ? '전체 ' + n + '회' : '준비 중') + '</span></span>';
     b.disabled = !n;
     b.setAttribute('data-code', c.code);
@@ -330,6 +330,9 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
         '</span></div>';
     });
     $('rounds').innerHTML = html;
+    var allOn = rounds.length && rounds.every(function(n){ return selHas(current, n); });
+    $('sec-all').textContent = allOn ? '전체 회차 빼기' : '전체 회차 담기';
+    $('sec-all').classList.toggle('on', !!allOn);
   }
 
   $('rounds').addEventListener('click', function(ev){
@@ -347,10 +350,25 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     renderRounds();
     renderSelBox();
   }
+
+  /* 회차 화면의 [전체 회차 담기/빼기] — 지금 보는 카테고리 전 회차를 한 번에 */
+  $('sec-all').addEventListener('click', function(){
+    var rounds = roundsOf(current);
+    var allOn = rounds.length && rounds.every(function(n){ return selHas(current, n); });
+    if (allOn) SEL = SEL.filter(function(s){ return s.cat !== current; });
+    else rounds.forEach(function(n){ if (!selHas(current, n)) SEL.push({ cat: current, round: '' + n }); });
+    renderRounds();
+    renderSelBox();
+  });
+
+  /* 담은 테스트 n개 → 학생 배정으로 이동 바 */
+  $('go-assign').addEventListener('click', function(){
+    $('assign-card').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  });
   function renderSelBox(){
     var box = $('sel-box');
     if (!SEL.length){
-      box.innerHTML = '<div class="sel-empty">아직 담은 테스트가 없어요. 아래 카테고리에서 회차의 <b>[담기]</b>를 눌러 주세요 — 여러 회차를 한 번에 배정할 수 있어요.</div>';
+      box.innerHTML = '<div class="sel-empty">아직 담은 테스트가 없어요. 위 카테고리에서 회차의 <b>[담기]</b>를 눌러 배정할 테스트를 골라 주세요 — 여러 회차를 한 번에 배정할 수 있어요.</div>';
     } else {
       box.innerHTML = '<div class="sel-chips">' + SEL.map(function(s, i){
         return '<span class="sel-chip">' + esc(catLabelOf(s.cat)) + ' ' + esc(s.round) + '회' +
@@ -358,6 +376,9 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
       }).join('') + '</div>';
     }
     $('f-add').textContent = SEL.length > 1 ? ('이 학생들에게 배정 (테스트 ' + SEL.length + '개)') : '이 학생들에게 배정';
+    var go = $('go-assign');
+    go.hidden = !SEL.length;
+    go.textContent = '담은 테스트 ' + SEL.length + '개 — 아래에서 학생을 골라 배정하세요 ↓';
   }
   $('sel-box').addEventListener('click', function(ev){
     var b = ev.target.closest('button');

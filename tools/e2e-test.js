@@ -198,6 +198,19 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p7.click('#f-add');
   await p7.waitForFunction(() => document.getElementById('f-status').textContent.includes('먼저 담아'));
   ok(true, '담은 테스트 없으면 배정 차단 안내');
+  // 2단계 흐름 — 카테고리(1단계)가 위, 학생 배정 카드가 아래
+  ok(await p7.$eval('#round-view', el => {
+    const card = document.getElementById('assign-card');
+    return !!(el.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING);
+  }), '학생 배정 카드가 카테고리 아래(2단계) 위치');
+  // [전체 회차 담기] → 32개 담김 + 이동 바 표시 → 다시 눌러 비움
+  await p7.click('#sec-all');
+  await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 32);
+  ok(true, "'전체 회차 담기'로 32회 전부 담김");
+  ok(!(await p7.$eval('#go-assign', el => el.hidden)) && (await p7.textContent('#go-assign')).includes('32개'), "'담은 테스트 n개' 이동 바 표시");
+  await p7.click('#sec-all');
+  await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 0);
+  ok(await p7.$eval('#go-assign', el => el.hidden), "'전체 회차 빼기'로 비우면 이동 바 숨김");
   // ① 여러 회차 담기 — 한글 맞춤법 1회 + (다른 카테고리) 음운 1회
   await p7.click('#rounds .row .abtn.assign');   // ort 1회 담기
   await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 1);
