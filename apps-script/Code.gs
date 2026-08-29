@@ -266,12 +266,13 @@ function txt_(v) {
 }
 function squeeze_(v) { return ('' + (v == null ? '' : v)).replace(/\s/g, ''); }
 
-/* 행 내용 해시 (MD5 앞 10자리) — Date는 epoch ms 로 정규화 */
+/* 행 내용 해시 (MD5 앞 10자리) — Date는 epoch ms 로 정규화.
+ * 값 사이 \u0001 구분자는 배포본에서 가져온 수정(이어붙임 모호성 방지). */
 function rowSig_(vals) {
   var s = vals.map(function (v) {
     if (Object.prototype.toString.call(v) === '[object Date]') return v.getTime();
     return '' + v;
-  }).join('');
+  }).join('\u0001');
   var raw = Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, s, Utilities.Charset.UTF_8);
   var hex = '';
   for (var i = 0; i < raw.length; i++) { var b = (raw[i] + 256) % 256; hex += ('0' + b.toString(16)).slice(-2); }
