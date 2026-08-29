@@ -143,15 +143,18 @@ function deleteRows_(idsStr) {
 }
 
 /***************************************************************
- * 배정 — 학년 / 학교 / 개인에게 테스트 지정 ('배정' 탭)
- *  A:기록일시 B:대상구분(학년|학교|개인) C:대상 D:카테고리코드
- *  E:카테고리 F:회차 G:메모 H:상태(진행|마감)
+ * 배정 — 전 학년 / 학년 / 개인 / 일부 학생에게 테스트 지정 ('배정' 탭)
+ *  A:기록일시 B:대상구분(전체|학년|학교|일부|개인) C:대상 D:카테고리코드
+ *  E:카테고리 F:회차 G:메모 H:상태(진행|마감) I:마감일(yyyy-MM-dd, 선택)
+ *  - H WORK 배정과 같은 대상 형식(2026-08-29): 전체=대상 빈칸,
+ *    학년='고1, 고2'(쉼표 목록), 개인/일부=이름 또는 동명이인 토큰 '이름|학교|학년'
+ *  - 마감일이 지나면(그 날 밤 11:59까지 유효) myAssign에서 자동 제외
  *  - 교사(키 필요): assignList / assignAdd / assignSet / assignDel
  *  - 학생(공개):   myAssign&grade=&school=&name= → 상태 '진행'인
  *                  배정 중 그 학생에게 해당하는 것만 반환
  ***************************************************************/
 var ASSIGN_SHEET = '배정';
-var ASSIGN_HEADERS = ['기록일시', '대상구분', '대상', '카테고리코드', '카테고리', '회차', '메모', '상태'];
+var ASSIGN_HEADERS = ['기록일시', '대상구분', '대상', '카테고리코드', '카테고리', '회차', '메모', '상태', '마감일'];
 
 function assignSheet_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -163,6 +166,8 @@ function assignSheet_() {
     sh.getRange(1, 1, sh.getMaxRows(), ASSIGN_HEADERS.length).setNumberFormat('@');
   }
   if (sh.getLastRow() === 0) sh.appendRow(ASSIGN_HEADERS);
+  // 옛 8열 시트에 마감일 열 머리글 보충
+  if (!txt_(sh.getRange(1, 9).getValue())) sh.getRange(1, 9).setNumberFormat('@').setValue('마감일');
   return sh;
 }
 
@@ -175,7 +180,7 @@ function assignRows_() {
     rows.push({
       time: txt_(v[0]), ttype: txt_(v[1]), target: txt_(v[2]),
       cat: txt_(v[3]), catLabel: txt_(v[4]), round: txt_(v[5]),
-      memo: txt_(v[6]), status: txt_(v[7]) || '진행', _row: i + 1
+      memo: txt_(v[6]), status: txt_(v[7]) || '진행', due: ymd_(v[8]), _row: i + 1
     });
   }
   return rows;
@@ -188,14 +193,16 @@ function assignList_() {
 function assignAdd_(p) {
   var ttype = txt_(p.ttype), target = txt_(p.target);
   var cat = txt_(p.cat), catLabel = txt_(p.catLabel), round = txt_(p.round);
-  if (['학년', '학교', '일부', '개인'].indexOf(ttype) < 0) return { ok: false, error: 'bad_ttype' };
-  if (!target || !cat || !round) return { ok: false, error: 'missing' };
+  var due = txt_(p.due);
+  if (['전체', '학년', '학교', '일부', '개인'].indexOf(ttype) < 0) return { ok: false, error: 'bad_ttype' };
+  if ((!target && ttype !== '전체') || !cat || !round) return { ok: false, error: 'missing' };
+  if (due && !/^\d{4}-\d{2}-\d{2}$/.test(due)) return { ok: false, error: 'bad_due' };
   var lock = LockService.getScriptLock();
   try { lock.waitLock(20000); } catch (e) { return { ok: false, error: 'busy' }; }
   try {
     var sh = assignSheet_();
     var ts = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
-    var row = [ts, ttype, target, cat, catLabel, round, txt_(p.memo), '진행'];
+    var row = [ts, ttype, target, cat, catLabel, round, txt_(p.memo), '진행', due];
     sh.getRange(sh.getLastRow() + 1, 1, 1, row.length).setNumberFormat('@').setValues([row]);
     return { ok: true, kind: 'assign', time: ts };
   } catch (err) {
@@ -237,31 +244,63 @@ function assignTouch_(p, fn) {
   }
 }
 
-/* 학생 조회 — 상태 '진행'인 배정 중 이 학생에게 해당하는 것만.
- *  학년: 대상 == 학생 학년 / 개인: 이름 일치(공백 제거)
- *  학교: 표기가 다를 수 있어("화정고"·"화정고등학교") 한쪽이 다른 쪽을 포함하면 인정 */
+/* 학생 조회 — 상태 '진행'이고 마감일이 지나지 않은 배정 중 이 학생에게 해당하는 것만.
+ *  전체: 모든 학생 / 학년: 대상 목록('고1, 고2')에 학생 학년 포함
+ *  개인·일부: 이름 일치(공백 제거) — 동명이인 토큰 '이름|학교|학년'은 학교·학년까지 대조
+ *  학교(옛 형식 호환): 한쪽이 다른 쪽으로 시작하면 인정("화정고"↔"화정고등학교") */
 function myAssign_(p) {
   var grade = squeeze_(p.grade), school = squeeze_(p.school), name = squeeze_(p.name);
+  var today = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd');
   var items = assignRows_().filter(function(r) {
     if (r.status !== '진행') return false;
-    var t = squeeze_(r.target);
-    if (r.ttype === '학년') return !!grade && t === grade;
-    if (r.ttype === '개인') return !!name && t === name;
-    if (r.ttype === '일부') {
+    if (r.due && r.due < today) return false;   // 마감일 다음 날부터 제외
+    if (r.ttype === '전체') return true;
+    if (r.ttype === '학년') {
+      if (!grade) return false;
+      return ('' + r.target).split(/[,，]+/).some(function (tok) { return squeeze_(tok) === grade; });
+    }
+    if (r.ttype === '개인' || r.ttype === '일부') {
       if (!name) return false;
       return ('' + r.target).split(/[\s,，·、]+/).some(function (tok) {
-        return squeeze_(tok) && squeeze_(tok) === name;
+        return tokenHit_(tok, name, school, grade);
       });
     }
     if (r.ttype === '학교') {
+      var t = squeeze_(r.target);
       if (!school || !t) return false;
       return t === school || t.indexOf(school) === 0 || school.indexOf(t) === 0;
     }
     return false;
   }).map(function(r) {
-    return { cat: r.cat, catLabel: r.catLabel, round: r.round, ttype: r.ttype, memo: r.memo, time: r.time };
+    return { cat: r.cat, catLabel: r.catLabel, round: r.round, ttype: r.ttype, memo: r.memo, due: r.due, time: r.time };
   });
   return { ok: true, kind: 'assign', items: items };
+}
+
+/* 대상 토큰 한 개와 학생 대조 — '이름' 또는 동명이인 '이름|학교|학년'(공용 학생 선택 위젯 형식) */
+function tokenHit_(tok, name, school, grade) {
+  tok = squeeze_(tok);
+  if (!tok) return false;
+  if (tok.indexOf('|') < 0) return tok === name;
+  var parts = tok.split('|');
+  if (squeeze_(parts[0]) !== name) return false;
+  var ts = squeeze_(parts[1]), tg = squeeze_(parts[2]);
+  if (ts && school && !(ts === school || ts.indexOf(school) === 0 || school.indexOf(ts) === 0)) return false;
+  if (ts && !school) return false;
+  if (tg && grade && tg !== grade) return false;
+  if (tg && !grade) return false;
+  return true;
+}
+
+/* 마감일 칸 → 'yyyy-MM-dd' (시트가 날짜로 자동 변환해 저장했어도 읽는다) */
+function ymd_(v) {
+  if (Object.prototype.toString.call(v) === '[object Date]') {
+    return Utilities.formatDate(v, 'Asia/Seoul', 'yyyy-MM-dd');
+  }
+  var s = ('' + (v == null ? '' : v)).trim();
+  var m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return m[1] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[3]).slice(-2);
+  return s;
 }
 
 function txt_(v) {

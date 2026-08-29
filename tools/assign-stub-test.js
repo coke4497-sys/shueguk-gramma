@@ -54,9 +54,11 @@ global.ContentService = {
   createTextOutput: (s) => ({ _s: s, setMimeType() { return this; } })
 };
 global.Utilities = {
-  formatDate: (d) => {
+  formatDate: (d, tz, fmt) => {
     const p = (n) => (n < 10 ? '0' + n : '' + n);
-    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+    const ymd = d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+    if (fmt === 'yyyy-MM-dd') return ymd;
+    return ymd + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
   },
   computeDigest: (a, s) => { let h = []; for (let i = 0; i < 16; i++) h.push((s.length * 7 + i * 13) % 256); return h; },
   DigestAlgorithm: { MD5: 'md5' },
@@ -75,34 +77,57 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
 /* 1) 키 없이 교사 액션 → 거절 */
 ok(GET({ action: 'assignList' }).error === 'unauthorized', '키 없는 assignList 거절');
 
-/* 2) 배정 추가 3건 (학년/학교/개인) */
-let r1 = GET({ ...KEY, action: 'assignAdd', ttype: '학년', target: '고1', cat: 'pho', catLabel: '음운', round: '1' });
-ok(r1.ok === true && r1.kind === 'assign', '학년 배정 추가');
+/* 2) 배정 추가 (학년 목록/학교(옛)/개인/전체) — H WORK식 대상 형식 */
+let r1 = GET({ ...KEY, action: 'assignAdd', ttype: '학년', target: '고1, 고2', cat: 'pho', catLabel: '음운', round: '1' });
+ok(r1.ok === true && r1.kind === 'assign', '학년(목록) 배정 추가');
 let r2 = GET({ ...KEY, action: 'assignAdd', ttype: '학교', target: '화정고', cat: 'pho', catLabel: '음운', round: '2', memo: '9/5까지' });
-ok(r2.ok === true, '학교 배정 추가');
+ok(r2.ok === true, '학교(옛 형식) 배정 추가');
 let r3 = GET({ ...KEY, action: 'assignAdd', ttype: '개인', target: '홍길동', cat: 'mor', catLabel: '형태소', round: '1' });
 ok(r3.ok === true, '개인 배정 추가');
 ok(GET({ ...KEY, action: 'assignAdd', ttype: '반', target: 'x', cat: 'pho', round: '1' }).error === 'bad_ttype', '잘못된 대상구분 거절');
-let r4 = GET({ ...KEY, action: 'assignAdd', ttype: '일부', target: '박보검, 김철수', cat: 'ort', catLabel: '한글 맞춤법', round: '3' });
-ok(r4.ok === true, '일부 학생 배정 추가');
+let r4 = GET({ ...KEY, action: 'assignAdd', ttype: '일부', target: '박보검|화정고|고1, 김철수', cat: 'ort', catLabel: '한글 맞춤법', round: '3' });
+ok(r4.ok === true, '일부 학생 배정 추가 (동명이인 토큰 포함)');
 ok(GET({ action: 'myAssign', grade: '', school: '', name: '김철수' }).items.some(a => a.cat === 'ort'), '일부 학생 매칭 (김철수)');
-ok(GET({ action: 'myAssign', grade: '', school: '', name: '박 보검' }).items.some(a => a.cat === 'ort'), '일부 학생 매칭 (공백 무시)');
+ok(GET({ action: 'myAssign', grade: '고1', school: '화정고등학교', name: '박 보검' }).items.some(a => a.cat === 'ort'), '동명이인 토큰 매칭 (학교 표기 달라도)');
+ok(!GET({ action: 'myAssign', grade: '고2', school: '화정고', name: '박보검' }).items.some(a => a.cat === 'ort'), '동명이인 토큰 — 학년 다르면 제외');
+ok(!GET({ action: 'myAssign', grade: '', school: '', name: '박보검' }).items.some(a => a.cat === 'ort'), '동명이인 토큰 — 학교·학년 없으면 제외');
 ok(!GET({ action: 'myAssign', grade: '', school: '', name: '이영희' }).items.some(a => a.cat === 'ort'), '명단에 없는 학생은 제외');
 { let rows0 = GET({ ...KEY, action: 'assignList' }).rows; let some = rows0.find(r => r.ttype === '일부');
   ok(GET({ ...KEY, action: 'assignDel', row: some._row, time: some.time }).ok === true, '일부 배정 삭제(정리)'); }
-ok(GET({ ...KEY, action: 'assignAdd', ttype: '학년', target: '', cat: 'pho', round: '1' }).error === 'missing', '빈 대상 거절');
+ok(GET({ ...KEY, action: 'assignAdd', ttype: '학년', target: '', cat: 'pho', round: '1' }).error === 'missing', '빈 대상 거절(학년)');
+ok(GET({ ...KEY, action: 'assignAdd', ttype: '전체', target: '', cat: 'pho', round: '1', due: '9/5' }).error === 'bad_due', '잘못된 마감일 거절');
+
+/* 전체 배정 + 마감일 */
+const today = new Date(); const p2 = (n) => (n < 10 ? '0' + n : '' + n);
+const ymdOf = (d) => d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate());
+const yesterday = ymdOf(new Date(today.getTime() - 86400000));
+const tomorrow = ymdOf(new Date(today.getTime() + 86400000));
+let r5 = GET({ ...KEY, action: 'assignAdd', ttype: '전체', target: '', cat: 'sen', catLabel: '문장', round: '1', due: tomorrow });
+ok(r5.ok === true, '전체(전 학년) 배정 추가 — 빈 대상 허용 + 마감일');
+ok(GET({ action: 'myAssign', grade: '중1', school: '아무중', name: '아무개' }).items.some(a => a.cat === 'sen'), '전체 배정 = 모든 학생 매칭');
+{ let ms = GET({ action: 'myAssign', grade: '중1', school: '아무중', name: '아무개' }).items.find(a => a.cat === 'sen');
+  ok(ms && ms.due === tomorrow, 'myAssign 응답에 마감일 포함'); }
+let r6 = GET({ ...KEY, action: 'assignAdd', ttype: '전체', target: '', cat: 'hon', catLabel: '높임법', round: '1', due: yesterday });
+ok(r6.ok === true, '마감일 지난 배정 추가');
+ok(!GET({ action: 'myAssign', grade: '중1', school: '아무중', name: '아무개' }).items.some(a => a.cat === 'hon'), '마감일 지난 배정은 학생에게 안 보임');
+ok(GET({ ...KEY, action: 'assignList' }).rows.some(r => r.cat === 'hon' && r.due === yesterday), '마감일 지난 배정도 교사 목록에는 남음');
+{ let rows0 = GET({ ...KEY, action: 'assignList' }).rows;
+  for (const c of ['sen', 'hon']) { const rr = rows0.find(r => r.cat === c); GET({ ...KEY, action: 'assignDel', row: GET({ ...KEY, action: 'assignList' }).rows.find(r => r.cat === c)._row, time: rr.time }); }
+  ok(GET({ ...KEY, action: 'assignList' }).rows.every(r => r.cat !== 'sen' && r.cat !== 'hon'), '전체 배정 삭제(정리)'); }
 
 /* 3) 목록 */
 let list = GET({ ...KEY, action: 'assignList' });
-ok(list.kind === 'assign' && list.rows.length === 3, '배정 목록 3건(일부 배정 정리 후)');
+ok(list.kind === 'assign' && list.rows.length === 3, '배정 목록 3건(정리 후)');
 ok(list.rows[0].status === '진행', '기본 상태 진행');
 
 /* 4) 학생 조회 매칭 */
 let m1 = GET({ action: 'myAssign', grade: '고1', school: '능곡고', name: '김철수' });
 ok(m1.ok === true && m1.kind === 'assign', 'myAssign 키 없이 허용');
-ok(m1.items.length === 1 && m1.items[0].cat === 'pho' && m1.items[0].round === '1', '학년 매칭 (고1 → pho-1)');
+ok(m1.items.length === 1 && m1.items[0].cat === 'pho' && m1.items[0].round === '1', '학년 목록 매칭 (고1 → pho-1)');
+ok(GET({ action: 'myAssign', grade: '고2', school: '능곡고', name: '김철수' }).items.some(a => a.round === '1'), '학년 목록 매칭 (고2도 → pho-1)');
+ok(!GET({ action: 'myAssign', grade: '고3', school: '능곡고', name: '아무개' }).items.some(a => a.cat === 'pho' && a.round === '1'), '목록에 없는 학년(고3) 제외');
 let m2 = GET({ action: 'myAssign', grade: '고2', school: '화정고등학교', name: '김철수' });
-ok(m2.items.length === 1 && m2.items[0].round === '2', '학교 매칭 (화정고 ↔ 화정고등학교)');
+ok(m2.items.some(a => a.round === '2'), '학교 매칭 (화정고 ↔ 화정고등학교)');
 let m3 = GET({ action: 'myAssign', grade: '중2', school: '서정중', name: '홍 길동' });
 ok(m3.items.length === 1 && m3.items[0].cat === 'mor', '개인 매칭 (공백 무시)');
 let m4 = GET({ action: 'myAssign', grade: '고3', school: '백양고', name: '아무개' });

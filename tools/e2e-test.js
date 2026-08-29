@@ -33,6 +33,21 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   let assignRows = [];           // assignList 응답 rows
   let lastPost = null;           // doPost로 보낸 payload
   const reqLog = [];             // 배정 액션 호출 기록
+  const ROSTER = [               // 리포트 roster (공용 학생 선택 위젯이 읽음)
+    { name: '박보검', school: '화정고', grade: '고1', teacher: '수경T' },
+    { name: '김철수', school: '능곡고', grade: '고1', teacher: '수경T' },
+    { name: '김결과', school: '화정고', grade: '고1', teacher: '수경T' },
+    { name: '이영희', school: '서정중', grade: '중2', teacher: '수경T' }
+  ];
+
+  // 공용 학생 선택 위젯(리포트 저장소 GitHub Pages)을 로컬 파일로 서빙
+  const REPORT_DIR = path.join(ROOT, '..', 'shueguk-report');
+  await ctx.route('**://coke4497-sys.github.io/shueguk-report/**', async (route) => {
+    const base = path.basename(new URL(route.request().url()).pathname);
+    const f = path.join(REPORT_DIR, base);
+    if (!fs.existsSync(f)) return route.fulfill({ status: 404, body: '' });
+    return route.fulfill({ status: 200, contentType: base.endsWith('.css') ? 'text/css' : 'text/javascript', body: fs.readFileSync(f, 'utf8') });
+  });
 
   await ctx.route('**://script.google.com/**', async (route) => {
     const req = route.request();
@@ -45,10 +60,11 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
     const action = q.action || '';
     reqLog.push(q);
     let payload;
-    if (action === 'myAssign') payload = { ok: true, kind: 'assign', items: assignItems };
+    if (action === 'roster') payload = { result: 'success', students: ROSTER };   // 리포트 백엔드 명단
+    else if (action === 'myAssign') payload = { ok: true, kind: 'assign', items: assignItems };
     else if (action === 'assignList') payload = { ok: true, kind: 'assign', rows: assignRows };
     else if (action === 'assignAdd') {
-      assignRows.push({ time: '2026-08-28 21:00:00', ttype: q.ttype, target: q.target, cat: q.cat, catLabel: q.catLabel, round: q.round, memo: q.memo || '', status: '진행', _row: assignRows.length + 2 });
+      assignRows.push({ time: '2026-08-28 21:00:00', ttype: q.ttype, target: q.target, cat: q.cat, catLabel: q.catLabel, round: q.round, memo: q.memo || '', status: '진행', due: q.due || '', _row: assignRows.length + 2 });
       payload = { ok: true, kind: 'assign' };
     }
     else if (action === 'assignSet') { assignRows.forEach(r => { if ('' + r._row === q.row) r.status = q.status; }); payload = { ok: true, kind: 'assign' }; }
@@ -121,7 +137,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p3.close();
 
   /* ========== 5) index.html — 배정 목록 ========== */
-  assignItems = [{ cat: 'pho', round: '3', catLabel: '음운', memo: '9/5까지' }, { cat: 'mor', round: '1', catLabel: '형태소' }];
+  assignItems = [{ cat: 'pho', round: '3', catLabel: '음운', memo: '숙제', due: '2026-09-05' }, { cat: 'mor', round: '1', catLabel: '형태소' }];
   const p4 = await ctx.newPage();
   p4.on('dialog', d => d.accept());
   await p4.goto(`http://localhost:${PORT}/index.html`);
@@ -133,6 +149,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await p4.textContent('.assign-card .assign-title')).includes('음운 3회'), '카드에 카테고리·회차·제목');
   const href = await p4.getAttribute('.assign-card .assign-go', 'href');
   ok(href.includes('test.html?c=pho&r=3') && href.includes('name=') && decodeURIComponent(href).includes('박검증') && href.includes('p8=12345678'), '응시 링크에 학생 정보·전화 8자리 전달');
+  ok((await p4.textContent('.assign-card .assign-sub')).includes('마감 9월 5일 (토)까지'), '카드에 마감일 표시');
   // 배정 없음 안내
   assignItems = [];
   await p4.click('#check-btn');
@@ -171,35 +188,67 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   // 미리보기 링크에 preview=1
   const prevHref = await p7.getAttribute('#rounds .row .abtn.preview', 'href');
   ok(prevHref.includes('test.html?c=ort&r=1') && prevHref.includes('preview=1'), '미리보기 링크');
-  // [배정] → 폼 → 학교 대상 저장
+  // [배정] → 폼(H WORK식 학생 선택 위젯) 열림
   await p7.click('#rounds .row .abtn.assign');
   await p7.waitForSelector('#form-card.show');
   ok((await p7.textContent('#f-title')).includes('한글 맞춤법 1회'), '배정 폼에 회차 표시');
-  ok((await p7.$$('#f-ttype option')).length === 4, '대상 구분 4가지(학년/학교/일부 학생/개인)');
-  // 일부 학생 배정 저장 파라미터
-  await p7.selectOption('#f-ttype', '일부');
-  await p7.fill('#f-text', '박보검, 김철수');
+  await p7.waitForSelector('.sp-tab');
+  const tabLabels = await p7.$$eval('.sp-tab', els => els.map(e => e.textContent.trim()));
+  ok(tabLabels.join(',') === '전 학년,학년,개인,일부', '학생 선택 위젯 탭 (전 학년/학년/개인/일부)');
+  await p7.waitForFunction(() => document.querySelector('.sp-summary').textContent.includes('전 학년'));
+  // ① 전 학년 + 마감일 배정
+  await p7.fill('#f-due', '2026-09-05');
+  await p7.fill('#f-memo', '1회차');
   await p7.click('#f-add');
   await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 2);
-  const someReq = reqLog.find(q => q.action === 'assignAdd' && q.ttype === '일부');
-  ok(someReq && someReq.target === '박보검, 김철수', "'일부 학생' assignAdd 파라미터");
-  ok((await p7.textContent('#a-tbody')).includes('일부 학생'), "현황에 '일부 학생' 표시");
-  // 다시 배정 폼 열어 학교 대상 저장
-  await p7.click('#rounds .row .abtn.assign');
-  await p7.waitForSelector('#form-card.show');
-  await p7.selectOption('#f-ttype', '학교');
-  await p7.fill('#f-text', '능곡고');
+  const allReq = reqLog.find(q => q.action === 'assignAdd' && q.ttype === '전체');
+  ok(allReq && allReq.target === '' && allReq.due === '2026-09-05' && allReq.memo === '1회차' && allReq.cat === 'ort' && allReq.round === '1', "'전 학년' assignAdd 파라미터 (빈 대상 + 마감일)");
+  ok((await p7.textContent('#a-tbody')).includes('전 학년') && (await p7.textContent('#a-tbody')).includes('2026-09-05'), "현황에 '전 학년'·마감일 표시");
+  // ② 일부 — 재원 명단에서 두 명 선택
+  await p7.click('.sp-tab[data-mode="일부"]');
+  await p7.waitForSelector('.sp-item');
+  await p7.click('.sp-item:has-text("박보검")');
+  await p7.click('.sp-item:has-text("김철수")');
+  await p7.waitForFunction(() => document.querySelector('.sp-summary').textContent.includes('2명'));
   await p7.click('#f-add');
   await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 3);
-  const addReq = reqLog.find(q => q.action === 'assignAdd' && q.ttype === '학교');
-  ok(addReq && addReq.ttype === '학교' && addReq.target === '능곡고' && addReq.cat === 'ort' && addReq.round === '1', 'assignAdd 파라미터');
-  ok((await p7.textContent('#a-tbody')).includes('능곡고'), '추가된 배정 표시');
+  const someReq = reqLog.find(q => q.action === 'assignAdd' && q.ttype === '일부');
+  ok(someReq && someReq.target === '박보검, 김철수', "'일부' assignAdd — 명단에서 고른 이름들");
+  ok((await p7.textContent('#a-tbody')).includes('일부 학생'), "현황에 '일부 학생' 표시");
+  // ③ 학년 — 고1 칩 선택
+  await p7.click('.sp-tab[data-mode="학년"]');
+  await p7.waitForSelector('.sp-chip');
+  await p7.click('.sp-chip[data-grade="고1"]');
+  await p7.click('#f-add');
+  await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 4);
+  const grReq = reqLog.find(q => q.action === 'assignAdd' && q.ttype === '학년');
+  ok(grReq && grReq.target === '고1' && grReq.cat === 'ort' && grReq.round === '1', "'학년' assignAdd 파라미터");
+  // ④ 제출 현황 — ort 1회는 제출 0 (결과는 음운 1회뿐)
+  await p7.click('#st-load');
+  await p7.waitForSelector('#st-body .stat-row');
+  ok((await p7.textContent('#st-body .stat.assigned .n')) === '4', '현황: 배정 4명(전 학년 전개)');
+  ok((await p7.textContent('#st-body .stat.done .n')) === '0' && (await p7.textContent('#st-body .stat.todo .n')) === '4', '현황: 제출 0 · 미제출 4');
+  // ⑤ 제출 현황 — 음운 1회는 김결과 제출됨 (학년 고1 배정)
+  await p7.click('#cat-back');
+  await p7.waitForSelector('#home-view:not(.hidden)');
+  await p7.click('.cat-card[data-code="pho"]');
+  await p7.waitForSelector('#round-view:not(.hidden)');
+  await p7.click('#rounds .row .abtn.assign');
+  await p7.waitForSelector('#form-card.show');
+  await p7.click('#st-load');
+  await p7.waitForFunction(() => {
+    const el = document.querySelector('#st-body .stat.done .n');
+    return el && el.textContent === '1';
+  });
+  ok((await p7.textContent('#st-body .stat.assigned .n')) === '3', '현황: 음운 1회 배정 3명(고1)');
+  const doneChips = await p7.textContent('#st-body');
+  ok(doneChips.includes('김결과') && doneChips.includes('40 / 42'), '제출 칩에 이름·점수');
   // 마감 → 삭제
   await p7.click('#a-tbody .a-toggle');
   await p7.waitForFunction(() => document.getElementById('a-tbody').textContent.includes('마감'));
   ok(reqLog.some(q => q.action === 'assignSet' && q.status === '마감'), '마감 요청');
   await p7.click('#a-tbody .a-del');
-  await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 2);
+  await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 3);
   ok(reqLog.some(q => q.action === 'assignDel'), '삭제 요청·목록 갱신');
   await p7.close();
 
