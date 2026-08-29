@@ -106,7 +106,7 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   <div class="form-card" id="form-card">
     <div class="f-title" id="f-title"></div>
     <div class="f-row">
-      <div class="f-field"><label>대상 구분</label><select id="f-ttype"><option value="학년">학년</option><option value="학교">학교</option><option value="개인">개인</option></select></div>
+      <div class="f-field"><label>대상 구분</label><select id="f-ttype"><option value="학년">학년</option><option value="학교">학교</option><option value="일부">일부 학생</option><option value="개인">개인</option></select></div>
       <div class="f-field" id="f-grade-wrap"><label>대상 학년</label><select id="f-grade"><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option></select></div>
       <div class="f-field" id="f-text-wrap" style="display:none;"><label id="f-text-label">대상</label><input type="text" id="f-text" autocomplete="off"></div>
       <div class="f-field"><label>메모 (선택)</label><input type="text" id="f-memo" placeholder="예: 9/5까지" autocomplete="off"></div>
@@ -268,8 +268,9 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     var tt = $('f-ttype').value;
     $('f-grade-wrap').style.display = tt === '학년' ? '' : 'none';
     $('f-text-wrap').style.display = tt === '학년' ? 'none' : '';
-    $('f-text-label').textContent = tt === '학교' ? '대상 학교' : '대상 학생 이름';
-    $('f-text').placeholder = tt === '학교' ? '예: 화정고' : '예: 홍길동';
+    $('f-text-label').textContent = tt === '학교' ? '대상 학교' : (tt === '일부' ? '대상 학생 이름들 (쉼표로 구분)' : '대상 학생 이름');
+    $('f-text').placeholder = tt === '학교' ? '예: 화정고' : (tt === '일부' ? '예: 박보검, 김철수, 이영희' : '예: 박보검');
+    $('f-text').style.minWidth = tt === '일부' ? '240px' : '';
   }
   $('f-ttype').addEventListener('change', syncTargetUI);
   $('f-close').addEventListener('click', function(){ $('form-card').classList.remove('show'); picked = null; });
@@ -326,9 +327,10 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
       var closed = r.status === '마감';
       var testLabel = catLabelOf(r.cat) + ' ' + r.round + '회';
       var reg = TESTS[r.cat + '-' + r.round];
+      var ttShow = r.ttype === '일부' ? '일부 학생' : r.ttype;
       html += '<tr' + (closed ? ' style="opacity:.55;"' : '') + '>' +
         '<td>' + esc(r.time) + '</td>' +
-        '<td><b>' + esc(r.ttype) + '</b> · ' + esc(r.target) + '</td>' +
+        '<td><b>' + esc(ttShow) + '</b> · ' + esc(r.target) + '</td>' +
         '<td>' + esc(testLabel) + (reg && reg.title ? ' <span class="muted">' + esc(reg.title) + '</span>' : '') + '</td>' +
         '<td>' + esc(r.memo || '') + '</td>' +
         '<td>' + (closed ? '<span class="pct lo">마감</span>' : '<span class="pct hi">진행</span>') + '</td>' +

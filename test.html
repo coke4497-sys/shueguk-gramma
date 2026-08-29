@@ -172,11 +172,14 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             <div class="si-title">학생 정보<span class="req">* 제출 전 꼭 입력해 주세요</span></div>
             <div class="si-body">
                 <div class="si-row">
-                    <div class="si-field"><label for="si-name">이름</label><input type="text" id="si-name" placeholder="홍길동" autocomplete="off"></div>
+                    <div class="si-field"><label for="si-name">이름</label><input type="text" id="si-name" placeholder="박보검" autocomplete="off"></div>
                 </div>
                 <div class="si-row">
                     <div class="si-field"><label for="si-school">학교</label><input type="text" id="si-school" placeholder="○○중 또는 ○○고" autocomplete="off"></div>
                     <div class="si-field small"><label for="si-grade">학년</label><select id="si-grade"></select></div>
+                </div>
+                <div class="si-row">
+                    <div class="si-field"><label for="si-phone8">학부모님 휴대전화번호 8자리</label><input type="text" id="si-phone8" inputmode="numeric" maxlength="8" placeholder="12345678" autocomplete="off"></div>
                 </div>
             </div>
         </div>
@@ -286,11 +289,14 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         var pName = (params.get('name') || '').trim();
         var pSchool = (params.get('school') || '').trim();
         var pGrade = (params.get('grade') || '').trim();
+        var pPhone8 = (params.get('p8') || '').replace(/[^0-9]/g, '').slice(0, 8);
         if (pName) $('si-name').value = pName;
         if (pSchool) $('si-school').value = pSchool;
         if (pGrade && GRADES.indexOf(pGrade) >= 0) gradeSel.value = pGrade;
-        // 셋 다 채워져 넘어왔으면 요약 한 줄로 접는다 — [수정]으로 펼침
-        if (pName && pSchool && gradeSel.value) {
+        if (pPhone8.length === 8) $('si-phone8').value = pPhone8;
+        $('si-phone8').addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8); });
+        // 개인 페이지에서 넷 다 채워져 넘어왔으면 요약 한 줄로 접는다 — [수정]으로 펼침
+        if (pName && pSchool && gradeSel.value && pPhone8.length === 8) {
             $('si-sum-text').textContent = pName + ' · ' + pSchool + ' ' + gradeSel.value;
             $('student-info').classList.add('collapsed');
         }
@@ -527,9 +533,10 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         var sName = ($('si-name').value || '').trim();
         var sSchool = ($('si-school').value || '').trim();
         var sGrade = $('si-grade').value || '';
-        if (!sName || !sSchool || !sGrade) {
+        var sPhone8 = ($('si-phone8').value || '').trim();
+        if (!sName || !sSchool || !sGrade || !/^[0-9]{8}$/.test(sPhone8)) {
             $('student-info').classList.remove('collapsed');
-            alert('제출 전에 이름·학교·학년을 모두 입력해 주세요!');
+            alert('제출 전에 이름·학교·학년·학부모님 휴대전화번호 8자리를 모두 입력해 주세요!');
             $('si-name').scrollIntoView({ block: 'center' });
             return;
         }
@@ -642,6 +649,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 
         var payload = {
             time: nowStr(), name: sName, school: sSchool, grade: sGrade,
+            phone8: ($('si-phone8').value || '').trim(),
             unit: CAT_LABEL, round: round, score: score + ' / ' + TOTAL, details: details.join('\n')
         };
         sendResult(payload);

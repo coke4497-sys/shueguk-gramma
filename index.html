@@ -59,13 +59,16 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
     <div class="student-info">
         <div class="si-title">학생 정보</div>
         <div class="si-row">
-            <div class="si-field"><label for="si-name">이름</label><input type="text" id="si-name" placeholder="홍길동" autocomplete="off"></div>
+            <div class="si-field"><label for="si-name">이름</label><input type="text" id="si-name" placeholder="박보검" autocomplete="off"></div>
         </div>
         <div class="si-row">
             <div class="si-field"><label for="si-school">학교</label><input type="text" id="si-school" placeholder="○○중 또는 ○○고" autocomplete="off"></div>
             <div class="si-field small"><label for="si-grade">학년</label>
                 <select id="si-grade"><option value="">선택</option><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option></select>
             </div>
+        </div>
+        <div class="si-row">
+            <div class="si-field"><label for="si-phone8">학부모님 휴대전화번호 8자리</label><input type="text" id="si-phone8" inputmode="numeric" maxlength="8" placeholder="12345678" autocomplete="off"></div>
         </div>
         <button type="button" class="go-btn" id="check-btn">내 테스트 확인하기</button>
     </div>
@@ -99,6 +102,8 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
     $('si-school').value = (params.get('school') || saved.school || '').trim();
     var g = (params.get('grade') || saved.grade || '').trim();
     if (g) $('si-grade').value = g;
+    $('si-phone8').value = ((params.get('p8') || saved.phone8 || '') + '').replace(/[^0-9]/g, '').slice(0, 8);
+    $('si-phone8').addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8); });
 
     function showStatus(type, html) {
         var el = $('status');
@@ -110,8 +115,9 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
         var name = ($('si-name').value || '').trim();
         var school = ($('si-school').value || '').trim();
         var grade = $('si-grade').value || '';
-        if (!name || !school || !grade) { alert('이름·학교·학년을 모두 입력해 주세요!'); return; }
-        try { localStorage.setItem(LS_KEY, JSON.stringify({ name: name, school: school, grade: grade })); } catch (e) {}
+        var phone8 = ($('si-phone8').value || '').trim();
+        if (!name || !school || !grade || !/^[0-9]{8}$/.test(phone8)) { alert('이름·학교·학년·학부모님 휴대전화번호 8자리를 모두 입력해 주세요!'); return; }
+        try { localStorage.setItem(LS_KEY, JSON.stringify({ name: name, school: school, grade: grade, phone8: phone8 })); } catch (e) {}
 
         var btn = $('check-btn');
         btn.disabled = true;
@@ -126,7 +132,7 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
                     showStatus('fail', IC_ALERT + '배정 확인 기능이 아직 준비되지 않았어요.<br>선생님이 보내 준 링크로 응시해 주세요.');
                     return;
                 }
-                render(res.items || [], { name: name, school: school, grade: grade });
+                render(res.items || [], { name: name, school: school, grade: grade, phone8: phone8 });
             })
             .catch(function() {
                 btn.disabled = false;
@@ -147,7 +153,8 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
             var reg = window.GRAMMA && GRAMMA.tests && GRAMMA.tests[key];
             var title = (reg && reg.title) ? reg.title : (label + ' ' + a.round + '회');
             var url = 'test.html?c=' + encodeURIComponent(a.cat) + '&r=' + encodeURIComponent(a.round) +
-                '&name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade);
+                '&name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) +
+                '&p8=' + encodeURIComponent(who.phone8 || '');
             html += '<div class="assign-card">' +
                 '<span class="assign-cat">' + esc(label) + '</span>' +
                 '<div class="assign-body">' +
