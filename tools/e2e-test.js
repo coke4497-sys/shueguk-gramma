@@ -299,7 +299,32 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(!(await p8.$eval('#mode-tabs', el => el.classList.contains('hidden'))), '개념 정리/테스트 모드 탭 표시');
   ok((await p8.textContent('#study-body')).includes('된소리로 적는다'), '개념 정리에 규정 내용');
   ok((await p8.$$('#study-body .note-box')).length >= 1, "'다만' 안내 상자 표시");
+  // 개념 정리 화면의 상자에는 테두리를 쓰지 않는다 (바탕색·그림자로만 구분)
+  const borders = await p8.$$eval('.header, .mode-label, .cat-label, .vocab-card, .vocab-example, .ex-chip, .note-box',
+    els => els.map(e => getComputedStyle(e).borderTopWidth));
+  ok(borders.every(w => w === '0px'), '개념 정리 상자·탭·헤더에 테두리 없음');
   await p8.close();
+
+  /* ========== 10) 한글 맞춤법 채점 화면 — 보기 정오 표시·근거 조항 ========== */
+  const p9 = await ctx.newPage();
+  p9.on('dialog', d => d.accept());
+  await p9.goto(`http://localhost:${PORT}/test.html?c=ort&r=2&preview=1`);
+  await p9.waitForSelector('#app:not(.hidden)');
+  await p9.click('#tab-test');
+  await p9.fill('#si-name', '박검증'); await p9.fill('#si-school', '화정고');
+  await p9.selectOption('#si-grade', '고1'); await p9.fill('#si-phone8', '12345678');
+  await p9.$$eval('.opt-label[data-opt="1"]', els => els[0] && els[0].click());   // 선택형 1번 고름
+  await p9.$$eval('.answer-input', els => { if (els[0]) els[0].value = '아무말'; });
+  await p9.click('#submit-btn');
+  await p9.waitForSelector('.final.show');
+  ok((await p9.$$('.opt-label.ans')).length >= 1, '선택형 정답 보기에 초록 표시');
+  ok((await p9.textContent('.opt-label.ans')).includes('정답'), "정답 보기에 '정답' 표기");
+  ok((await p9.$$('.ox-label.ans')).length >= 1, 'OX 정답 버튼 표시');
+  ok((await p9.$$('.ox-label.pick-ng, .opt-label.pick-ng')).length >= 0, '내가 고른 오답 표시 자리');
+  ok((await p9.$$('.answer-input.ng')).length >= 1, '틀린 단답 입력칸 붉은 표시');
+  ok((await p9.$$('.fb-art')).length >= 1, '해설의 근거 조항이 칩으로 분리');
+  ok((await p9.textContent('.fb-art')).startsWith('제'), '근거 조항 칩 내용 (제○항)');
+  await p9.close();
 
   await browser.close();
   server.close();
