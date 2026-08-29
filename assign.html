@@ -52,15 +52,10 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .abtn { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; font-weight: 700; border-radius: 9px; padding: 7px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; text-decoration: none; transition: border-color .15s, background .15s; }
 .abtn svg { width: 13px; height: 13px; }
 .abtn.preview { color: #628C83; background: none; border: none; padding: 7px 4px; }
-.abtn.copy { color: #3A544E; background: #E9F0EF; border: 1.5px solid #C6D5D2; }
-.abtn.copy:hover { border-color: #A6C1BB; }
-.abtn.copy.done { color: #276B4E; background: #E4F1EA; border-color: #3E9B74; }
 .abtn.assign { color: #635A7D; background: #EDE4F4; border: 1.5px solid #D9CCE8; }
 .abtn.assign:hover { background: #E3D6EF; border-color: #8D83A8; }
 .abtn.assign.on { color: #fff; background: #8D83A8; border-color: #8D83A8; }
 .abtn.assign.on:hover { background: #635A7D; border-color: #635A7D; }
-.abtn.stat { color: #3A544E; background: white; border: 1.5px solid #E8EAE7; }
-.abtn.stat:hover { border-color: #A6C1BB; }
 
 /* 회차 화면 머리줄 + 학생 배정으로 이동 바 */
 .sec-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 6px 2px 10px; }
@@ -93,25 +88,6 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .f-status { font-size: 12.5px; margin-top: 9px; min-height: 1.2em; color: #6A716C; text-align: center; font-weight: 700; }
 .f-status.ok { color: #276B4E; }
 .f-status.err { color: #992F20; }
-.f-sec { border-top: 1.5px solid #F1F6F4; margin-top: 16px; padding-top: 14px; }
-.f-sec .s-title { font-size: 13px; font-weight: 800; color: #3A544E; margin-bottom: 8px; }
-
-/* 제출 현황 (H WORK과 같은 대조 화면) */
-.stat-row { display: flex; gap: 8px; margin: 4px 0 12px; }
-.stat { flex: 1; background: #F4F5F3; border-radius: 11px; padding: 11px; text-align: center; }
-.stat .n { font-family: 'Gowun Batang', serif; font-size: 22px; font-weight: 700; line-height: 1.1; }
-.stat .l { font-size: 11.5px; color: #6A716C; margin-top: 3px; font-weight: 700; }
-.stat.assigned .n { color: #8D83A8; }
-.stat.done .n { color: #3E9B74; }
-.stat.todo .n { color: #DB4C39; }
-.grp-title { font-size: 12.5px; font-weight: 800; color: #6A716C; margin: 13px 0 7px; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.pchip { font-size: 12.5px; font-weight: 700; padding: 5px 11px; border-radius: 16px; border: 1px solid #E8EAE7; background: white; }
-.pchip.todo { background: #FADED9; border-color: #FADED9; color: #992F20; }
-.pchip.done { background: #E4F1EA; border-color: #E4F1EA; color: #276B4E; }
-.pchip.warn { background: #fbf3e3; border-color: #ecd9af; color: #8F630F; }
-.pchip .sc { color: #8B928C; font-size: 11px; font-weight: 400; }
-.warn-box { background: #fbf3e3; border: 1px solid #ecd9af; color: #8F630F; font-size: 12px; border-radius: 9px; padding: 9px 12px; margin-bottom: 10px; line-height: 1.6; }
 
 /* 학생 선택 위젯을 문법 포인트 연보라로 — 공용 student-picker.css는 녹색(H WORK 등 공용)이라 이 페이지에서만 덮어씀 */
 .sp-tab.on { background: #8D83A8; border-color: #8D83A8; color: #fff; }
@@ -161,21 +137,6 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   </div>
 
   <div id="home-view">
-  <!-- 학생 공통 입구 -->
-  <div class="list">
-    <div class="row">
-      <span class="rd">입구</span>
-      <span class="ttl">내 문법 테스트 (학생용 — 배정 확인·응시)</span>
-      <span class="acts">
-        <a class="abtn preview" id="entry-open" href="index.html" target="_blank" rel="noopener">열어 보기
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        <button type="button" class="abtn copy" id="entry-copy">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          링크 복사</button>
-      </span>
-    </div>
-  </div>
-
   <!-- 1단계: 카테고리 목록 -->
   <div class="unit-title">1단계 · 배정할 테스트 고르기 <span class="muted" style="font-weight:400;">— 카테고리를 눌러 회차를 담으세요</span></div>
   <div class="cats" id="cats"></div>
@@ -204,21 +165,10 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     <div id="picker" style="margin-top:12px;"></div>
     <div class="f-row">
       <div class="f-field"><label>마감 (선택)</label><input type="date" id="f-due"></div>
-      <div class="f-field"><label>비고 (선택)</label><input type="text" id="f-memo" placeholder="예: 1회차" autocomplete="off"></div>
+      <div class="f-field"><label>메모 (선택)</label><input type="text" id="f-memo" placeholder="예: 시험 대비" autocomplete="off"></div>
     </div>
     <button class="f-submit" id="f-add">이 학생들에게 배정</button>
     <div class="f-status" id="f-status"></div>
-  </div>
-
-  <!-- 제출 현황 (회차의 [현황]을 누르면 열림) -->
-  <div class="form-card" id="st-card">
-    <div class="f-title" id="st-title"></div>
-    <p class="muted" style="margin-bottom:10px;">배정된 학생과 실제 제출을 대조합니다 (이름+학교 기준)</p>
-    <div id="st-body"></div>
-    <div style="display:flex;justify-content:space-between;margin-top:14px;">
-      <button class="fbtn ghost" type="button" id="st-load">다시 불러오기</button>
-      <button class="fbtn ghost" type="button" id="st-close">닫기</button>
-    </div>
   </div>
 
   <!-- 배정 현황 -->
@@ -227,7 +177,7 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     <div id="a-status" class="status loading">배정 목록을 불러오는 중…</div>
     <div class="table-wrap" id="a-table-wrap" style="display:none;">
       <table>
-        <thead><tr><th>배정일시</th><th>대상</th><th>테스트</th><th>마감</th><th>비고</th><th>상태</th><th>동작</th></tr></thead>
+        <thead><tr><th>배정일시</th><th>대상</th><th>테스트</th><th>마감</th><th>메모</th><th>상태</th><th>동작</th></tr></thead>
         <tbody id="a-tbody"></tbody>
       </table>
     </div>
@@ -250,7 +200,6 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   var A_ROWS = [];
   var current = '';          // 선택된 카테고리 코드
   var SEL = [];              // 담은 테스트 [{cat, round}] — 여러 회차·카테고리 가능
-  var stPicked = null;       // 제출 현황이 가리키는 {cat, round}
 
   function $(id){ return document.getElementById(id); }
   function esc(s){ return ('' + (s==null?'':s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -322,10 +271,6 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
         '<span class="acts">' +
           '<a class="abtn preview" href="' + url + '&preview=1" target="_blank" rel="noopener">미리보기' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
-          '<button type="button" class="abtn copy" data-url="' + escAttr(url) + '">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
-            '링크 복사</button>' +
-          '<button type="button" class="abtn stat" data-round="' + n + '">현황</button>' +
           '<button type="button" class="abtn assign' + (on ? ' on' : '') + '" data-round="' + n + '">' + (on ? '담김 ✓' : '담기') + '</button>' +
         '</span></div>';
     });
@@ -338,9 +283,7 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   $('rounds').addEventListener('click', function(ev){
     var b = ev.target.closest('button');
     if (!b) return;
-    if (b.classList.contains('copy')) { copyText(b.getAttribute('data-url'), b); }
-    else if (b.classList.contains('assign')) { toggleSel(current, b.getAttribute('data-round')); }
-    else if (b.classList.contains('stat')) { openStatus(current, b.getAttribute('data-round')); }
+    if (b.classList.contains('assign')) { toggleSel(current, b.getAttribute('data-round')); }
   });
 
   /* ===== 배정할 테스트 담기 (여러 회차·카테고리 한 번에) ===== */
@@ -448,127 +391,12 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     })(0);
   });
 
-  /* ===== 제출 현황 (배정 vs 제출 대조 — H WORK과 같은 방식) ===== */
-  function norm(x){ return ('' + (x == null ? '' : x)).replace(/\s/g, ''); }
-  function looseSchool(a, b){ var na = norm(a), nb = norm(b); if (!na || !nb) return false; return na.indexOf(nb) >= 0 || nb.indexOf(na) >= 0; }
-  // 동명이인 토큰 '이름|학교|학년' → '이름(학교 학년)' 로 읽기 좋게
+  // 동명이인 토큰 '이름|학교|학년' → '이름(학교 학년)' 로 읽기 좋게 (배정 현황 표시용)
   function prettyTarget(t){
     return ('' + (t || '')).split(/\s*,\s*/).map(function(x){
       var p = x.split('|');
       return p.length >= 3 ? p[0] + '(' + [p[1], p[2]].filter(Boolean).join(' ') + ')' : x;
     }).join(', ');
-  }
-  // 배정 대상 → 재원 명단에서 실제 학생 목록으로 전개
-  function expandAssigned(assigns, roster){
-    var set = {};
-    assigns.forEach(function(a){
-      var type = a.ttype || '', tgt = a.target || '';
-      var tokens = tgt.split(/[,，\n;·]+/).map(function(x){ return x.trim(); }).filter(Boolean);
-      roster.forEach(function(s){
-        var hit = false;
-        if (type === '전체') hit = true;
-        else if (type === '학년'){
-          hit = tokens.some(function(t){ return norm(s.grade) === norm(t) || norm(s.school + s.grade) === norm(t); });
-        } else if (type === '학교'){
-          hit = tokens.some(function(t){ return looseSchool(t, s.school); });
-        } else { // 개인 / 일부
-          hit = tokens.some(function(t){
-            if (t.indexOf('|') >= 0){
-              var p = t.split('|');
-              return p[0] === s.name &&
-                     (!p[1] || looseSchool(p[1], s.school)) &&
-                     (!p[2] || norm(p[2]) === norm(s.grade));
-            }
-            return t === s.name;
-          });
-        }
-        if (hit) set[s.name + '|' + s.school + '|' + s.grade] = s;
-      });
-    });
-    return Object.keys(set).map(function(k){ return set[k]; });
-  }
-  function fetchRoster(){
-    if (picker && picker.students && picker.students.length) return Promise.resolve(picker.students);
-    return fetch(REPORT_API + '?action=roster&t=' + Date.now(), { cache: 'no-store' })
-      .then(function(r){ return r.json(); })
-      .then(function(d){ return (d && d.result === 'success' && d.students) || []; });
-  }
-  function openStatus(cat, round){
-    stPicked = { cat: cat, round: '' + round };
-    var t = TESTS[cat + '-' + round];
-    $('st-title').innerHTML = '<b>' + esc(catLabelOf(cat)) + ' ' + esc(round) + '회</b>' +
-      (t && t.title ? ' · ' + esc(t.title) : '') + ' — 제출 현황';
-    $('st-card').classList.add('show');
-    $('st-card').scrollIntoView({ block: 'start', behavior: 'smooth' });
-    loadStatus();
-  }
-  $('st-load').addEventListener('click', loadStatus);
-  $('st-close').addEventListener('click', function(){ $('st-card').classList.remove('show'); stPicked = null; });
-  function loadStatus(){
-    if (!stPicked) return;
-    var body = $('st-body');
-    var cat = stPicked.cat, round = '' + stPicked.round, unit = catLabelOf(cat);
-    body.innerHTML = '<p class="muted">현황 불러오는 중…</p>';
-    var pAssign = new Promise(function(res, rej){ jsonp({ action: 'assignList' }, res, rej); });
-    var pResult = new Promise(function(res, rej){ jsonp({}, res, rej); });   // 결과 전체 (기본 액션)
-    Promise.all([pAssign, pResult, fetchRoster()]).then(function(rs){
-      var aRes = rs[0], sRes = rs[1], roster = rs[2] || [];
-      if (!aRes || aRes.ok !== true || aRes.kind !== 'assign'){ body.innerHTML = '<p class="muted">배정 내역을 불러오지 못했어요.</p>'; return; }
-      var assigns = (aRes.rows || []).filter(function(r){ return r.cat === cat && ('' + r.round) === round; });
-      if (!assigns.length){ body.innerHTML = '<p class="muted">아직 이 회차에 배정이 없어요. 위에서 먼저 학생을 배정해 주세요.</p>'; return; }
-      if (!sRes || sRes.ok !== true){ body.innerHTML = '<p class="muted">제출 기록을 불러오지 못했어요.</p>'; return; }
-      if (!roster.length){ body.innerHTML = '<p class="muted">재원 명단을 불러오지 못했어요.</p>'; return; }
-
-      var assigned = expandAssigned(assigns, roster);
-      var subs = (sRes.rows || []).filter(function(r){ return ('' + r.unit) === unit && ('' + r.round) === round; });
-      var subsByName = {}; subs.forEach(function(s){ (subsByName[s.name] = subsByName[s.name] || []).push(s); });
-      var nameCount = {}; assigned.forEach(function(a){ nameCount[a.name] = (nameCount[a.name] || 0) + 1; });
-
-      var done = [], todo = [], warnCnt = 0;
-      assigned.forEach(function(a){
-        var cand = subsByName[a.name] || [];
-        var ambiguous = false, submitted = false, sc = '';
-        if (!cand.length){ submitted = false; }
-        else if (nameCount[a.name] <= 1){ submitted = true; }
-        else {
-          submitted = cand.some(function(c){ return looseSchool(c.school, a.school); });
-          if (assigned.filter(function(x){ return x.name === a.name && looseSchool(x.school, a.school); }).length > 1) ambiguous = true;
-        }
-        if (submitted){
-          var c = cand.find(function(x){ return looseSchool(x.school, a.school); }) || cand[0];
-          sc = '' + (c.score || '');
-        }
-        var rec = { a: a, ambiguous: ambiguous, sc: sc };
-        if (submitted) done.push(rec); else todo.push(rec);
-        if (ambiguous) warnCnt++;
-      });
-
-      // 배정 안 됐는데 제출한 학생
-      var assignedNames = {}; assigned.forEach(function(a){ assignedNames[a.name] = 1; });
-      var extra = subs.filter(function(s){ return !assignedNames[s.name]; });
-
-      var html = '<div class="stat-row">' +
-        '<div class="stat assigned"><div class="n">' + assigned.length + '</div><div class="l">배정</div></div>' +
-        '<div class="stat done"><div class="n">' + done.length + '</div><div class="l">제출</div></div>' +
-        '<div class="stat todo"><div class="n">' + todo.length + '</div><div class="l">미제출</div></div>' +
-      '</div>';
-      if (warnCnt) html += '<div class="warn-box">동명+동학교 학생이 배정에 ' + warnCnt + '명 있어 자동 구분이 어려워요. 해당 학생은 결과 확인에서 직접 확인해 주세요.</div>';
-      html += '<div class="grp-title">미제출 (' + todo.length + '명)</div>';
-      html += todo.length ? ('<div class="chips">' + todo.map(function(r){ return chip(r, 'todo'); }).join('') + '</div>') : '<p class="muted">미제출 학생이 없어요.</p>';
-      html += '<div class="grp-title">제출 (' + done.length + '명)</div>';
-      html += done.length ? ('<div class="chips">' + done.map(function(r){ return chip(r, 'done'); }).join('') + '</div>') : '<p class="muted">아직 제출이 없어요.</p>';
-      if (extra.length){
-        html += '<div class="grp-title">배정 외 제출 (' + extra.length + '건)</div>';
-        html += '<div class="chips">' + extra.map(function(s){ return '<span class="pchip">' + esc(s.name) + ' <span class="sc">' + esc(s.school || '') + '</span></span>'; }).join('') + '</div>';
-      }
-      body.innerHTML = html;
-    }).catch(function(){ body.innerHTML = '<p class="muted">현황을 불러오지 못했어요. 인터넷을 확인해 주세요.</p>'; });
-  }
-  function chip(r, kind){
-    var a = r.a;
-    var meta = [a.school, a.grade].filter(Boolean).join(' ');
-    return '<span class="pchip ' + (r.ambiguous ? 'warn' : kind) + '">' + esc(a.name) +
-      ' <span class="sc">' + esc(meta) + (r.sc ? (' · ' + esc(r.sc)) : '') + '</span></span>';
   }
 
   /* ===== 배정 현황 ===== */
@@ -640,27 +468,6 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
       }, function(msg){ aStatus('fail', msg); });
     }
   });
-
-  /* ===== 링크 복사 ===== */
-  function copyText(url, btn){
-    var done = function(){
-      btn.classList.add('done');
-      var label = btn.childNodes[btn.childNodes.length - 1];
-      label.textContent = '복사됐어요!';
-      setTimeout(function(){ btn.classList.remove('done'); label.textContent = '링크 복사'; }, 1600);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(url).then(done, function(){ fallback(url, done); });
-    } else { fallback(url, done); }
-  }
-  function fallback(url, done){
-    var t = document.createElement('textarea');
-    t.value = url; t.style.position = 'fixed'; t.style.opacity = '0';
-    document.body.appendChild(t); t.select();
-    try { document.execCommand('copy'); done(); } catch(_){ prompt('아래 주소를 복사하세요:', url); }
-    document.body.removeChild(t);
-  }
-  $('entry-copy').addEventListener('click', function(){ copyText(BASE_URL + 'index.html', $('entry-copy')); });
 
   renderSelBox();
   ensurePicker();

@@ -257,16 +257,10 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 5);
   const grReq = reqLog.find(q => q.action === 'assignAdd' && q.ttype === '학년');
   ok(grReq && grReq.target === '고1' && grReq.cat === 'pho' && grReq.round === '1', "'학년' assignAdd 파라미터");
-  // ④ 제출 현황 — 회차 줄의 [현황]: 음운 1회 (전체+일부+학년 배정 → 4명 전개, 김결과 제출)
-  await p7.click('#rounds .row .abtn.stat');
-  await p7.waitForSelector('#st-card.show');
-  ok((await p7.textContent('#st-title')).includes('음운 1회'), '현황 카드에 회차 표시');
-  await p7.waitForSelector('#st-body .stat-row');
-  ok((await p7.textContent('#st-body .stat.assigned .n')) === '4', '현황: 배정 4명(전 학년 전개)');
-  ok((await p7.textContent('#st-body .stat.done .n')) === '1' && (await p7.textContent('#st-body .stat.todo .n')) === '3', '현황: 제출 1 · 미제출 3');
-  const doneChips = await p7.textContent('#st-body');
-  ok(doneChips.includes('김결과') && doneChips.includes('40 / 42'), '제출 칩에 이름·점수');
-  await p7.click('#st-close');
+  // ④ 회차 줄은 [미리보기]+[담기]만 (링크 복사·현황 버튼 제거 — 사용자 확정)
+  ok(!(await p7.$('#rounds .abtn.stat')) && !(await p7.$('#rounds .abtn.copy')), '회차 줄에 링크 복사·현황 버튼 없음');
+  ok(!(await p7.$('#entry-copy')), "'입구' 줄 제거");
+  ok((await p7.textContent('#assign-card')).includes('메모 (선택)'), "'메모 (선택)' 라벨");
   // 마감 → 삭제
   await p7.click('#a-tbody .a-toggle');
   await p7.waitForFunction(() => document.getElementById('a-tbody').textContent.includes('마감'));
