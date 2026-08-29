@@ -28,9 +28,11 @@
 - **결과 제출 payload는 옛 그대로**(time,name,school,grade,unit,round,score,details — unit=카테고리
   라벨) → 결과 수집(doPost)은 재배포 없이도 동작. 옛 데이터의 unit '음운 변동'과 새 '음운'은
   대시보드 단원 필터에서 서로 다른 값으로 보인다(정상).
-- **배정 기능은 Apps Script 재배포가 필요하다** — 티쳐스 페이지는 응답에 kind:'assign'이 없으면
-  "재배포 필요" 안내를 띄운다(옛 배포본은 assignList 요청에 결과 rows를 돌려주므로 kind로 구분).
-  재배포 방법은 shuegukweekendtest CLAUDE.md의 clasp 절차(문법 스크립트 ID는 아직 표에 없음 —
-  배포 주소의 AKfycbzikteq… 부분이 DEPLOYMENT_ID).
+- **Apps Script 재배포 정보** (clasp 절차는 shuegukweekendtest CLAUDE.md):
+  - SCRIPT_ID: `1ZQ7IrLsfMHORsaRCuXqCY1AzqCU4_IjdBFk1WlRvbGcYuWDqPvKnWa3H` (2026-08-29 사용자 제공)
+  - DEPLOYMENT_ID: `AKfycbzikteq7gR2ezi_NXc2of8PTvUj5XouJ5ZcZOEWv0YWgjQjs8dZqogQjSr0-LSqneXF`
+  - 배정 기능 포함 버전은 2026-08-29 재배포 완료. 티쳐스 페이지는 응답에 kind:'assign'이 없으면
+    "재배포 필요" 안내를 띄운다(옛 배포본은 assignList 요청에 결과 rows를 돌려주므로 kind로 구분).
+  - `rowSig_`의 \u0001 구분자는 배포본에만 있던 수정을 저장소로 가져온 것 — 덮어쓰지 말 것.
 - 검증(2026-08-28): 브라우저 E2E(tools/e2e-test.js — 정적 서빙 + script.google.com 가로채기)로
   응시→채점→배정 차단/허용→제출 payload, index.html 배정 목록, 대시보드 배정 CRUD 왕복 확인.
