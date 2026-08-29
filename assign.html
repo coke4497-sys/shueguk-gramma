@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="icon-180.png" />
 <link rel="icon" type="image/png" href="icon-192.png" />
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif; background: #C6D5D2; min-height: 100vh; color: #2C2F2D; padding: 16px 16px 80px; -webkit-text-size-adjust: 100%; }
 .container { max-width: 680px; margin: 0 auto; }
@@ -18,15 +18,15 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .back:hover { color: #628C83; }
 
 .header { text-align: center; margin-bottom: 14px; padding: 18px 16px 16px; background: white; border-radius: 20px; box-shadow: 0 4px 16px rgba(45,128,104,0.08); border: 2px solid #C6D5D2; }
-.header .logo { font-family: 'Nanum Myeongjo', serif; font-size: 11px; font-weight: 800; letter-spacing: 5px; color: #A6C1BB; margin-bottom: 6px; }
-.header h1 { font-family: 'Nanum Myeongjo', serif; font-size: 22px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; }
+.header .logo { font-family: 'Gowun Batang', serif; font-size: 11px; font-weight: 800; letter-spacing: 5px; color: #A6C1BB; margin-bottom: 6px; }
+.header h1 { font-family: 'Gowun Batang', serif; font-size: 22px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; }
 .header .intro { font-size: 13px; color: #6A716C; margin-top: 8px; line-height: 1.7; }
 
 .cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 4px 0 18px; }
 .cat-card { background: white; border: 2px solid #F1F6F4; border-radius: 14px; padding: 16px 12px; text-align: center; cursor: pointer; font: inherit; box-shadow: 0 2px 10px rgba(45,128,104,0.04); transition: transform .14s ease, border-color .14s ease; -webkit-tap-highlight-color: transparent; }
 .cat-card:hover { transform: translateY(-2px); border-color: #C6D5D2; }
-.cat-card .cname { font-family: 'Nanum Myeongjo', serif; font-size: 15.5px; font-weight: 800; color: #3A544E; letter-spacing: -.3px; }
-.cat-card .ccnt { margin-top: 5px; font-size: 11.5px; font-weight: 700; color: #8E6BC8; }
+.cat-card .cname { font-family: 'Gowun Batang', serif; font-size: 15.5px; font-weight: 800; color: #3A544E; letter-spacing: -.3px; }
+.cat-card .ccnt { margin-top: 5px; font-size: 11.5px; font-weight: 700; color: #8D83A8; }
 .cat-card:disabled { cursor: not-allowed; box-shadow: none; }
 .cat-card:disabled:hover { transform: none; border-color: #F1F6F4; }
 .cat-card:disabled .cname { color: #A9B1AB; }
@@ -37,11 +37,11 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .hidden { display: none !important; }
 @media (max-width: 560px) { .cats { grid-template-columns: repeat(2, 1fr); } }
 
-.unit-title { font-family: 'Nanum Myeongjo', serif; font-size: 15px; font-weight: 800; color: #3A544E; margin: 6px 2px 10px; }
+.unit-title { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 800; color: #3A544E; margin: 6px 2px 10px; }
 
 .list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
 .row { display: flex; align-items: center; gap: 10px; background: white; border: 2px solid #F1F6F4; border-radius: 13px; padding: 12px 14px; flex-wrap: wrap; }
-.rd { flex: none; width: 44px; font-family: 'Nanum Myeongjo', serif; font-weight: 800; color: #628C83; font-size: 15px; }
+.rd { flex: none; width: 44px; font-family: 'Gowun Batang', serif; font-weight: 800; color: #628C83; font-size: 15px; }
 .ttl { flex: 1; min-width: 140px; font-size: 13.5px; color: #2C2F2D; }
 .acts { flex: none; display: flex; gap: 7px; align-items: center; }
 .abtn { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; font-weight: 700; border-radius: 9px; padding: 7px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; text-decoration: none; transition: border-color .15s, background .15s; }
@@ -50,20 +50,20 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .abtn.copy { color: #3A544E; background: #E9F0EF; border: 1.5px solid #C6D5D2; }
 .abtn.copy:hover { border-color: #A6C1BB; }
 .abtn.copy.done { color: #276B4E; background: #E4F1EA; border-color: #3E9B74; }
-.abtn.assign { color: #43307A; background: #C4A9E4; border: 1.5px solid #C4A9E4; }
-.abtn.assign:hover { background: #B79BDD; }
+.abtn.assign { color: #635A7D; background: #EDE4F4; border: 1.5px solid #D9CCE8; }
+.abtn.assign:hover { background: #E3D6EF; border-color: #8D83A8; }
 
 /* 배정 폼 */
-.form-card { background: white; border: 2px solid #C4A9E4; border-radius: 16px; padding: 16px; margin-bottom: 14px; display: none; }
+.form-card { background: white; border: 2px solid #D9CCE8; border-radius: 16px; padding: 16px; margin-bottom: 14px; display: none; }
 .form-card.show { display: block; }
 .form-card .f-title { font-size: 14px; font-weight: 800; color: #3A544E; margin-bottom: 12px; }
-.form-card .f-title b { color: #8E6BC8; }
+.form-card .f-title b { color: #8D83A8; }
 .f-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
 .f-field { display: flex; flex-direction: column; gap: 3px; }
 .f-field label { font-size: 11px; font-weight: 700; color: #6A716C; }
 .f-field select, .f-field input { padding: 10px; font-size: 13px; font-family: inherit; font-weight: 700; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; background: white; -webkit-appearance: none; }
 .f-field select:focus, .f-field input:focus { border-color: #A6C1BB; }
-.fbtn { padding: 10px 18px; font-size: 13px; font-weight: 800; font-family: inherit; border: none; border-radius: 9px; background: #C4A9E4; color: #43307A; cursor: pointer; }
+.fbtn { padding: 10px 18px; font-size: 13px; font-weight: 800; font-family: inherit; border: 1.5px solid #D9CCE8; border-radius: 9px; background: #EDE4F4; color: #635A7D; cursor: pointer; }
 .fbtn.ghost { background: white; color: #6A716C; border: 2px solid #E8EAE7; }
 .fbtn:disabled { opacity: .5; cursor: not-allowed; }
 
