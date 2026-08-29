@@ -154,10 +154,16 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p7.goto(`http://localhost:${PORT}/assign.html`);
   await p7.waitForSelector('#a-tbody tr');
   ok((await p7.textContent('#a-tbody')).includes('학년') && (await p7.textContent('#a-tbody')).includes('음운 1회'), '배정 현황 표시');
-  ok((await p7.$$('.cat-btn')).length === 10, '카테고리 탭 10개');
-  ok((await p7.$$('#rounds .row')).length === 10, '기본 카테고리(음운) 회차 10개');
-  // 한글 맞춤법 탭 전환
-  await p7.click('.cat-btn[data-code="ort"]');
+  ok((await p7.$$('.cat-card')).length === 10, '카테고리 카드 10개');
+  ok((await p7.$$('.cat-card[disabled]')).length === 8, '문항 없는 카테고리 8개는 비활성(준비 중)');
+  ok(!(await p7.$('#round-view:not(.hidden)')), '첫 화면에는 회차 목록 없음');
+  // 음운 → 회차 10개 → 뒤로 → 한글 맞춤법 → 32개
+  await p7.click('.cat-card[data-code="pho"]');
+  await p7.waitForSelector('#round-view:not(.hidden)');
+  ok((await p7.$$('#rounds .row')).length === 10, '음운 회차 10개');
+  await p7.click('#cat-back');
+  await p7.waitForSelector('#home-view:not(.hidden)');
+  await p7.click('.cat-card[data-code="ort"]');
   await p7.waitForFunction(() => document.querySelectorAll('#rounds .row').length === 32);
   ok(true, '한글 맞춤법 회차 32개');
   // 미리보기 링크에 preview=1
