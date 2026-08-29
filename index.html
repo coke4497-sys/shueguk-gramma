@@ -94,6 +94,15 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
     var CATS = {};
     if (window.GRAMMA) GRAMMA.categories.forEach(function(c) { CATS[c.code] = c.label; });
 
+    // 마감일 '2026-09-05' → '9월 5일 (토)'
+    function fmtDue(s) {
+        var m = ('' + s).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) return '' + s;
+        var d = new Date(+m[1], +m[2] - 1, +m[3]);
+        var day = ['일', '월', '화', '수', '목', '금', '토'][d.getDay()];
+        return (+m[2]) + '월 ' + (+m[3]) + '일 (' + day + ')';
+    }
+
     // 지난 입력 기억 + 개인 페이지 등에서 주소로 넘어온 값 우선
     var params = new URLSearchParams(location.search);
     var saved = {};
@@ -155,11 +164,14 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
             var url = 'test.html?c=' + encodeURIComponent(a.cat) + '&r=' + encodeURIComponent(a.round) +
                 '&name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) +
                 '&p8=' + encodeURIComponent(who.phone8 || '');
+            var subs = [];
+            if (a.due) subs.push('마감 ' + fmtDue(a.due) + '까지');
+            if (a.memo) subs.push(a.memo);
             html += '<div class="assign-card">' +
                 '<span class="assign-cat">' + esc(label) + '</span>' +
                 '<div class="assign-body">' +
                     '<div class="assign-title">' + esc(label) + ' ' + esc(a.round) + '회 · ' + esc(title) + '</div>' +
-                    (a.memo ? '<div class="assign-sub">' + esc(a.memo) + '</div>' : '') +
+                    (subs.length ? '<div class="assign-sub">' + esc(subs.join(' · ')) + '</div>' : '') +
                 '</div>' +
                 '<a class="assign-go" href="' + url + '">응시하기' +
                     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +

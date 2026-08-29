@@ -7,6 +7,8 @@
 <meta name="description" content="이수경국어 문법 테스트 — 회차별 미리보기·학년/학교/개인 배정" />
 <link rel="apple-touch-icon" href="icon-180.png" />
 <link rel="icon" type="image/png" href="icon-192.png" />
+<!-- 공용 학생 선택 위젯 (지필고사 리포트에 위치 — H WORK 배정과 동일) -->
+<link rel="stylesheet" href="https://coke4497-sys.github.io/shueguk-report/student-picker.css" />
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -53,19 +55,44 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .abtn.assign { color: #635A7D; background: #EDE4F4; border: 1.5px solid #D9CCE8; }
 .abtn.assign:hover { background: #E3D6EF; border-color: #8D83A8; }
 
-/* 배정 폼 */
+/* 배정 폼 (H WORK 배정과 같은 구성 — 학생 선택 위젯 + 마감·비고) */
 .form-card { background: white; border: 2px solid #D9CCE8; border-radius: 16px; padding: 16px; margin-bottom: 14px; display: none; }
 .form-card.show { display: block; }
 .form-card .f-title { font-size: 14px; font-weight: 800; color: #3A544E; margin-bottom: 12px; }
 .form-card .f-title b { color: #8D83A8; }
-.f-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
-.f-field { display: flex; flex-direction: column; gap: 3px; }
+.f-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin-top: 12px; }
+.f-field { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 140px; }
 .f-field label { font-size: 11px; font-weight: 700; color: #6A716C; }
 .f-field select, .f-field input { padding: 10px; font-size: 13px; font-family: inherit; font-weight: 700; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; background: white; -webkit-appearance: none; }
 .f-field select:focus, .f-field input:focus { border-color: #A6C1BB; }
 .fbtn { padding: 10px 18px; font-size: 13px; font-weight: 800; font-family: inherit; border: 1.5px solid #D9CCE8; border-radius: 9px; background: #EDE4F4; color: #635A7D; cursor: pointer; }
 .fbtn.ghost { background: white; color: #6A716C; border: 2px solid #E8EAE7; }
 .fbtn:disabled { opacity: .5; cursor: not-allowed; }
+.f-submit { width: 100%; margin-top: 14px; padding: 13px; border: 1.5px solid #D9CCE8; border-radius: 11px; background: #EDE4F4; color: #635A7D; font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; cursor: pointer; }
+.f-submit:active { opacity: .85; }
+.f-submit:disabled { opacity: .5; cursor: not-allowed; }
+.f-status { font-size: 12.5px; margin-top: 9px; min-height: 1.2em; color: #6A716C; text-align: center; font-weight: 700; }
+.f-status.ok { color: #276B4E; }
+.f-status.err { color: #992F20; }
+.f-sec { border-top: 1.5px solid #F1F6F4; margin-top: 16px; padding-top: 14px; }
+.f-sec .s-title { font-size: 13px; font-weight: 800; color: #3A544E; margin-bottom: 8px; }
+
+/* 제출 현황 (H WORK과 같은 대조 화면) */
+.stat-row { display: flex; gap: 8px; margin: 4px 0 12px; }
+.stat { flex: 1; background: #F4F5F3; border-radius: 11px; padding: 11px; text-align: center; }
+.stat .n { font-family: 'Gowun Batang', serif; font-size: 22px; font-weight: 700; line-height: 1.1; }
+.stat .l { font-size: 11.5px; color: #6A716C; margin-top: 3px; font-weight: 700; }
+.stat.assigned .n { color: #8D83A8; }
+.stat.done .n { color: #3E9B74; }
+.stat.todo .n { color: #DB4C39; }
+.grp-title { font-size: 12.5px; font-weight: 800; color: #6A716C; margin: 13px 0 7px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pchip { font-size: 12.5px; font-weight: 700; padding: 5px 11px; border-radius: 16px; border: 1px solid #E8EAE7; background: white; }
+.pchip.todo { background: #FADED9; border-color: #FADED9; color: #992F20; }
+.pchip.done { background: #E4F1EA; border-color: #E4F1EA; color: #276B4E; }
+.pchip.warn { background: #fbf3e3; border-color: #ecd9af; color: #8F630F; }
+.pchip .sc { color: #8B928C; font-size: 11px; font-weight: 400; }
+.warn-box { background: #fbf3e3; border: 1px solid #ecd9af; color: #8F630F; font-size: 12px; border-radius: 9px; padding: 9px 12px; margin-bottom: 10px; line-height: 1.6; }
 
 /* 배정 현황 */
 .card { background: white; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; border: 2px solid #C6D5D2; }
@@ -76,7 +103,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .status.loading { background: #F4F5F3; color: #6A716C; border: 1.5px solid #E8EAE7; }
 .status.fail { background: #FADED9; color: #992F20; border: 1.5px solid #EFA9A5; }
 .table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 520px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 620px; }
 th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #F1F6F4; white-space: nowrap; }
 th { background: #E9F0EF; color: #3A544E; font-weight: 800; font-size: 12px; }
 .pct { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; }
@@ -99,18 +126,27 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   <div class="header">
     <div class="logo">SHUEGUK</div>
     <h1>배정하기</h1>
-    <p class="intro">카테고리를 고르면 회차별 테스트가 나옵니다.<br />미리 보고, 학년·학교·개인에게 배정하세요.<br />배정된 학생은 '내 문법 테스트' 페이지에서 확인하고 응시합니다.</p>
+    <p class="intro">카테고리를 고르면 회차별 테스트가 나옵니다.<br />미리 보고, 학생을 선택해 배정하세요 (전 학년 · 학년 · 개인 · 일부).<br />배정된 학생은 '내 문법 테스트' 페이지에서 확인하고 응시합니다.</p>
   </div>
 
-  <!-- 배정 폼 (회차의 [배정]을 누르면 열림) -->
+  <!-- 배정 폼 (회차의 [배정]을 누르면 열림 — H WORK 배정과 같은 구성) -->
   <div class="form-card" id="form-card">
     <div class="f-title" id="f-title"></div>
+    <div id="picker"></div>
     <div class="f-row">
-      <div class="f-field"><label>대상 구분</label><select id="f-ttype"><option value="학년">학년</option><option value="학교">학교</option><option value="일부">일부 학생</option><option value="개인">개인</option></select></div>
-      <div class="f-field" id="f-grade-wrap"><label>대상 학년</label><select id="f-grade"><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option></select></div>
-      <div class="f-field" id="f-text-wrap" style="display:none;"><label id="f-text-label">대상</label><input type="text" id="f-text" autocomplete="off"></div>
-      <div class="f-field"><label>메모 (선택)</label><input type="text" id="f-memo" placeholder="예: 9/5까지" autocomplete="off"></div>
-      <button class="fbtn" id="f-add">배정하기</button>
+      <div class="f-field"><label>마감 (선택)</label><input type="date" id="f-due"></div>
+      <div class="f-field"><label>비고 (선택)</label><input type="text" id="f-memo" placeholder="예: 1회차" autocomplete="off"></div>
+    </div>
+    <button class="f-submit" id="f-add">이 학생들에게 배정</button>
+    <div class="f-status" id="f-status"></div>
+
+    <div class="f-sec">
+      <div class="s-title">제출 현황 <span class="muted" style="font-weight:400;">— 배정된 학생과 실제 제출을 대조합니다 (이름+학교 기준)</span></div>
+      <button class="fbtn ghost" type="button" id="st-load" style="width:100%;">현황 불러오기 / 새로고침</button>
+      <div id="st-body" style="margin-top:12px;"></div>
+    </div>
+
+    <div style="text-align:right;margin-top:14px;">
       <button class="fbtn ghost" id="f-close">닫기</button>
     </div>
   </div>
@@ -151,7 +187,7 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     <div id="a-status" class="status loading">배정 목록을 불러오는 중…</div>
     <div class="table-wrap" id="a-table-wrap" style="display:none;">
       <table>
-        <thead><tr><th>배정일시</th><th>대상</th><th>테스트</th><th>메모</th><th>상태</th><th>동작</th></tr></thead>
+        <thead><tr><th>배정일시</th><th>대상</th><th>테스트</th><th>마감</th><th>비고</th><th>상태</th><th>동작</th></tr></thead>
         <tbody id="a-tbody"></tbody>
       </table>
     </div>
@@ -161,11 +197,13 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
 </div>
 
 <script src="manifest.js"></script>
+<script src="https://coke4497-sys.github.io/shueguk-report/student-picker.js"></script>
 <script>
 (function(){
   var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzikteq7gR2ezi_NXc2of8PTvUj5XouJ5ZcZOEWv0YWgjQjs8dZqogQjSr0-LSqneXF/exec';
   var ACCESS_KEY = 'shueguk2026';   // Apps Script의 ACCESS_KEY와 동일
   var BASE_URL = 'https://coke4497-sys.github.io/shueguk-gramma/';
+  var REPORT_API = 'https://script.google.com/macros/s/AKfycbzhCncBwn-JlqXARC3wfrWUCuNHzlNK2df0bdhx-w78Xr8mzYUcIYZOJdRi9N4bHtsb/exec';   // 리포트 백엔드 (재원 명단)
 
   var CATS = (window.GRAMMA && GRAMMA.categories) || [];
   var TESTS = (window.GRAMMA && GRAMMA.tests) || {};
@@ -255,44 +293,171 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     else if (b.classList.contains('assign')) { openForm(current, b.getAttribute('data-round')); }
   });
 
-  /* ===== 배정 폼 ===== */
+  /* ===== 배정 폼 (H WORK과 같은 학생 선택 위젯) ===== */
+  var picker = null;       // 공용 StudentPicker — 처음 폼을 열 때 한 번 만든다
+  var currentSel = null;   // 위젯이 onChange로 알려주는 최신 선택값
+
+  function ensurePicker(){
+    if (picker || !window.StudentPicker) return;
+    picker = StudentPicker.create($('picker'), {
+      endpoint: REPORT_API,
+      onChange: function(sel){
+        currentSel = sel;
+        var s = $('f-status');
+        if (sel && s.classList.contains('err')){ s.textContent = ''; s.className = 'f-status'; }
+      }
+    });
+  }
   function openForm(cat, round){
     picked = { cat: cat, round: round };
     var t = TESTS[cat + '-' + round];
     $('f-title').innerHTML = '<b>' + esc(catLabelOf(cat)) + ' ' + esc(round) + '회</b>' +
-      (t && t.title ? ' · ' + esc(t.title) : '') + ' — 누구에게 배정할까요?';
+      (t && t.title ? ' · ' + esc(t.title) : '') + ' — 받을 학생을 선택하세요.';
+    ensurePicker();
+    fStatus('');
+    $('st-body').innerHTML = '';
     $('form-card').classList.add('show');
-    $('form-card').scrollIntoView({ block: 'center', behavior: 'smooth' });
+    $('form-card').scrollIntoView({ block: 'start', behavior: 'smooth' });
   }
-  function syncTargetUI(){
-    var tt = $('f-ttype').value;
-    $('f-grade-wrap').style.display = tt === '학년' ? '' : 'none';
-    $('f-text-wrap').style.display = tt === '학년' ? 'none' : '';
-    $('f-text-label').textContent = tt === '학교' ? '대상 학교' : (tt === '일부' ? '대상 학생 이름들 (쉼표로 구분)' : '대상 학생 이름');
-    $('f-text').placeholder = tt === '학교' ? '예: 화정고' : (tt === '일부' ? '예: 박보검, 김철수, 이영희' : '예: 박보검');
-    $('f-text').style.minWidth = tt === '일부' ? '240px' : '';
+  function fStatus(msg, kind){
+    var s = $('f-status');
+    s.textContent = msg || '';
+    s.className = 'f-status' + (kind ? (' ' + kind) : '');
   }
-  $('f-ttype').addEventListener('change', syncTargetUI);
   $('f-close').addEventListener('click', function(){ $('form-card').classList.remove('show'); picked = null; });
   $('f-add').addEventListener('click', function(){
     if (!picked) return;
-    var ttype = $('f-ttype').value;
-    var target = ttype === '학년' ? $('f-grade').value : ($('f-text').value || '').trim();
-    if (!target){ alert('대상을 입력해 주세요.'); return; }
+    var sel = currentSel || (picker && picker.getSelection());
+    if (!sel){ fStatus('대상을 먼저 선택해 주세요.', 'err'); return; }
     var btn = $('f-add');
-    btn.disabled = true; btn.textContent = '저장 중…';
-    jsonp({ action: 'assignAdd', ttype: ttype, target: target, cat: picked.cat, catLabel: catLabelOf(picked.cat), round: picked.round, memo: ($('f-memo').value || '').trim() }, function(resp){
-      btn.disabled = false; btn.textContent = '배정하기';
+    btn.disabled = true; btn.textContent = '배정 중…';
+    fStatus('배정하는 중…');
+    jsonp({ action: 'assignAdd', ttype: sel.type, target: sel.target, cat: picked.cat, catLabel: catLabelOf(picked.cat), round: picked.round, due: $('f-due').value || '', memo: ($('f-memo').value || '').trim() }, function(resp){
+      btn.disabled = false; btn.textContent = '이 학생들에게 배정';
       if (!resp || resp.ok !== true || resp.kind !== 'assign'){
-        aStatus('fail', resp && resp.error === 'unauthorized' ? '비밀키(ACCESS_KEY)가 일치하지 않습니다.' : '배정 기능을 쓰려면 Apps Script를 새 버전으로 재배포해야 합니다.');
+        fStatus(resp && resp.error === 'unauthorized' ? '비밀키(ACCESS_KEY)가 일치하지 않습니다.' : '배정하지 못했어요 — Apps Script 재배포가 필요할 수 있어요.', 'err');
         return;
       }
+      fStatus('✓ 배정됨 — ' + sel.summary, 'ok');
+      if (picker) picker.reset();
       $('f-memo').value = '';
-      $('form-card').classList.remove('show');
-      picked = null;
+      $('f-due').value = '';
       aLoad();
-    }, function(msg){ btn.disabled = false; btn.textContent = '배정하기'; aStatus('fail', msg); });
+    }, function(msg){ btn.disabled = false; btn.textContent = '이 학생들에게 배정'; fStatus(msg, 'err'); });
   });
+
+  /* ===== 제출 현황 (배정 vs 제출 대조 — H WORK과 같은 방식) ===== */
+  function norm(x){ return ('' + (x == null ? '' : x)).replace(/\s/g, ''); }
+  function looseSchool(a, b){ var na = norm(a), nb = norm(b); if (!na || !nb) return false; return na.indexOf(nb) >= 0 || nb.indexOf(na) >= 0; }
+  // 동명이인 토큰 '이름|학교|학년' → '이름(학교 학년)' 로 읽기 좋게
+  function prettyTarget(t){
+    return ('' + (t || '')).split(/\s*,\s*/).map(function(x){
+      var p = x.split('|');
+      return p.length >= 3 ? p[0] + '(' + [p[1], p[2]].filter(Boolean).join(' ') + ')' : x;
+    }).join(', ');
+  }
+  // 배정 대상 → 재원 명단에서 실제 학생 목록으로 전개
+  function expandAssigned(assigns, roster){
+    var set = {};
+    assigns.forEach(function(a){
+      var type = a.ttype || '', tgt = a.target || '';
+      var tokens = tgt.split(/[,，\n;·]+/).map(function(x){ return x.trim(); }).filter(Boolean);
+      roster.forEach(function(s){
+        var hit = false;
+        if (type === '전체') hit = true;
+        else if (type === '학년'){
+          hit = tokens.some(function(t){ return norm(s.grade) === norm(t) || norm(s.school + s.grade) === norm(t); });
+        } else if (type === '학교'){
+          hit = tokens.some(function(t){ return looseSchool(t, s.school); });
+        } else { // 개인 / 일부
+          hit = tokens.some(function(t){
+            if (t.indexOf('|') >= 0){
+              var p = t.split('|');
+              return p[0] === s.name &&
+                     (!p[1] || looseSchool(p[1], s.school)) &&
+                     (!p[2] || norm(p[2]) === norm(s.grade));
+            }
+            return t === s.name;
+          });
+        }
+        if (hit) set[s.name + '|' + s.school + '|' + s.grade] = s;
+      });
+    });
+    return Object.keys(set).map(function(k){ return set[k]; });
+  }
+  function fetchRoster(){
+    if (picker && picker.students && picker.students.length) return Promise.resolve(picker.students);
+    return fetch(REPORT_API + '?action=roster&t=' + Date.now(), { cache: 'no-store' })
+      .then(function(r){ return r.json(); })
+      .then(function(d){ return (d && d.result === 'success' && d.students) || []; });
+  }
+  $('st-load').addEventListener('click', loadStatus);
+  function loadStatus(){
+    if (!picked) return;
+    var body = $('st-body');
+    var cat = picked.cat, round = '' + picked.round, unit = catLabelOf(cat);
+    body.innerHTML = '<p class="muted">현황 불러오는 중…</p>';
+    var pAssign = new Promise(function(res, rej){ jsonp({ action: 'assignList' }, res, rej); });
+    var pResult = new Promise(function(res, rej){ jsonp({}, res, rej); });   // 결과 전체 (기본 액션)
+    Promise.all([pAssign, pResult, fetchRoster()]).then(function(rs){
+      var aRes = rs[0], sRes = rs[1], roster = rs[2] || [];
+      if (!aRes || aRes.ok !== true || aRes.kind !== 'assign'){ body.innerHTML = '<p class="muted">배정 내역을 불러오지 못했어요.</p>'; return; }
+      var assigns = (aRes.rows || []).filter(function(r){ return r.cat === cat && ('' + r.round) === round; });
+      if (!assigns.length){ body.innerHTML = '<p class="muted">아직 이 회차에 배정이 없어요. 위에서 먼저 학생을 배정해 주세요.</p>'; return; }
+      if (!sRes || sRes.ok !== true){ body.innerHTML = '<p class="muted">제출 기록을 불러오지 못했어요.</p>'; return; }
+      if (!roster.length){ body.innerHTML = '<p class="muted">재원 명단을 불러오지 못했어요.</p>'; return; }
+
+      var assigned = expandAssigned(assigns, roster);
+      var subs = (sRes.rows || []).filter(function(r){ return ('' + r.unit) === unit && ('' + r.round) === round; });
+      var subsByName = {}; subs.forEach(function(s){ (subsByName[s.name] = subsByName[s.name] || []).push(s); });
+      var nameCount = {}; assigned.forEach(function(a){ nameCount[a.name] = (nameCount[a.name] || 0) + 1; });
+
+      var done = [], todo = [], warnCnt = 0;
+      assigned.forEach(function(a){
+        var cand = subsByName[a.name] || [];
+        var ambiguous = false, submitted = false, sc = '';
+        if (!cand.length){ submitted = false; }
+        else if (nameCount[a.name] <= 1){ submitted = true; }
+        else {
+          submitted = cand.some(function(c){ return looseSchool(c.school, a.school); });
+          if (assigned.filter(function(x){ return x.name === a.name && looseSchool(x.school, a.school); }).length > 1) ambiguous = true;
+        }
+        if (submitted){
+          var c = cand.find(function(x){ return looseSchool(x.school, a.school); }) || cand[0];
+          sc = '' + (c.score || '');
+        }
+        var rec = { a: a, ambiguous: ambiguous, sc: sc };
+        if (submitted) done.push(rec); else todo.push(rec);
+        if (ambiguous) warnCnt++;
+      });
+
+      // 배정 안 됐는데 제출한 학생
+      var assignedNames = {}; assigned.forEach(function(a){ assignedNames[a.name] = 1; });
+      var extra = subs.filter(function(s){ return !assignedNames[s.name]; });
+
+      var html = '<div class="stat-row">' +
+        '<div class="stat assigned"><div class="n">' + assigned.length + '</div><div class="l">배정</div></div>' +
+        '<div class="stat done"><div class="n">' + done.length + '</div><div class="l">제출</div></div>' +
+        '<div class="stat todo"><div class="n">' + todo.length + '</div><div class="l">미제출</div></div>' +
+      '</div>';
+      if (warnCnt) html += '<div class="warn-box">동명+동학교 학생이 배정에 ' + warnCnt + '명 있어 자동 구분이 어려워요. 해당 학생은 결과 확인에서 직접 확인해 주세요.</div>';
+      html += '<div class="grp-title">미제출 (' + todo.length + '명)</div>';
+      html += todo.length ? ('<div class="chips">' + todo.map(function(r){ return chip(r, 'todo'); }).join('') + '</div>') : '<p class="muted">미제출 학생이 없어요.</p>';
+      html += '<div class="grp-title">제출 (' + done.length + '명)</div>';
+      html += done.length ? ('<div class="chips">' + done.map(function(r){ return chip(r, 'done'); }).join('') + '</div>') : '<p class="muted">아직 제출이 없어요.</p>';
+      if (extra.length){
+        html += '<div class="grp-title">배정 외 제출 (' + extra.length + '건)</div>';
+        html += '<div class="chips">' + extra.map(function(s){ return '<span class="pchip">' + esc(s.name) + ' <span class="sc">' + esc(s.school || '') + '</span></span>'; }).join('') + '</div>';
+      }
+      body.innerHTML = html;
+    }).catch(function(){ body.innerHTML = '<p class="muted">현황을 불러오지 못했어요. 인터넷을 확인해 주세요.</p>'; });
+  }
+  function chip(r, kind){
+    var a = r.a;
+    var meta = [a.school, a.grade].filter(Boolean).join(' ');
+    return '<span class="pchip ' + (r.ambiguous ? 'warn' : kind) + '">' + esc(a.name) +
+      ' <span class="sc">' + esc(meta) + (r.sc ? (' · ' + esc(r.sc)) : '') + '</span></span>';
+  }
 
   /* ===== 배정 현황 ===== */
   function aStatus(type, msg){
@@ -327,11 +492,13 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
       var closed = r.status === '마감';
       var testLabel = catLabelOf(r.cat) + ' ' + r.round + '회';
       var reg = TESTS[r.cat + '-' + r.round];
-      var ttShow = r.ttype === '일부' ? '일부 학생' : r.ttype;
+      var ttShow = r.ttype === '일부' ? '일부 학생' : (r.ttype === '전체' ? '전 학년' : r.ttype);
+      var tgtShow = r.ttype === '전체' ? '모든 재원 학생' : prettyTarget(r.target);
       html += '<tr' + (closed ? ' style="opacity:.55;"' : '') + '>' +
         '<td>' + esc(r.time) + '</td>' +
-        '<td><b>' + esc(ttShow) + '</b> · ' + esc(r.target) + '</td>' +
+        '<td><b>' + esc(ttShow) + '</b> · ' + esc(tgtShow) + '</td>' +
         '<td>' + esc(testLabel) + (reg && reg.title ? ' <span class="muted">' + esc(reg.title) + '</span>' : '') + '</td>' +
+        '<td>' + esc(r.due || '') + '</td>' +
         '<td>' + esc(r.memo || '') + '</td>' +
         '<td>' + (closed ? '<span class="pct lo">마감</span>' : '<span class="pct hi">진행</span>') + '</td>' +
         '<td>' +
@@ -383,7 +550,6 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   }
   $('entry-copy').addEventListener('click', function(){ copyText(BASE_URL + 'index.html', $('entry-copy')); });
 
-  syncTargetUI();
   aLoad();
 })();
 </script>
