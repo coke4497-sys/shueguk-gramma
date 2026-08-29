@@ -85,7 +85,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await page.$$('.cat-label')).length === 3, '개념 정리 탭 3개(교체/탈락/첨가·기타)');
   ok((await page.$$('#cat-0 .vocab-card')).length === 6, '교체 탭 개념 카드 6장');
   await page.click('#tab-test');
-  ok((await page.$$('.q-card')).length === 42, '문항 42개 렌더');
+  ok((await page.$$('.q-card')).length === 21, '문항 21개 렌더 (10회차 → 20회차로 나눔)');
   ok(await page.inputValue('#si-name') === '박검증', '학생 정보 미리 채움');
   ok(await page.inputValue('#si-grade') === '고1', '학년 미리 선택');
   ok(await page.inputValue('#si-phone8') === '12345678', '학부모 전화 8자리 미리 채움');
@@ -109,11 +109,21 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await page.click('#submit-btn');
   await page.waitForSelector('.final.show');
   ok((await page.textContent('#final .score-big')) === '1', '점수 1점(1번만 정답)');
-  ok((await page.$$('.q-card.correct')).length === 1 && (await page.$$('.q-card.wrong')).length === 41, '카드 정오 표시');
+  ok((await page.$$('.q-card.correct')).length === 1 && (await page.$$('.q-card.wrong')).length === 20, '카드 정오 표시');
   const fb = await page.textContent('#feedback-1');
   ok(fb.includes('정답 과정') && fb.includes('잡히다'), '오답 문항에 정답 과정 표시');
+  // 오답 해설 — 판정 줄 / 과정 칩 / 규칙 칩이 층으로 나뉘어 있다
+  ok((await page.$$('#feedback-1 .fb-top')).length === 1, '오답 해설에 판정 줄');
+  ok((await page.$$('#feedback-1 .fb-chain .ch-r')).length >= 1, '정답 과정이 변동 종류 칩으로 표시');
+  ok(await page.$eval('#feedback-1 .fb-chain .ch-f.fin', el => el.textContent.includes('[')), '최종 발음 칩 강조');
+  // 틀린 문항만 보기
+  await page.click('#review-btn');
+  await page.waitForFunction(() => document.body.classList.contains('only-wrong'));
+  ok(await page.$eval('#card-0', el => getComputedStyle(el).display === 'none'), '틀린 문항만 보기 — 맞힌 문항 숨김');
+  await page.click('#review-btn');
+  ok(!(await page.$eval('body', el => el.classList.contains('only-wrong'))), '다시 누르면 전체 문항 복귀');
   await page.waitForFunction(() => true);
-  ok(lastPost && lastPost.unit === '음운' && '' + lastPost.round === '1' && lastPost.score === '1 / 42' && lastPost.name === '박검증' && lastPost.phone8 === '12345678', '제출 payload (unit·round·score·phone8)');
+  ok(lastPost && lastPost.unit === '음운' && '' + lastPost.round === '1' && lastPost.score === '1 / 21' && lastPost.name === '박검증' && lastPost.phone8 === '12345678', '제출 payload (unit·round·score·phone8)');
   ok(lastPost.details.split('\n')[0] === '1. ✓', '상세 첫 줄 1. ✓');
 
   /* ========== 3) test.html — preview는 게이트 생략 ========== */
@@ -176,10 +186,10 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await p7.$$('.cat-card')).length === 10, '카테고리 카드 10개');
   ok((await p7.$$('.cat-card[disabled]')).length === 8, '문항 없는 카테고리 8개는 비활성(준비 중)');
   ok(!(await p7.$('#round-view:not(.hidden)')), '첫 화면에는 회차 목록 없음');
-  // 음운 → 회차 10개 → 뒤로 → 한글 맞춤법 → 32개
+  // 음운 → 회차 20개 → 뒤로 → 한글 맞춤법 → 32개
   await p7.click('.cat-card[data-code="pho"]');
   await p7.waitForSelector('#round-view:not(.hidden)');
-  ok((await p7.$$('#rounds .row')).length === 10, '음운 회차 10개');
+  ok((await p7.$$('#rounds .row')).length === 20, '음운 회차 20개');
   await p7.click('#cat-back');
   await p7.waitForSelector('#home-view:not(.hidden)');
   await p7.click('.cat-card[data-code="ort"]');

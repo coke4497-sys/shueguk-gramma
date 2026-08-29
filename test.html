@@ -26,16 +26,17 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .cat-label { padding: 10px 4px; background: white; border: 1.5px solid #E8EAE7; border-radius: 8px; font-size: 12px; font-weight: 700; color: #6A716C; text-align: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
 .cat-label.active { background: #E9F0EF; border-color: #A6C1BB; color: #3A544E; }
 
-.vocab-card { background: white; border-radius: 18px; padding: 18px; border: 2px solid #F1F6F4; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(45,128,104,0.04); }
+/* 개념 정리 카드 — 상자 테두리는 쓰지 않고 옅은 바탕색으로만 구분한다 (사용자 확정, 2026-08-29) */
+.vocab-card { background: white; border-radius: 18px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(45,128,104,0.04); }
 .vocab-word { font-family: 'Gowun Batang', serif; font-size: 20px; font-weight: 800; color: #2C2F2D; margin-bottom: 4px; }
 .vocab-tag { display: inline-block; font-size: 10.5px; font-weight: 800; color: #635A7D; background: #EDE4F4; padding: 3px 9px; border-radius: 999px; margin-left: 7px; vertical-align: middle; letter-spacing: .2px; }
 .vocab-meaning { font-size: 13px; line-height: 1.7; background: #E9F0EF; padding: 11px 13px; border-radius: 10px; margin: 8px 0; }
-.vocab-example { font-size: 12px; line-height: 1.7; color: #4E534F; padding: 10px 12px; background: #F8FAF9; border: 1.5px solid #F1F6F4; border-radius: 10px; }
+.vocab-example { font-size: 12px; line-height: 1.7; color: #4E534F; padding: 10px 12px; background: #F4F6F4; border-radius: 10px; }
 .vocab-example b { font-weight: 800; color: #628C83; margin-right: 6px; }
 .ex-line { display: block; margin-top: 4px; }
 .ex-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-.ex-chip { background: white; border: 1.5px solid #E5EDE8; border-radius: 8px; padding: 4px 10px; font-size: 12px; color: #3A544E; font-weight: 700; }
-.note-box { background: #FBEECF; border: 1.5px solid #F5B23C; color: #8F630F; font-size: 12px; line-height: 1.6; padding: 11px 13px; border-radius: 10px; margin-bottom: 10px; }
+.ex-chip { background: white; border-radius: 8px; padding: 4px 10px; font-size: 12px; color: #3A544E; font-weight: 700; }
+.note-box { background: #FBEECF; color: #8F630F; font-size: 12px; line-height: 1.6; padding: 11px 13px; border-radius: 10px; margin-bottom: 10px; }
 
 .progress-bar { display: flex; align-items: center; gap: 10px; background: white; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 12px; font-weight: 700; border: 1.5px solid #C6D5D2; }
 .progress-bar .filled { color: #635A7D; font-weight: 800; }
@@ -89,12 +90,37 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 @media (hover:hover) { .opt-label:hover:not(.active) { border-color: #C6D5D2; background: #FAFBFA; } }
 .opt-label .opt-num { font-weight: 800; color: #8D83A8; margin-right: 6px; }
 
-.feedback { margin-top: 8px; padding: 9px 12px; border-radius: 9px; font-size: 12px; line-height: 1.6; display: none; }
+/* 채점 결과(오답 확인) — 판정 한 줄 / 내 답·정답 줄 / 해설을 층으로 나눠 읽게 한다 */
+.feedback { margin-top: 10px; padding: 11px 13px; border-radius: 10px; font-size: 12.5px; line-height: 1.7; display: none; }
 .feedback.show { display: block; }
-.feedback.correct { background: #E4F1EA; color: #276B4E; border: 1.5px solid #3E9B74; }
-.feedback.wrong { background: #FADED9; color: #992F20; border: 1.5px solid #EFA9A5; }
+.feedback.correct { background: #EAF3ED; }
+.feedback.wrong { background: #FBEEEB; }
 .feedback b { font-weight: 800; }
-.feedback .chain { font-family: 'Gowun Batang', serif; }
+.fb-top { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 800; }
+.fb-mark { flex: 0 0 auto; width: 19px; height: 19px; border-radius: 50%; color: white; font-size: 12px; line-height: 19px; text-align: center; }
+.feedback.correct .fb-top { color: #276B4E; }
+.feedback.correct .fb-mark { background: #3E9B74; }
+.feedback.wrong .fb-top { color: #A8402E; }
+.feedback.wrong .fb-mark { background: #D9705E; }
+.fb-rows { margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
+.fb-row { display: flex; gap: 9px; align-items: baseline; }
+.fb-k { flex: 0 0 38px; font-size: 11px; font-weight: 800; color: #7B807C; }
+.fb-v { flex: 1; font-weight: 800; color: #2C2F2D; word-break: break-word; }
+.fb-v.mine { font-weight: 700; color: #8B6B64; }
+.fb-v .alt { font-weight: 700; font-size: 11.5px; color: #7B807C; margin-left: 6px; }
+.fb-why { margin-top: 9px; padding-top: 9px; border-top: 1px solid rgba(0,0,0,.08); font-size: 12.5px; line-height: 1.75; color: #46504A; }
+.fb-lab { display: block; font-size: 11px; font-weight: 800; color: #7B807C; margin-bottom: 3px; }
+.fb-chain + .fb-why { margin-top: 10px; }
+/* 음운 변동 과정 — 문항의 입력 줄과 같은 모양으로 단계마다 한 줄 */
+.fb-chain { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
+.fb-srow { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.fb-sn { flex: 0 0 30px; height: 22px; line-height: 22px; text-align: center; background: rgba(255,255,255,.7); border-radius: 6px; font-size: 10.5px; font-weight: 800; color: #7B807C; }
+.ch-f { font-family: 'Gowun Batang', serif; font-size: 14.5px; font-weight: 800; color: #2C2F2D; background: white; border-radius: 8px; padding: 4px 11px; }
+.ch-f.fin { background: #EDE4F4; color: #463F58; }
+.ch-r { font-size: 11.5px; font-weight: 800; color: #635A7D; background: #EDE4F4; border-radius: 999px; padding: 4px 11px; }
+.ch-ar { font-size: 11px; font-weight: 800; color: #A6C1BB; }
+.only-wrong .q-card.correct { display: none; }
+.review-btn { display: inline-block; background: white; color: #635A7D; border: 2px solid #8D83A8; padding: 11px 18px; border-radius: 10px; font-size: 13px; font-weight: 800; font-family: inherit; cursor: pointer; margin: 0 0 10px; -webkit-tap-highlight-color: transparent; }
 
 .student-info { background: white; border-radius: 14px; padding: 16px; margin-bottom: 10px; border: 2px solid #C6D5D2; }
 .si-sum { display: none; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700; color: #3A544E; }
@@ -528,6 +554,39 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         return s;
     }
 
+    /* ===== 오답 확인 화면 조각 =====
+     * 판정 한 줄 → 내 답·정답 줄 → 해설 순으로 층을 나눠, 한 문단에 몰아넣지 않는다. */
+    function fbTop(ok, label) {
+        return '<div class="fb-top"><span class="fb-mark">' + (ok ? '✓' : '✗') + '</span>' + esc(label) + '</div>';
+    }
+    function fbRow(k, valueHtml, cls) {
+        return '<div class="fb-row"><span class="fb-k">' + esc(k) + '</span>' +
+               '<span class="fb-v' + (cls ? ' ' + cls : '') + '">' + valueHtml + '</span></div>';
+    }
+    function fbRows(html) { return html ? '<div class="fb-rows">' + html + '</div>' : ''; }
+    function fbWhy(text) {
+        return text ? '<div class="fb-why"><b class="fb-lab">해설</b>' + esc(text) + '</div>' : '';
+    }
+    // 음운 변동 과정 — 문항의 입력 줄과 같은 순서로, 단계마다 한 줄씩 보여 준다
+    function chainHTML(q) {
+        var h = '<b class="fb-lab">정답 과정</b><div class="fb-chain">' +
+                '<div class="fb-srow"><span class="fb-sn">처음</span><span class="ch-f">' + esc(q.start) + '</span></div>';
+        (q.steps || []).forEach(function(st, si) {
+            var fin = (si === q.steps.length - 1);
+            h += '<div class="fb-srow"><span class="fb-sn">' + (si + 1) + '</span>' +
+                 '<span class="ch-r">' + esc(st.accept.join(' 또는 ')) + '</span>' +
+                 '<span class="ch-ar">→</span>' +
+                 '<span class="ch-f' + (fin ? ' fin' : '') + '">' + esc(fin ? '[' + st.form + ']' : st.form) + '</span></div>';
+        });
+        return h + '</div>';
+    }
+    // 단답의 다른 정답 표기
+    function altHTML(q) {
+        var accept = (q.answers && q.answers.length) ? q.answers : [];
+        var others = accept.filter(function(a) { return normalize(a) !== normalize(q.answer); });
+        return others.length ? '<span class="alt">' + esc(others.join(' · ')) + ' 도 정답</span>' : '';
+    }
+
     function submit() {
         if (submitted) return;
         var sName = ($('si-name').value || '').trim();
@@ -564,7 +623,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     function doSubmit(sName, sSchool, sGrade) {
         if (submitted) return;
         submitted = true;
-        var score = 0, details = [];
+        var score = 0, details = [], wrongIdx = [];
 
         QUESTIONS.forEach(function(q, i) {
             var card = $('card-' + i), fb = $('feedback-' + i), qNum = q.num;
@@ -583,10 +642,10 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
                 isCorrect = itemOK;
                 fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
                 if (isCorrect) {
-                    fb.innerHTML = '<b>✓ 정답</b> 잘했어요!';
+                    fb.innerHTML = fbTop(true, '정답') + fbWhy(q.explanation);
                     details.push(qNum + '. ✓');
                 } else {
-                    fb.innerHTML = '<b>✗ 정답 과정</b><br><span class="chain">' + esc(correctChain(q)) + '</span>';
+                    fb.innerHTML = fbTop(false, '다시 확인해요') + chainHTML(q) + fbWhy(q.explanation);
                     details.push(qNum + '. ✗ → ' + correctChain(q));
                 }
             } else if (q.type === 'ox') {
@@ -594,14 +653,21 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
                 isCorrect = (choice === q.answer);
                 card.querySelectorAll('.ox-label').forEach(function(x) { x.style.pointerEvents = 'none'; });
                 fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
-                fb.innerHTML = '<b>' + (isCorrect ? '✓' : '✗') + ' 정답 ' + esc(q.answer) + '</b> ' + esc(q.explanation || '');
+                fb.innerHTML = fbTop(isCorrect, isCorrect ? '정답' : '다시 확인해요') +
+                    fbRows((isCorrect ? '' : fbRow('내 답', choice ? esc(choice) : '미선택', 'mine')) +
+                           fbRow('정답', esc(q.answer))) +
+                    fbWhy(q.explanation);
                 details.push(qNum + '. ' + (isCorrect ? '✓ ' : '✗ ') + (choice || '(미선택)') + (isCorrect ? '' : ' → 정답: ' + q.answer));
             } else if (q.type === 'choice') {
                 var sel2 = choiceSel[i] || null;
                 isCorrect = (sel2 === ('' + q.answer));
                 card.querySelectorAll('.opt-label').forEach(function(x) { x.style.pointerEvents = 'none'; });
                 fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
-                fb.innerHTML = '<b>' + (isCorrect ? '✓' : '✗') + ' 정답 ' + circ(q.answer) + '</b> ' + esc(q.explanation || '');
+                var ansText = (q.options && q.options[parseInt(q.answer, 10) - 1]) || '';
+                fb.innerHTML = fbTop(isCorrect, isCorrect ? '정답' : '다시 확인해요') +
+                    fbRows((isCorrect ? '' : fbRow('내 답', sel2 ? circ(sel2) + ' ' + esc((q.options || [])[parseInt(sel2, 10) - 1] || '') : '미선택', 'mine')) +
+                           fbRow('정답', circ(q.answer) + (ansText ? ' ' + esc(ansText) : ''))) +
+                    fbWhy(q.explanation);
                 details.push(qNum + '. ' + (isCorrect ? '✓ ' : '✗ ') + (sel2 ? circ(sel2) : '(미선택)') + (isCorrect ? '' : ' → 정답: ' + circ(q.answer)));
             } else {
                 var inp = $('input-' + i);
@@ -619,16 +685,19 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
                 inp.disabled = true;
                 fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
                 if (isCorrect) {
-                    fb.innerHTML = '<b>✓ 정답</b> 잘했어요!';
+                    fb.innerHTML = fbTop(true, '정답') +
+                        fbRows(fbRow('정답', esc(q.answer) + altHTML(q))) + fbWhy(q.explanation);
                     details.push(qNum + '. ✓ ' + inp.value);
                 } else {
-                    var up = inp.value.trim() ? '입력: <b>' + esc(inp.value) + '</b>　→　' : '<b>미입력</b>　→　';
-                    fb.innerHTML = '<b>✗</b> ' + up + '정답: <b>' + esc(q.answer) + '</b>';
+                    fb.innerHTML = fbTop(false, '다시 확인해요') +
+                        fbRows(fbRow('내 답', inp.value.trim() ? esc(inp.value) : '미입력', 'mine') +
+                               fbRow('정답', esc(q.answer) + altHTML(q))) +
+                        fbWhy(q.explanation);
                     details.push(qNum + '. ✗ ' + (inp.value || '(미입력)') + ' → 정답: ' + q.answer);
                 }
             }
             card.className = 'q-card ' + (isCorrect ? 'correct' : 'wrong');
-            if (isCorrect) score++;
+            if (isCorrect) score++; else wrongIdx.push(i);
         });
 
         var pct = Math.round((score / TOTAL) * 100), msg;
@@ -642,6 +711,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         finalEl.innerHTML =
             '<div><span class="score-big">' + score + '</span><span class="total"> / ' + TOTAL + '</span></div>' +
             '<div class="msg">' + msg + '</div>' +
+            (wrongIdx.length ? '<button type="button" class="review-btn" id="review-btn">틀린 ' + wrongIdx.length + '문항만 보기</button><br>' : '') +
             '<div id="send-status" class="send-status-box sending">' + IC.send + '선생님께 결과 전송 중…</div>' +
             '<button type="button" id="retry-btn" class="send-btn" style="display:none;">다시 전송하기</button>' +
             '<br><button type="button" class="send-btn reset" onclick="location.reload()">처음부터 다시</button>';
@@ -655,6 +725,14 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         sendResult(payload);
         var retryBtn = $('retry-btn');
         if (retryBtn) retryBtn.addEventListener('click', function() { sendResult(payload); });
+
+        // 오답만 모아 보기 — 문항이 많아도 틀린 것만 훑을 수 있게
+        var reviewBtn = $('review-btn');
+        if (reviewBtn) reviewBtn.addEventListener('click', function() {
+            var on = document.body.classList.toggle('only-wrong');
+            reviewBtn.textContent = on ? '전체 문항 보기' : '틀린 ' + wrongIdx.length + '문항만 보기';
+            if (on) $('card-' + wrongIdx[0]).scrollIntoView({ block: 'center' });
+        });
 
         $('result-display').innerHTML = '<span class="filled">맞힌 문항: ' + score + ' / ' + TOTAL + '</span>';
         $('submit-bar').style.display = 'none';

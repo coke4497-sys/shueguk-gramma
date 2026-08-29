@@ -1,9 +1,9 @@
 {
   "category": "음운",
-  "round": 4,
+  "round": 15,
   "title": "음운 변동, 과정을 직접 써 보자.",
-  "subtitle": "음운 변동 실습 (64~84)",
-  "instruction": "64~84 각 단어의 음운 변동 과정을 순서대로 완성하시오. 단계마다 <b>변동 종류를 선택</b>하고 <b>바뀐 형태를 직접 입력</b>하세요. 마지막 칸이 최종 발음입니다. (대괄호 없이 한글만)",
+  "subtitle": "음운 변동 실습 (295~315)",
+  "instruction": "295~315 각 단어의 음운 변동 과정을 순서대로 완성하시오. 단계마다 <b>변동 종류를 선택</b>하고 <b>바뀐 형태를 직접 입력</b>하세요. 마지막 칸이 최종 발음입니다. (대괄호 없이 한글만)",
   "ruleOptions": [
     "음절의 끝소리 규칙",
     "비음화",
@@ -125,340 +125,328 @@
   "questions": [
     {
       "type": "process",
-      "num": 64,
-      "start": "책잡히다",
+      "num": 295,
+      "start": "기어서",
       "steps": [
         {
           "accept": [
-            "된소리되기"
+            "반모음 첨가"
           ],
-          "form": "책짭히다"
-        },
-        {
-          "accept": [
-            "거센소리되기"
-          ],
-          "form": "책짜피다"
+          "form": "기어서/기여서"
         }
       ]
     },
     {
       "type": "process",
-      "num": 65,
-      "start": "수척한",
-      "steps": [
-        {
-          "accept": [
-            "거센소리되기"
-          ],
-          "form": "수처칸"
-        }
-      ]
-    },
-    {
-      "type": "process",
-      "num": 66,
-      "start": "권력",
-      "steps": [
-        {
-          "accept": [
-            "유음화"
-          ],
-          "form": "궐력"
-        }
-      ]
-    },
-    {
-      "type": "process",
-      "num": 67,
-      "start": "꽃눈",
-      "steps": [
-        {
-          "accept": [
-            "음절의 끝소리 규칙"
-          ],
-          "form": "꼳눈"
-        },
-        {
-          "accept": [
-            "비음화"
-          ],
-          "form": "꼰눈"
-        }
-      ]
-    },
-    {
-      "type": "process",
-      "num": 68,
-      "start": "입원료",
+      "num": 296,
+      "start": "잡는",
       "steps": [
         {
           "accept": [
             "비음화"
           ],
-          "form": "이붠뇨"
+          "form": "잠는"
         }
       ]
     },
     {
       "type": "process",
-      "num": 69,
-      "start": "(신을)신기다",
-      "steps": [
-        {
-          "accept": [
-            "변동 없음"
-          ],
-          "form": "신기다"
-        }
-      ]
-    },
-    {
-      "type": "process",
-      "num": 70,
-      "start": "넓다",
-      "steps": [
-        {
-          "accept": [
-            "된소리되기"
-          ],
-          "form": "넓따"
-        },
-        {
-          "accept": [
-            "자음군 단순화"
-          ],
-          "form": "널따"
-        }
-      ]
-    },
-    {
-      "type": "process",
-      "num": 71,
-      "start": "잃는",
-      "steps": [
-        {
-          "accept": [
-            "자음군 단순화"
-          ],
-          "form": "일는"
-        },
-        {
-          "accept": [
-            "유음화"
-          ],
-          "form": "일른"
-        }
-      ]
-    },
-    {
-      "type": "process",
-      "num": 72,
-      "start": "콩엿",
-      "steps": [
-        {
-          "accept": [
-            "ㄴ 첨가"
-          ],
-          "form": "콩녓"
-        },
-        {
-          "accept": [
-            "음절의 끝소리 규칙"
-          ],
-          "form": "콩녇"
-        }
-      ]
-    },
-    {
-      "type": "process",
-      "num": 73,
-      "start": "색유리",
-      "steps": [
-        {
-          "accept": [
-            "ㄴ 첨가"
-          ],
-          "form": "색뉴리"
-        },
-        {
-          "accept": [
-            "비음화"
-          ],
-          "form": "생뉴리"
-        }
-      ]
-    },
-    {
-      "type": "process",
-      "num": 74,
-      "start": "입는",
-      "steps": [
-        {
-          "accept": [
-            "비음화"
-          ],
-          "form": "임는"
-        }
-      ]
-    },
-    {
-      "type": "process",
-      "num": 75,
-      "start": "부엌",
+      "num": 297,
+      "start": "찻잔",
       "steps": [
         {
           "accept": [
             "음절의 끝소리 규칙"
           ],
-          "form": "부억"
-        }
-      ]
-    },
-    {
-      "type": "process",
-      "num": 76,
-      "start": "꽃밭이",
-      "steps": [
-        {
-          "accept": [
-            "음절의 끝소리 규칙"
-          ],
-          "form": "꼳밭이"
+          "form": "찯잔"
         },
         {
           "accept": [
             "된소리되기"
           ],
-          "form": "꼳빹이"
-        },
-        {
-          "accept": [
-            "구개음화"
-          ],
-          "form": "꼳빠치"
+          "form": "찯짠"
         }
       ]
     },
     {
       "type": "process",
-      "num": 77,
-      "start": "절약",
+      "num": 298,
+      "start": "밭을",
       "steps": [
         {
           "accept": [
             "연음"
           ],
-          "form": "저략"
+          "form": "바틀"
         }
       ]
     },
     {
       "type": "process",
-      "num": 78,
-      "start": "서울역",
+      "num": 299,
+      "start": "반듯한",
       "steps": [
         {
           "accept": [
-            "ㄴ 첨가"
+            "음절의 끝소리 규칙"
           ],
-          "form": "서울녁"
+          "form": "반듣한"
         },
         {
           "accept": [
-            "유음화"
+            "거센소리되기"
           ],
-          "form": "서울력"
+          "form": "반드탄"
         }
       ]
     },
     {
       "type": "process",
-      "num": 79,
-      "start": "일념",
+      "num": 300,
+      "start": "귀찮은",
       "steps": [
         {
           "accept": [
-            "유음화"
+            "ㅎ 탈락"
           ],
-          "form": "일렴"
+          "form": "귀차는"
         }
       ]
     },
     {
       "type": "process",
-      "num": 80,
-      "start": "쌓고",
+      "num": 301,
+      "start": "놓던",
       "steps": [
         {
           "accept": [
             "거센소리되기"
           ],
-          "form": "싸코"
+          "form": "노턴"
         }
       ]
     },
     {
       "type": "process",
-      "num": 81,
-      "start": "독서대",
+      "num": 302,
+      "start": "미닫이문",
       "steps": [
-        {
-          "accept": [
-            "된소리되기"
-          ],
-          "form": "독써대"
-        }
-      ]
-    },
-    {
-      "type": "process",
-      "num": 82,
-      "start": "벼훑이",
-      "steps": [
-        {
-          "accept": [
-            "연음"
-          ],
-          "form": "벼훌티"
-        },
         {
           "accept": [
             "구개음화"
           ],
-          "form": "벼훌치"
+          "form": "미다지문"
         }
       ]
     },
     {
       "type": "process",
-      "num": 83,
-      "start": "적는",
+      "num": 303,
+      "start": "믿는",
       "steps": [
         {
           "accept": [
             "비음화"
           ],
-          "form": "정는"
+          "form": "민는"
         }
       ]
     },
     {
       "type": "process",
-      "num": 84,
-      "start": "넓니",
+      "num": 304,
+      "start": "잘나다",
+      "steps": [
+        {
+          "accept": [
+            "유음화"
+          ],
+          "form": "잘라다"
+        }
+      ]
+    },
+    {
+      "type": "process",
+      "num": 305,
+      "start": "낳게",
+      "steps": [
+        {
+          "accept": [
+            "거센소리되기"
+          ],
+          "form": "나케"
+        }
+      ]
+    },
+    {
+      "type": "process",
+      "num": 306,
+      "start": "국밥",
+      "steps": [
+        {
+          "accept": [
+            "된소리되기"
+          ],
+          "form": "국빱"
+        }
+      ]
+    },
+    {
+      "type": "process",
+      "num": 307,
+      "start": "덮고",
+      "steps": [
+        {
+          "accept": [
+            "음절의 끝소리 규칙"
+          ],
+          "form": "덥고"
+        },
+        {
+          "accept": [
+            "된소리되기"
+          ],
+          "form": "덥꼬"
+        }
+      ]
+    },
+    {
+      "type": "process",
+      "num": 308,
+      "start": "색연필",
+      "steps": [
+        {
+          "accept": [
+            "ㄴ 첨가"
+          ],
+          "form": "색년필"
+        },
+        {
+          "accept": [
+            "비음화"
+          ],
+          "form": "생년필"
+        }
+      ]
+    },
+    {
+      "type": "process",
+      "num": 309,
+      "start": "놓는",
+      "steps": [
+        {
+          "accept": [
+            "비음화"
+          ],
+          "form": "논는"
+        }
+      ]
+    },
+    {
+      "type": "process",
+      "num": 310,
+      "start": "나뭇잎",
+      "steps": [
+        {
+          "accept": [
+            "ㄴ 첨가"
+          ],
+          "form": "나뭇닢"
+        },
+        {
+          "accept": [
+            "음절의 끝소리 규칙"
+          ],
+          "form": "나묻닙"
+        },
+        {
+          "accept": [
+            "비음화"
+          ],
+          "form": "나문닙"
+        }
+      ]
+    },
+    {
+      "type": "process",
+      "num": 311,
+      "start": "젓고",
+      "steps": [
+        {
+          "accept": [
+            "음절의 끝소리 규칙"
+          ],
+          "form": "젇고"
+        },
+        {
+          "accept": [
+            "된소리되기"
+          ],
+          "form": "젇꼬"
+        }
+      ]
+    },
+    {
+      "type": "process",
+      "num": 312,
+      "start": "삯",
       "steps": [
         {
           "accept": [
             "자음군 단순화"
           ],
-          "form": "널니"
+          "form": "삭"
+        }
+      ]
+    },
+    {
+      "type": "process",
+      "num": 313,
+      "start": "부엌문",
+      "steps": [
+        {
+          "accept": [
+            "음절의 끝소리 규칙"
+          ],
+          "form": "부억문"
         },
         {
           "accept": [
-            "유음화"
+            "비음화"
           ],
-          "form": "널리"
+          "form": "부엉문"
+        }
+      ]
+    },
+    {
+      "type": "process",
+      "num": 314,
+      "start": "꽃가루",
+      "steps": [
+        {
+          "accept": [
+            "음절의 끝소리 규칙"
+          ],
+          "form": "꼳가루"
+        },
+        {
+          "accept": [
+            "된소리되기"
+          ],
+          "form": "꼳까루"
+        }
+      ]
+    },
+    {
+      "type": "process",
+      "num": 315,
+      "start": "여덟",
+      "steps": [
+        {
+          "accept": [
+            "자음군 단순화"
+          ],
+          "form": "여덜"
         }
       ]
     }
