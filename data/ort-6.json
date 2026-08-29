@@ -5,21 +5,157 @@
  "subtitle": "제3장 제3절 'ㄷ' 소리 받침 (1)",
  "instruction": "제7항: 'ㄷ' 소리로 나는 받침 중에서 'ㄷ'으로 적을 근거가 없는 것은 'ㅅ'으로 적는다.",
  "total": 15,
+ "study": {
+  "tabs": [
+   {
+    "label": "제7항 'ㄷ' 소리 받침",
+    "items": [
+     {
+      "word": "ㅅ으로 적는 경우",
+      "tag": "근거 없음",
+      "meaning": "'ㄷ' 소리로 나는 받침 중에서 'ㄷ'으로 적을 근거가 없는 것은 'ㅅ'으로 적는다.",
+      "example": "덧저고리, 돗자리, 엇셈, 웃어른, 핫옷, 무릇, 사뭇, 얼핏, 자칫하면, 뭇[衆], 옛, 첫, 헛"
+     },
+     {
+      "note": "<b>비교</b> ㄷ으로 적을 근거가 있으면 ㄷ으로 적는다 — 걷잡다(←걷다), 곧장, 숟가락(←술 · 제29항), 이튿날(←이틀 · 제29항)"
+     }
+    ]
+   }
+  ]
+ },
  "questions": [
-  { "type": "ox", "num": 1, "stem": "'ㄷ' 소리로 나는 받침 중 'ㄷ'으로 적을 근거가 없는 것은 'ㅅ'으로 적는다.", "answer": "O", "explanation": "제7항." },
-  { "type": "choice", "num": 2, "stem": "바른 표기는?", "options": ["웃어른", "욷어른", "웆어른", "윗어른"], "answer": 1, "explanation": "제7항." },
-  { "type": "short", "num": 3, "stem": "틀린 표기 '돋자리'를 바르게 고쳐 쓰시오.", "answer": "돗자리", "explanation": "제7항." },
-  { "type": "ox", "num": 4, "stem": "'무릇'이 바른 표기이다.", "answer": "O", "explanation": "제7항." },
-  { "type": "choice", "num": 5, "stem": "바른 표기는?", "options": ["사뭇", "사묻", "사뭍", "싸뭇"], "answer": 1, "explanation": "제7항." },
-  { "type": "short", "num": 6, "stem": "틀린 표기 '얼핃'을 바르게 고쳐 쓰시오.", "answer": "얼핏", "explanation": "제7항." },
-  { "type": "ox", "num": 7, "stem": "'덧저고리'의 '덧-'은 ㅅ 받침으로 적는다.", "answer": "O", "explanation": "제7항." },
-  { "type": "choice", "num": 8, "stem": "바른 표기는?", "options": ["자칫하면", "자칟하면", "자침하면", "잣칫하면"], "answer": 1, "explanation": "제7항." },
-  { "type": "short", "num": 9, "stem": "'헛수고'의 '헛-'에 쓰인 받침을 자음 하나로 쓰시오.", "answer": "ㅅ" },
-  { "type": "ox", "num": 10, "stem": "'옛날'은 '옏날'로 적는다.", "answer": "X", "explanation": "'옛'은 ㅅ 받침(제7항)." },
-  { "type": "choice", "num": 11, "stem": "표기가 틀린 것은?", "options": ["첫사랑", "헛기침", "뭇사람", "엳셈"], "answer": 4, "explanation": "'엇셈'이 바른 표기(제7항)." },
-  { "type": "ox", "num": 12, "stem": "'숟가락'은 '술+가락'에서 온 말이어서 ㄷ으로 적을 근거가 있으므로 ㄷ으로 적는다.", "answer": "O", "explanation": "제29항 — ㄹ 소리가 ㄷ으로 난 것." },
-  { "type": "choice", "num": 13, "stem": "ㅅ이 아닌 ㄷ 받침으로 적는 것은?", "options": ["숟가락", "무릇", "사뭇", "얼핏"], "answer": 1, "explanation": "'숟가락'은 ㄷ으로 적을 근거가 있는 말(제29항)." },
-  { "type": "short", "num": 14, "stem": "틀린 표기 '핟옷'(솜을 두어 지은 옷)을 바르게 고쳐 쓰시오.", "answer": "핫옷", "explanation": "제7항." },
-  { "type": "ox", "num": 15, "stem": "'ㄷ'으로 적을 근거가 있으면 ㄷ으로 적는다. 예: 걷잡다(← 걷다), 곧장.", "answer": "O" }
+  {
+   "type": "ox",
+   "num": 1,
+   "stem": "'ㄷ' 소리로 나는 받침 중 'ㄷ'으로 적을 근거가 없는 것은 'ㅅ'으로 적는다.",
+   "answer": "O",
+   "explanation": "제7항."
+  },
+  {
+   "type": "choice",
+   "num": 2,
+   "stem": "바른 표기는?",
+   "options": [
+    "웃어른",
+    "욷어른",
+    "웆어른",
+    "윗어른"
+   ],
+   "answer": 1,
+   "explanation": "제7항."
+  },
+  {
+   "type": "short",
+   "num": 3,
+   "stem": "틀린 표기 '돋자리'를 바르게 고쳐 쓰시오.",
+   "answer": "돗자리",
+   "explanation": "제7항."
+  },
+  {
+   "type": "ox",
+   "num": 4,
+   "stem": "'무릇'이 바른 표기이다.",
+   "answer": "O",
+   "explanation": "제7항."
+  },
+  {
+   "type": "choice",
+   "num": 5,
+   "stem": "바른 표기는?",
+   "options": [
+    "사뭇",
+    "사묻",
+    "사뭍",
+    "싸뭇"
+   ],
+   "answer": 1,
+   "explanation": "제7항."
+  },
+  {
+   "type": "short",
+   "num": 6,
+   "stem": "틀린 표기 '얼핃'을 바르게 고쳐 쓰시오.",
+   "answer": "얼핏",
+   "explanation": "제7항."
+  },
+  {
+   "type": "ox",
+   "num": 7,
+   "stem": "'덧저고리'의 '덧-'은 ㅅ 받침으로 적는다.",
+   "answer": "O",
+   "explanation": "제7항."
+  },
+  {
+   "type": "choice",
+   "num": 8,
+   "stem": "바른 표기는?",
+   "options": [
+    "자칫하면",
+    "자칟하면",
+    "자침하면",
+    "잣칫하면"
+   ],
+   "answer": 1,
+   "explanation": "제7항."
+  },
+  {
+   "type": "short",
+   "num": 9,
+   "stem": "'헛수고'의 '헛-'에 쓰인 받침을 자음 하나로 쓰시오.",
+   "answer": "ㅅ"
+  },
+  {
+   "type": "ox",
+   "num": 10,
+   "stem": "'옛날'은 '옏날'로 적는다.",
+   "answer": "X",
+   "explanation": "'옛'은 ㅅ 받침(제7항)."
+  },
+  {
+   "type": "choice",
+   "num": 11,
+   "stem": "표기가 틀린 것은?",
+   "options": [
+    "첫사랑",
+    "헛기침",
+    "뭇사람",
+    "엳셈"
+   ],
+   "answer": 4,
+   "explanation": "'엇셈'이 바른 표기(제7항)."
+  },
+  {
+   "type": "ox",
+   "num": 12,
+   "stem": "'숟가락'은 '술+가락'에서 온 말이어서 ㄷ으로 적을 근거가 있으므로 ㄷ으로 적는다.",
+   "answer": "O",
+   "explanation": "제29항 — ㄹ 소리가 ㄷ으로 난 것."
+  },
+  {
+   "type": "choice",
+   "num": 13,
+   "stem": "ㅅ이 아닌 ㄷ 받침으로 적는 것은?",
+   "options": [
+    "숟가락",
+    "무릇",
+    "사뭇",
+    "얼핏"
+   ],
+   "answer": 1,
+   "explanation": "'숟가락'은 ㄷ으로 적을 근거가 있는 말(제29항)."
+  },
+  {
+   "type": "short",
+   "num": 14,
+   "stem": "틀린 표기 '핟옷'(솜을 두어 지은 옷)을 바르게 고쳐 쓰시오.",
+   "answer": "핫옷",
+   "explanation": "제7항."
+  },
+  {
+   "type": "ox",
+   "num": 15,
+   "stem": "'ㄷ'으로 적을 근거가 있으면 ㄷ으로 적는다. 예: 걷잡다(← 걷다), 곧장.",
+   "answer": "O"
+  }
  ]
 }

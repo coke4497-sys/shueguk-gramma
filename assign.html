@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>문법 배정하기 · 슈국 티쳐스</title>
+<meta name="description" content="이수경국어 문법 테스트 — 회차별 미리보기·학년/학교/개인 배정" />
+<link rel="apple-touch-icon" href="icon-180.png" />
+<link rel="icon" type="image/png" href="icon-192.png" />
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700;800&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif; background: #C6D5D2; min-height: 100vh; color: #2C2F2D; padding: 16px 16px 80px; -webkit-text-size-adjust: 100%; }
+.container { max-width: 680px; margin: 0 auto; }
+
+.back { display: inline-flex; align-items: center; gap: 6px; margin: 4px 0 10px; color: #6A716C; text-decoration: none; font-size: 13px; font-weight: 700; }
+.back svg { width: 16px; height: 16px; }
+.back:hover { color: #628C83; }
+
+.header { text-align: center; margin-bottom: 14px; padding: 18px 16px 16px; background: white; border-radius: 20px; box-shadow: 0 4px 16px rgba(45,128,104,0.08); border: 2px solid #C6D5D2; }
+.header .logo { font-family: 'Nanum Myeongjo', serif; font-size: 11px; font-weight: 800; letter-spacing: 5px; color: #A6C1BB; margin-bottom: 6px; }
+.header h1 { font-family: 'Nanum Myeongjo', serif; font-size: 22px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; }
+.header .intro { font-size: 13px; color: #6A716C; margin-top: 8px; line-height: 1.7; }
+
+.cats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 6px 0 14px; }
+.cat-btn { padding: 11px 4px; background: white; border: 1.5px solid #E5EDE8; border-radius: 11px; font: inherit; font-size: 12.5px; font-weight: 700; color: #6A716C; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.cat-btn:hover { border-color: #C6D5D2; color: #4C6E66; }
+.cat-btn.active { background: #F0E0AC; color: #7A6224; border-color: #E5CE8F; }
+.cat-btn:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 560px) { .cats { grid-template-columns: repeat(3, 1fr); } .cat-btn { font-size: 12px; } }
+
+.unit-title { font-family: 'Nanum Myeongjo', serif; font-size: 15px; font-weight: 800; color: #3A544E; margin: 6px 2px 10px; }
+
+.list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+.row { display: flex; align-items: center; gap: 10px; background: white; border: 2px solid #F1F6F4; border-radius: 13px; padding: 12px 14px; flex-wrap: wrap; }
+.rd { flex: none; width: 44px; font-family: 'Nanum Myeongjo', serif; font-weight: 800; color: #628C83; font-size: 15px; }
+.ttl { flex: 1; min-width: 140px; font-size: 13.5px; color: #2C2F2D; }
+.acts { flex: none; display: flex; gap: 7px; align-items: center; }
+.abtn { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; font-weight: 700; border-radius: 9px; padding: 7px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; text-decoration: none; transition: border-color .15s, background .15s; }
+.abtn svg { width: 13px; height: 13px; }
+.abtn.preview { color: #628C83; background: none; border: none; padding: 7px 4px; }
+.abtn.copy { color: #3A544E; background: #E9F0EF; border: 1.5px solid #C6D5D2; }
+.abtn.copy:hover { border-color: #A6C1BB; }
+.abtn.copy.done { color: #276B4E; background: #E4F1EA; border-color: #3E9B74; }
+.abtn.assign { color: white; background: #628C83; border: 1.5px solid #628C83; }
+.abtn.assign:hover { background: #4C6E66; }
+
+/* 배정 폼 */
+.form-card { background: white; border: 2px solid #A6C1BB; border-radius: 16px; padding: 16px; margin-bottom: 14px; display: none; }
+.form-card.show { display: block; }
+.form-card .f-title { font-size: 14px; font-weight: 800; color: #3A544E; margin-bottom: 12px; }
+.form-card .f-title b { color: #628C83; }
+.f-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+.f-field { display: flex; flex-direction: column; gap: 3px; }
+.f-field label { font-size: 11px; font-weight: 700; color: #6A716C; }
+.f-field select, .f-field input { padding: 10px; font-size: 13px; font-family: inherit; font-weight: 700; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; background: white; -webkit-appearance: none; }
+.f-field select:focus, .f-field input:focus { border-color: #A6C1BB; }
+.fbtn { padding: 10px 18px; font-size: 13px; font-weight: 800; font-family: inherit; border: none; border-radius: 9px; background: #628C83; color: white; cursor: pointer; }
+.fbtn.ghost { background: white; color: #6A716C; border: 2px solid #E8EAE7; }
+.fbtn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* 배정 현황 */
+.card { background: white; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; border: 2px solid #C6D5D2; }
+.card .c-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.card .c-head b { font-size: 14px; color: #3A544E; }
+.muted { color: #8B928C; font-size: 12px; }
+.status { font-size: 13px; font-weight: 700; padding: 12px; border-radius: 10px; text-align: center; }
+.status.loading { background: #F4F5F3; color: #6A716C; border: 1.5px solid #E8EAE7; }
+.status.fail { background: #FADED9; color: #992F20; border: 1.5px solid #EFA9A5; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 520px; }
+th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #F1F6F4; white-space: nowrap; }
+th { background: #E9F0EF; color: #3A544E; font-weight: 800; font-size: 12px; }
+.pct { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+.pct.hi { background: #E4F1EA; color: #276B4E; }
+.pct.lo { background: #FADED9; color: #992F20; }
+.detail-btn { padding: 5px 10px; font-size: 11px; font-weight: 800; border: 1.5px solid #A6C1BB; background: white; color: #3A544E; border-radius: 7px; cursor: pointer; font-family: inherit; }
+.detail-btn.danger { color: #DB4C39; border-color: #EFA9A5; }
+
+footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; line-height: 1.9; }
+@media (prefers-reduced-motion: reduce){ * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back" href="https://coke4497-sys.github.io/shueguk-hub/gramma.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+    문법 테스트
+  </a>
+
+  <div class="header">
+    <div class="logo">SHUEGUK</div>
+    <h1>배정하기</h1>
+    <p class="intro">카테고리를 고르면 회차별 테스트가 나옵니다.<br />미리 보고, 학년·학교·개인에게 배정하세요.<br />배정된 학생은 '내 문법 테스트' 페이지에서 확인하고 응시합니다.</p>
+  </div>
+
+  <!-- 배정 폼 (회차의 [배정]을 누르면 열림) -->
+  <div class="form-card" id="form-card">
+    <div class="f-title" id="f-title"></div>
+    <div class="f-row">
+      <div class="f-field"><label>대상 구분</label><select id="f-ttype"><option value="학년">학년</option><option value="학교">학교</option><option value="개인">개인</option></select></div>
+      <div class="f-field" id="f-grade-wrap"><label>대상 학년</label><select id="f-grade"><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option></select></div>
+      <div class="f-field" id="f-text-wrap" style="display:none;"><label id="f-text-label">대상</label><input type="text" id="f-text" autocomplete="off"></div>
+      <div class="f-field"><label>메모 (선택)</label><input type="text" id="f-memo" placeholder="예: 9/5까지" autocomplete="off"></div>
+      <button class="fbtn" id="f-add">배정하기</button>
+      <button class="fbtn ghost" id="f-close">닫기</button>
+    </div>
+  </div>
+
+  <!-- 학생 공통 입구 -->
+  <div class="list">
+    <div class="row">
+      <span class="rd">입구</span>
+      <span class="ttl">내 문법 테스트 (학생용 — 배정 확인·응시)</span>
+      <span class="acts">
+        <a class="abtn preview" id="entry-open" href="index.html" target="_blank" rel="noopener">열어 보기
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <button type="button" class="abtn copy" id="entry-copy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          링크 복사</button>
+      </span>
+    </div>
+  </div>
+
+  <!-- 카테고리 탭 -->
+  <div class="cats" id="cats"></div>
+
+  <div class="unit-title" id="sec-title"></div>
+  <div class="list" id="rounds"></div>
+
+  <!-- 배정 현황 -->
+  <div class="card">
+    <div class="c-head"><b>배정 현황</b><span class="muted">마감하면 학생 목록에서 사라져요 · 제출 결과는 '결과 확인'에서</span></div>
+    <div id="a-status" class="status loading">배정 목록을 불러오는 중…</div>
+    <div class="table-wrap" id="a-table-wrap" style="display:none;">
+      <table>
+        <thead><tr><th>배정일시</th><th>대상</th><th>테스트</th><th>메모</th><th>상태</th><th>동작</th></tr></thead>
+        <tbody id="a-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>이수경국어 Shueguk · 교사용</footer>
+</div>
+
+<script src="manifest.js"></script>
+<script>
+(function(){
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzikteq7gR2ezi_NXc2of8PTvUj5XouJ5ZcZOEWv0YWgjQjs8dZqogQjSr0-LSqneXF/exec';
+  var ACCESS_KEY = 'shueguk2026';   // Apps Script의 ACCESS_KEY와 동일
+  var BASE_URL = 'https://coke4497-sys.github.io/shueguk-gramma/';
+
+  var CATS = (window.GRAMMA && GRAMMA.categories) || [];
+  var TESTS = (window.GRAMMA && GRAMMA.tests) || {};
+  var A_ROWS = [];
+  var current = '';          // 선택된 카테고리 코드
+  var picked = null;         // 배정 폼이 가리키는 {cat, round}
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return ('' + (s==null?'':s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escAttr(s){ return esc(s).replace(/"/g,'&quot;'); }
+  function catLabelOf(code){ for (var i=0;i<CATS.length;i++) if (CATS[i].code===code) return CATS[i].label; return code; }
+  function roundsOf(code){
+    var out = [];
+    Object.keys(TESTS).forEach(function(k){ var m = k.match(/^(.+)-(\d+)$/); if (m && m[1]===code) out.push(parseInt(m[2],10)); });
+    return out.sort(function(a,b){ return a-b; });
+  }
+
+  /* ===== JSONP ===== */
+  function jsonp(params, onDone, onFail){
+    var cb = 'shueguk_a_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+    var done = false;
+    var timer = setTimeout(function(){ if (!done){ done = true; cleanup(); onFail('응답이 없습니다.'); } }, 15000);
+    window[cb] = function(resp){ if (done) return; done = true; clearTimeout(timer); cleanup(); onDone(resp); };
+    var qs = Object.keys(params).map(function(k){ return k + '=' + encodeURIComponent(params[k]); }).join('&');
+    var s = document.createElement('script');
+    s.id = cb + '_s';
+    s.src = SCRIPT_URL + '?callback=' + cb + '&key=' + encodeURIComponent(ACCESS_KEY) + '&' + qs + '&t=' + Date.now();
+    s.onerror = function(){ if (!done){ done = true; clearTimeout(timer); cleanup(); onFail('요청을 보내지 못했습니다.'); } };
+    document.body.appendChild(s);
+    function cleanup(){ try { delete window[cb]; } catch(e){ window[cb] = undefined; } var el = $(cb + '_s'); if (el) el.remove(); }
+  }
+
+  /* ===== 카테고리 탭 + 회차 목록 ===== */
+  var catWrap = $('cats');
+  CATS.forEach(function(c){
+    var n = roundsOf(c.code).length;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'cat-btn';
+    b.textContent = c.label + (n ? '' : ' ·준비 중');
+    b.disabled = !n;
+    b.setAttribute('data-code', c.code);
+    b.addEventListener('click', function(){
+      current = c.code;
+      catWrap.querySelectorAll('.cat-btn').forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+      renderRounds();
+    });
+    catWrap.appendChild(b);
+    if (!current && n) { current = c.code; b.classList.add('active'); }
+  });
+
+  function renderRounds(){
+    var rounds = roundsOf(current);
+    $('sec-title').textContent = catLabelOf(current) + ' · 전체 ' + rounds.length + '회';
+    var html = '';
+    rounds.forEach(function(n){
+      var t = TESTS[current + '-' + n];
+      var url = BASE_URL + 'test.html?c=' + current + '&r=' + n;
+      html += '<div class="row">' +
+        '<span class="rd">' + n + '회</span>' +
+        '<span class="ttl">' + esc(t && t.title ? t.title : catLabelOf(current) + ' ' + n + '회') + '</span>' +
+        '<span class="acts">' +
+          '<a class="abtn preview" href="' + url + '&preview=1" target="_blank" rel="noopener">미리보기' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
+          '<button type="button" class="abtn copy" data-url="' + escAttr(url) + '">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+            '링크 복사</button>' +
+          '<button type="button" class="abtn assign" data-round="' + n + '">배정</button>' +
+        '</span></div>';
+    });
+    $('rounds').innerHTML = html;
+  }
+
+  $('rounds').addEventListener('click', function(ev){
+    var b = ev.target.closest('button');
+    if (!b) return;
+    if (b.classList.contains('copy')) { copyText(b.getAttribute('data-url'), b); }
+    else if (b.classList.contains('assign')) { openForm(current, b.getAttribute('data-round')); }
+  });
+
+  /* ===== 배정 폼 ===== */
+  function openForm(cat, round){
+    picked = { cat: cat, round: round };
+    var t = TESTS[cat + '-' + round];
+    $('f-title').innerHTML = '<b>' + esc(catLabelOf(cat)) + ' ' + esc(round) + '회</b>' +
+      (t && t.title ? ' · ' + esc(t.title) : '') + ' — 누구에게 배정할까요?';
+    $('form-card').classList.add('show');
+    $('form-card').scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+  function syncTargetUI(){
+    var tt = $('f-ttype').value;
+    $('f-grade-wrap').style.display = tt === '학년' ? '' : 'none';
+    $('f-text-wrap').style.display = tt === '학년' ? 'none' : '';
+    $('f-text-label').textContent = tt === '학교' ? '대상 학교' : '대상 학생 이름';
+    $('f-text').placeholder = tt === '학교' ? '예: 화정고' : '예: 홍길동';
+  }
+  $('f-ttype').addEventListener('change', syncTargetUI);
+  $('f-close').addEventListener('click', function(){ $('form-card').classList.remove('show'); picked = null; });
+  $('f-add').addEventListener('click', function(){
+    if (!picked) return;
+    var ttype = $('f-ttype').value;
+    var target = ttype === '학년' ? $('f-grade').value : ($('f-text').value || '').trim();
+    if (!target){ alert('대상을 입력해 주세요.'); return; }
+    var btn = $('f-add');
+    btn.disabled = true; btn.textContent = '저장 중…';
+    jsonp({ action: 'assignAdd', ttype: ttype, target: target, cat: picked.cat, catLabel: catLabelOf(picked.cat), round: picked.round, memo: ($('f-memo').value || '').trim() }, function(resp){
+      btn.disabled = false; btn.textContent = '배정하기';
+      if (!resp || resp.ok !== true || resp.kind !== 'assign'){
+        aStatus('fail', resp && resp.error === 'unauthorized' ? '비밀키(ACCESS_KEY)가 일치하지 않습니다.' : '배정 기능을 쓰려면 Apps Script를 새 버전으로 재배포해야 합니다.');
+        return;
+      }
+      $('f-memo').value = '';
+      $('form-card').classList.remove('show');
+      picked = null;
+      aLoad();
+    }, function(msg){ btn.disabled = false; btn.textContent = '배정하기'; aStatus('fail', msg); });
+  });
+
+  /* ===== 배정 현황 ===== */
+  function aStatus(type, msg){
+    var el = $('a-status');
+    if (msg === null){ el.style.display = 'none'; return; }
+    el.style.display = 'block'; el.className = 'status ' + type; el.textContent = msg;
+  }
+  function aLoad(){
+    aStatus('loading', '배정 목록을 불러오는 중…');
+    jsonp({ action: 'assignList' }, function(resp){
+      if (!resp || resp.ok !== true || resp.kind !== 'assign'){
+        if (resp && resp.error === 'unauthorized'){ aStatus('fail', '비밀키(ACCESS_KEY)가 일치하지 않습니다.'); return; }
+        aStatus('fail', '배정 기능을 쓰려면 Apps Script를 새 버전으로 재배포해야 합니다. (apps-script/Code.gs)');
+        $('a-table-wrap').style.display = 'none';
+        return;
+      }
+      A_ROWS = resp.rows || [];
+      aRender();
+    }, function(msg){ aStatus('fail', '배정 목록: ' + msg); });
+  }
+  function aRender(){
+    var tb = $('a-tbody');
+    if (!A_ROWS.length){
+      aStatus('loading', '아직 배정이 없습니다. 회차의 [배정] 버튼으로 첫 배정을 만들어 보세요.');
+      $('a-table-wrap').style.display = 'none';
+      return;
+    }
+    aStatus('loading', null);
+    var rows = A_ROWS.slice().sort(function(a,b){ return a.time < b.time ? 1 : -1; });
+    var html = '';
+    rows.forEach(function(r){
+      var closed = r.status === '마감';
+      var testLabel = catLabelOf(r.cat) + ' ' + r.round + '회';
+      var reg = TESTS[r.cat + '-' + r.round];
+      html += '<tr' + (closed ? ' style="opacity:.55;"' : '') + '>' +
+        '<td>' + esc(r.time) + '</td>' +
+        '<td><b>' + esc(r.ttype) + '</b> · ' + esc(r.target) + '</td>' +
+        '<td>' + esc(testLabel) + (reg && reg.title ? ' <span class="muted">' + esc(reg.title) + '</span>' : '') + '</td>' +
+        '<td>' + esc(r.memo || '') + '</td>' +
+        '<td>' + (closed ? '<span class="pct lo">마감</span>' : '<span class="pct hi">진행</span>') + '</td>' +
+        '<td>' +
+          '<button class="detail-btn a-toggle" data-row="' + r._row + '" data-time="' + escAttr(r.time) + '" data-next="' + (closed ? '진행' : '마감') + '">' + (closed ? '다시 열기' : '마감') + '</button> ' +
+          '<button class="detail-btn danger a-del" data-row="' + r._row + '" data-time="' + escAttr(r.time) + '">삭제</button>' +
+        '</td></tr>';
+    });
+    tb.innerHTML = html;
+    $('a-table-wrap').style.display = 'block';
+  }
+  $('a-tbody').addEventListener('click', function(ev){
+    var b = ev.target.closest('button');
+    if (!b) return;
+    var row = b.getAttribute('data-row'), time = b.getAttribute('data-time');
+    if (b.classList.contains('a-toggle')){
+      aStatus('loading', '상태 변경 중…');
+      jsonp({ action: 'assignSet', row: row, time: time, status: b.getAttribute('data-next') }, function(resp){
+        if (!resp || resp.ok !== true){ aStatus('fail', resp && resp.error === 'stale' ? '목록이 바뀌었어요 — 새로고침 후 다시 시도하세요.' : '상태를 바꾸지 못했습니다.'); return; }
+        aLoad();
+      }, function(msg){ aStatus('fail', msg); });
+    } else if (b.classList.contains('a-del')){
+      if (!confirm('이 배정을 삭제할까요?')) return;
+      aStatus('loading', '삭제 중…');
+      jsonp({ action: 'assignDel', row: row, time: time }, function(resp){
+        if (!resp || resp.ok !== true){ aStatus('fail', resp && resp.error === 'stale' ? '목록이 바뀌었어요 — 새로고침 후 다시 시도하세요.' : '삭제하지 못했습니다.'); return; }
+        aLoad();
+      }, function(msg){ aStatus('fail', msg); });
+    }
+  });
+
+  /* ===== 링크 복사 ===== */
+  function copyText(url, btn){
+    var done = function(){
+      btn.classList.add('done');
+      var label = btn.childNodes[btn.childNodes.length - 1];
+      label.textContent = '복사됐어요!';
+      setTimeout(function(){ btn.classList.remove('done'); label.textContent = '링크 복사'; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(done, function(){ fallback(url, done); });
+    } else { fallback(url, done); }
+  }
+  function fallback(url, done){
+    var t = document.createElement('textarea');
+    t.value = url; t.style.position = 'fixed'; t.style.opacity = '0';
+    document.body.appendChild(t); t.select();
+    try { document.execCommand('copy'); done(); } catch(_){ prompt('아래 주소를 복사하세요:', url); }
+    document.body.removeChild(t);
+  }
+  $('entry-copy').addEventListener('click', function(){ copyText(BASE_URL + 'index.html', $('entry-copy')); });
+
+  syncTargetUI();
+  if (current) renderRounds();
+  aLoad();
+})();
+</script>
+</body>
+</html>

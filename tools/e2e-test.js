@@ -138,49 +138,71 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(true, '배정 없음 안내');
   await p4.close();
 
-  /* ========== 6) 대시보드 — 배정 CRUD + 결과 표 ========== */
-  assignRows = [{ time: '2026-08-28 20:00:00', ttype: '학년', target: '고1', cat: 'pho', catLabel: '음운', round: '1', memo: '', status: '진행', _row: 2 }];
+  /* ========== 6) 결과 확인(대시보드) — 결과 전용 ========== */
   const p5 = await ctx.newPage();
-  p5.on('dialog', d => d.accept());
   await p5.goto(`http://localhost:${PORT}/shueguk-teacher-dashboard.html`);
-  await p5.waitForSelector('#a-tbody tr');
-  ok((await p5.textContent('#a-tbody')).includes('학년') && (await p5.textContent('#a-tbody')).includes('음운 1회'), '배정 목록 표시');
   await p5.waitForSelector('#tbody tr');
   ok((await p5.textContent('#tbody')).includes('김결과'), '결과 표 표시');
   ok((await p5.textContent('#f-unit')).includes('음운'), '단원 필터에 카테고리');
-
-  // 배정 추가 (학교 대상)
-  await p5.selectOption('#a-ttype', '학교');
-  await p5.waitForSelector('#a-target-text-wrap:not([style*="none"])');
-  await p5.fill('#a-target-text', '능곡고');
-  await p5.selectOption('#a-cat', 'pho');
-  await p5.selectOption('#a-round', '4');
-  await p5.click('#a-add');
-  await p5.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 2);
-  const addReq = reqLog.find(q => q.action === 'assignAdd');
-  ok(addReq && addReq.ttype === '학교' && addReq.target === '능곡고' && addReq.cat === 'pho' && addReq.round === '4', 'assignAdd 파라미터');
-  ok((await p5.textContent('#a-tbody')).includes('능곡고'), '추가된 배정 표시');
-
-  // 마감 → 삭제
-  await p5.click('#a-tbody .a-toggle');
-  await p5.waitForFunction(() => document.getElementById('a-tbody').textContent.includes('마감'));
-  ok(reqLog.some(q => q.action === 'assignSet' && q.status === '마감'), '마감 요청');
-  await p5.click('#a-tbody .a-del');
-  await p5.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 1);
-  ok(reqLog.some(q => q.action === 'assignDel'), '삭제 요청·목록 갱신');
+  ok(!(await p5.$('#a-tbody')), '대시보드에 배정 UI 없음 (배정하기 페이지로 이동)');
   await p5.close();
 
-  /* ========== 7) 대시보드 — 옛 배포본(assign 미지원) 안내 ========== */
+  /* ========== 7) 배정하기 페이지 — 회차 목록·배정 CRUD ========== */
+  assignRows = [{ time: '2026-08-28 20:00:00', ttype: '학년', target: '고1', cat: 'pho', catLabel: '음운', round: '1', memo: '', status: '진행', _row: 2 }];
+  const p7 = await ctx.newPage();
+  p7.on('dialog', d => d.accept());
+  await p7.goto(`http://localhost:${PORT}/assign.html`);
+  await p7.waitForSelector('#a-tbody tr');
+  ok((await p7.textContent('#a-tbody')).includes('학년') && (await p7.textContent('#a-tbody')).includes('음운 1회'), '배정 현황 표시');
+  ok((await p7.$$('.cat-btn')).length === 10, '카테고리 탭 10개');
+  ok((await p7.$$('#rounds .row')).length === 10, '기본 카테고리(음운) 회차 10개');
+  // 한글 맞춤법 탭 전환
+  await p7.click('.cat-btn[data-code="ort"]');
+  await p7.waitForFunction(() => document.querySelectorAll('#rounds .row').length === 32);
+  ok(true, '한글 맞춤법 회차 32개');
+  // 미리보기 링크에 preview=1
+  const prevHref = await p7.getAttribute('#rounds .row .abtn.preview', 'href');
+  ok(prevHref.includes('test.html?c=ort&r=1') && prevHref.includes('preview=1'), '미리보기 링크');
+  // [배정] → 폼 → 학교 대상 저장
+  await p7.click('#rounds .row .abtn.assign');
+  await p7.waitForSelector('#form-card.show');
+  ok((await p7.textContent('#f-title')).includes('한글 맞춤법 1회'), '배정 폼에 회차 표시');
+  await p7.selectOption('#f-ttype', '학교');
+  await p7.fill('#f-text', '능곡고');
+  await p7.click('#f-add');
+  await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 2);
+  const addReq = reqLog.find(q => q.action === 'assignAdd');
+  ok(addReq && addReq.ttype === '학교' && addReq.target === '능곡고' && addReq.cat === 'ort' && addReq.round === '1', 'assignAdd 파라미터');
+  ok((await p7.textContent('#a-tbody')).includes('능곡고'), '추가된 배정 표시');
+  // 마감 → 삭제
+  await p7.click('#a-tbody .a-toggle');
+  await p7.waitForFunction(() => document.getElementById('a-tbody').textContent.includes('마감'));
+  ok(reqLog.some(q => q.action === 'assignSet' && q.status === '마감'), '마감 요청');
+  await p7.click('#a-tbody .a-del');
+  await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 1);
+  ok(reqLog.some(q => q.action === 'assignDel'), '삭제 요청·목록 갱신');
+  await p7.close();
+
+  /* ========== 8) 배정하기 — 옛 배포본(assign 미지원) 안내 ========== */
   const p6 = await ctx.newPage();
   await p6.route('**://script.google.com/**', async (route) => {
     const q = Object.fromEntries(new URL(route.request().url()).searchParams);
     const payload = { ok: true, rows: [] };  // 옛 배포본은 assignList에도 결과 rows를 돌려준다
     return route.fulfill({ status: 200, contentType: 'text/javascript', body: `${q.callback}(${JSON.stringify(payload)})` });
   });
-  await p6.goto(`http://localhost:${PORT}/shueguk-teacher-dashboard.html`);
+  await p6.goto(`http://localhost:${PORT}/assign.html`);
   await p6.waitForFunction(() => document.getElementById('a-status').textContent.includes('재배포'));
   ok(true, '옛 배포본이면 재배포 안내');
   await p6.close();
+
+  /* ========== 9) 한글 맞춤법 개념 정리 탭 ========== */
+  const p8 = await ctx.newPage();
+  await p8.goto(`http://localhost:${PORT}/test.html?c=ort&r=2&preview=1`);
+  await p8.waitForSelector('#app:not(.hidden)');
+  ok(!(await p8.$eval('#mode-tabs', el => el.classList.contains('hidden'))), '개념 정리/테스트 모드 탭 표시');
+  ok((await p8.textContent('#study-body')).includes('된소리로 적는다'), '개념 정리에 규정 내용');
+  ok((await p8.$$('#study-body .note-box')).length >= 1, "'다만' 안내 상자 표시");
+  await p8.close();
 
   await browser.close();
   server.close();
