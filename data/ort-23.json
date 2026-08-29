@@ -1,0 +1,25 @@
+{
+ "category": "한글 맞춤법",
+ "round": 23,
+ "title": "한글 맞춤법 — 준말 (2)",
+ "subtitle": "제4장 제5절 준말 (2) — 제37~40항",
+ "instruction": "제37~40항: '-이-'가 붙은 준말, '-지 않-'의 준말, 어간 끝음절 '하'가 주는 경우의 표기입니다.",
+ "total": 15,
+ "questions": [
+  { "type": "choice", "num": 1, "stem": "'쓰이다'의 준말은?", "options": ["씌다", "씨다", "쓔다", "싀다"], "answer": 1, "explanation": "ㅡ + ㅣ → ㅢ(제37항)." },
+  { "type": "short", "num": 2, "stem": "'보이다'의 준말을 쓰시오.", "answer": "뵈다", "explanation": "ㅗ + ㅣ → ㅚ(제37항)." },
+  { "type": "ox", "num": 3, "stem": "'뜨이다'의 준말은 '띄다'이다.", "answer": "O", "explanation": "제37항." },
+  { "type": "choice", "num": 4, "stem": "'쓰이어'의 바른 준말 두 가지로 짝지어진 것은?", "options": ["씌어 · 쓰여", "씌여 · 쓰어", "싀어 · 쓔여", "씌어 · 씌여"], "answer": 1, "explanation": "제38항 — '씌여'는 틀린 표기." },
+  { "type": "ox", "num": 5, "stem": "'트이어'는 '틔어' 또는 '트여'로 줄 수 있다.", "answer": "O", "explanation": "제38항." },
+  { "type": "choice", "num": 6, "stem": "'그렇지 않은'의 준말은?", "options": ["그렇잖은", "그렇찮은", "그렇쟎은", "그러챦은"], "answer": 1, "explanation": "'-지 않-'은 '-잖-'으로 적는다(제39항)." },
+  { "type": "short", "num": 7, "stem": "'만만하지 않다'의 준말을 쓰시오.", "answer": "만만찮다", "explanation": "'-하지 않-'은 '-찮-'으로 적는다(제39항)." },
+  { "type": "choice", "num": 8, "stem": "'적지 않은'의 준말은?", "options": ["적잖은", "적찮은", "적쟎은", "적잔은"], "answer": 1, "explanation": "제39항." },
+  { "type": "ox", "num": 9, "stem": "'변변하지 않다'의 준말은 '변변찮다'이다.", "answer": "O", "explanation": "제39항." },
+  { "type": "choice", "num": 10, "stem": "'간편하게'의 준말은?", "options": ["간편케", "간편게", "간편해게", "간편캐"], "answer": 1, "explanation": "'하'의 ㅏ가 줄고 ㅎ이 다음 음절 첫소리와 어울려 거센소리가 된다(제40항)." },
+  { "type": "short", "num": 11, "stem": "'연구하도록'의 준말을 쓰시오.", "answer": "연구토록", "explanation": "제40항." },
+  { "type": "choice", "num": 12, "stem": "'거북하지'의 준말은?", "options": ["거북지", "거북치", "거붛지", "거북키지"], "answer": 1, "explanation": "ㄱ·ㅂ·ㅅ 같은 안울림소리 받침 뒤에서는 '하'가 통째로 준다(제40항 붙임 2)." },
+  { "type": "short", "num": 13, "stem": "'생각하건대'의 준말을 쓰시오.", "answer": "생각건대", "explanation": "제40항 붙임 2." },
+  { "type": "ox", "num": 14, "stem": "'익숙하지 않다'의 준말은 '익숙치 않다'이다.", "answer": "X", "explanation": "'익숙지 않다'가 바른 준말(제40항 붙임 2)." },
+  { "type": "choice", "num": 15, "stem": "바른 표기는?", "options": ["하마터면", "하마트면", "하마더면", "하맏터면"], "answer": 1, "explanation": "제40항 붙임 3 — 결코, 아무튼, 하마터면, 요컨대 등." }
+ ]
+}

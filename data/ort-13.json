@@ -1,0 +1,25 @@
+{
+ "category": "한글 맞춤법",
+ "round": 13,
+ "title": "한글 맞춤법 — 겹쳐 나는 소리 (2)",
+ "subtitle": "제3장 제6절 겹쳐 나는 소리 (2)",
+ "instruction": "제13항: 같은 음절이 겹쳐 나는 부분은 같은 글자로 적는다. 다만, 그 밖의 한자어는 둘째 음절 이하에서 본음대로 적는다(냉랭하다, 연년생 등).",
+ "total": 15,
+ "questions": [
+  { "type": "ox", "num": 1, "stem": "겹쳐 나는 소리라도 그 밖의 한자어는 둘째 음절 이하에서 본음대로 적는다. 예: 냉랭하다.", "answer": "O", "explanation": "제13항의 예외." },
+  { "type": "choice", "num": 2, "stem": "바른 표기는?", "options": ["냉랭하다", "냉냉하다", "랭랭하다", "냉랑하다"], "answer": 1, "explanation": "둘째 음절은 본음 '랭'대로 적는다." },
+  { "type": "short", "num": 3, "stem": "틀린 표기 '늠늠하다'(의젓하고 당당하다)를 바르게 고쳐 쓰시오.", "answer": "늠름하다", "explanation": "둘째 음절은 본음 '름'." },
+  { "type": "choice", "num": 4, "stem": "바른 표기는?", "options": ["연년생", "연연생", "년년생", "녕년생"], "answer": 1, "explanation": "둘째 음절은 본음 '년'." },
+  { "type": "ox", "num": 5, "stem": "'역력하다'는 '역역하다'로 적는다.", "answer": "X", "explanation": "'역력하다' — 둘째 음절은 본음 '력'." },
+  { "type": "short", "num": 6, "stem": "틀린 표기 '적나나하다'를 바르게 고쳐 쓰시오.", "answer": "적나라하다", "explanation": "'赤裸裸' — 셋째 음절은 본음 '라'." },
+  { "type": "choice", "num": 7, "stem": "바른 표기는?", "options": ["낭랑하다", "낭낭하다", "랑랑하다", "낭냥하다"], "answer": 1, "explanation": "둘째 음절은 본음 '랑'." },
+  { "type": "ox", "num": 8, "stem": "'녹록하지 않다'의 '녹록하다'가 바른 표기이다.", "answer": "O", "explanation": "둘째 음절은 본음 '록'." },
+  { "type": "choice", "num": 9, "stem": "겹치는 부분을 같은 글자로 적는 것은?", "options": ["누누이", "연년생", "냉랭하다", "역력하다"], "answer": 1, "explanation": "'누누이'는 제13항 본문의 예, 나머지는 본음대로 적는 예." },
+  { "type": "short", "num": 10, "stem": "틀린 표기 '유류상종'을 바르게 고쳐 쓰시오.", "answer": "유유상종", "explanation": "제13항." },
+  { "type": "ox", "num": 11, "stem": "'쓱싹쓱싹'이 바른 표기이다.", "answer": "O", "explanation": "제13항." },
+  { "type": "choice", "num": 12, "stem": "표기가 틀린 것은?", "options": ["꼿꼿하다", "밋밋하다", "씁쓸하다", "연연생"], "answer": 4, "explanation": "'연년생'이 바른 표기." },
+  { "type": "short", "num": 13, "stem": "빈칸에 알맞은 말을 쓰시오. — '딱딱', '쌕쌕'처럼 같은 음절이 겹쳐 나면 (   ) 글자로 적는다.", "answer": "같은", "explanation": "제13항." },
+  { "type": "ox", "num": 14, "stem": "'염념불망(念念不忘)'은 '염염불망'으로 적는다.", "answer": "X", "explanation": "둘째 음절은 본음 '념'대로 — 염념불망." },
+  { "type": "choice", "num": 15, "stem": "바른 표기끼리 짝지어진 것은?", "options": ["연연불망 · 염념불망", "연련불망 · 염염불망", "연연불망 · 염염불망", "연년불망 · 염념불망"], "answer": 1, "explanation": "'연연불망'은 제13항 본문의 예, '염념불망'은 본음대로 적는 예." }
+ ]
+}

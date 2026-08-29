@@ -1,0 +1,25 @@
+{
+ "category": "한글 맞춤법",
+ "round": 8,
+ "title": "한글 맞춤법 — 모음 (1)",
+ "subtitle": "제3장 제4절 모음 (1) — 'ㅖ'의 표기",
+ "instruction": "제8항: '계, 례, 몌, 폐, 혜'의 'ㅖ'는 [ㅔ]로 소리 나는 경우가 있더라도 'ㅖ'로 적는다. (다만 '게송, 게시판, 휴게실'은 본음대로 적는다.)",
+ "total": 15,
+ "questions": [
+  { "type": "ox", "num": 1, "stem": "'계, 례, 폐, 혜'의 'ㅖ'는 [ㅔ]로 소리 나는 경우가 있어도 'ㅖ'로 적는다.", "answer": "O", "explanation": "제8항." },
+  { "type": "choice", "num": 2, "stem": "바른 표기는?", "options": ["핑계", "핑게", "핑개", "핀계"], "answer": 1, "explanation": "제8항." },
+  { "type": "short", "num": 3, "stem": "틀린 표기 '헤택'을 바르게 고쳐 쓰시오.", "answer": "혜택", "explanation": "제8항." },
+  { "type": "choice", "num": 4, "stem": "바른 표기는?", "options": ["폐품", "페품", "패품", "펴품"], "answer": 1, "explanation": "제8항." },
+  { "type": "ox", "num": 5, "stem": "'게시판'은 본음대로 'ㅔ'로 적는다.", "answer": "O", "explanation": "제8항 다만 — 게송, 게시판, 휴게실." },
+  { "type": "choice", "num": 6, "stem": "표기가 틀린 것은?", "options": ["사례", "계집", "혜택", "휴계실"], "answer": 4, "explanation": "'휴게실'이 바른 표기(제8항 다만)." },
+  { "type": "ox", "num": 7, "stem": "'게송', '게시판', '휴게실'은 예외적으로 'ㅔ'로 적는다.", "answer": "O", "explanation": "제8항 다만." },
+  { "type": "choice", "num": 8, "stem": "바른 표기는?", "options": ["계수나무", "게수나무", "걔수나무", "계쑤나무"], "answer": 1, "explanation": "제8항." },
+  { "type": "short", "num": 9, "stem": "틀린 표기 '차레'(순서)를 바르게 고쳐 쓰시오.", "answer": "차례", "explanation": "제8항." },
+  { "type": "ox", "num": 10, "stem": "'계시다'가 바른 표기이다.", "answer": "O", "explanation": "제8항." },
+  { "type": "choice", "num": 11, "stem": "바른 표기는?", "options": ["시계", "시게", "시걔", "싯계"], "answer": 1, "explanation": "제8항." },
+  { "type": "short", "num": 12, "stem": "틀린 표기 '실레'(예의에 벗어남)를 바르게 고쳐 쓰시오.", "answer": "실례", "explanation": "제8항." },
+  { "type": "ox", "num": 13, "stem": "'은혜'는 '은헤'로 적어도 된다.", "answer": "X", "explanation": "'혜'는 ㅖ로 적는다(제8항)." },
+  { "type": "choice", "num": 14, "stem": "예외적으로 'ㅔ'로 적는 말끼리 묶인 것은?", "options": ["게송 · 게시판 · 휴게실", "계수 · 사례 · 폐품", "혜택 · 계집 · 핑계", "계시다 · 시계 · 차례"], "answer": 1, "explanation": "제8항 다만." },
+  { "type": "short", "num": 15, "stem": "틀린 표기 '지페'(종이돈)를 바르게 고쳐 쓰시오.", "answer": "지폐", "explanation": "제8항." }
+ ]
+}

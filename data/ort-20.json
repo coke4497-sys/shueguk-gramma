@@ -1,0 +1,25 @@
+{
+ "category": "한글 맞춤법",
+ "round": 20,
+ "title": "한글 맞춤법 — 합성어 및 접두사가 붙은 말 (1)",
+ "subtitle": "제4장 제4절 합성어 및 접두사가 붙은 말 (1) — 제27~29항",
+ "instruction": "제27항: 둘 이상의 단어가 어울리거나 접두사가 붙어서 이루어진 말은 각각 그 원형을 밝히어 적는다.",
+ "total": 15,
+ "questions": [
+  { "type": "ox", "num": 1, "stem": "둘 이상의 단어가 어울린 말은 각각 그 원형을 밝혀 적는다. 예: 꽃잎, 칼날.", "answer": "O", "explanation": "제27항." },
+  { "type": "choice", "num": 2, "stem": "바른 표기는?", "options": ["부엌일", "부억일", "부엌닐", "부엉일"], "answer": 1, "explanation": "제27항." },
+  { "type": "short", "num": 3, "stem": "틀린 표기 '실증'(싫은 생각)을 바르게 고쳐 쓰시오.", "answer": "싫증", "explanation": "'싫-'의 원형을 밝혀 적는다(제27항)." },
+  { "type": "choice", "num": 4, "stem": "바른 표기는?", "options": ["헛웃음", "허수슴", "헛우슴", "헏웃음"], "answer": 1, "explanation": "제27항." },
+  { "type": "ox", "num": 5, "stem": "'며칠'은 어원이 분명하지 않아 '몇일'로 적지 않는다.", "answer": "O", "explanation": "제27항 붙임 2." },
+  { "type": "short", "num": 6, "stem": "틀린 표기 '몇일'을 바르게 고쳐 쓰시오.", "answer": "며칠" },
+  { "type": "choice", "num": 7, "stem": "바른 표기는?", "options": ["샛노랗다", "새노랗다", "샏노랗다", "샌노랗다"], "answer": 1, "explanation": "제27항 — 접두사 '샛-'." },
+  { "type": "ox", "num": 8, "stem": "'할아버지'는 어원은 '한아버지'와 관련되지만 소리 나는 대로 '할아버지'로 적는다.", "answer": "O", "explanation": "제27항 붙임 1." },
+  { "type": "choice", "num": 9, "stem": "'이[齒]'가 합성어에서 [니]로 소리 날 때의 바른 표기는?", "options": ["송곳니", "송곳이", "송곤니", "송고치"], "answer": 1, "explanation": "제27항 붙임 3 — 간니, 덧니, 사랑니, 어금니 등." },
+  { "type": "short", "num": 10, "stem": "틀린 표기 '틀이'(잇몸에 끼웠다 뺐다 하는 이)를 바르게 고쳐 쓰시오.", "answer": "틀니", "explanation": "제27항 붙임 3." },
+  { "type": "choice", "num": 11, "stem": "바른 표기는?", "options": ["따님", "딸님", "따임", "딷님"], "answer": 1, "explanation": "끝소리 ㄹ이 줄어진 대로 적는다(제28항)." },
+  { "type": "short", "num": 12, "stem": "'바늘 + 질'이 어울려 만들어진 말의 바른 표기를 쓰시오.", "answer": "바느질", "explanation": "제28항 — ㄹ 탈락." },
+  { "type": "choice", "num": 13, "stem": "바른 표기는?", "options": ["숟가락", "숫가락", "술가락", "숱가락"], "answer": 1, "explanation": "'술'의 ㄹ이 ㄷ으로 소리 나는 것은 ㄷ으로 적는다(제29항)." },
+  { "type": "short", "num": 14, "stem": "틀린 표기 '이틋날'을 바르게 고쳐 쓰시오.", "answer": "이튿날", "explanation": "제29항." },
+  { "type": "ox", "num": 15, "stem": "'섣달', '반짇고리', '사흗날'은 ㄹ 소리가 ㄷ으로 나서 ㄷ으로 적는 말이다.", "answer": "O", "explanation": "제29항." }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "category": "한글 맞춤법",
+ "round": 12,
+ "title": "한글 맞춤법 — 겹쳐 나는 소리 (1)",
+ "subtitle": "제3장 제6절 겹쳐 나는 소리 (1)",
+ "instruction": "제13항: 한 단어 안에서 같은 음절이나 비슷한 음절이 겹쳐 나는 부분은 같은 글자로 적는다.",
+ "total": 15,
+ "questions": [
+  { "type": "ox", "num": 1, "stem": "한 단어 안에서 같은 음절이나 비슷한 음절이 겹쳐 나는 부분은 같은 글자로 적는다.", "answer": "O", "explanation": "제13항." },
+  { "type": "choice", "num": 2, "stem": "바른 표기는?", "options": ["딱딱", "딱닥", "닥딱", "딱땋"], "answer": 1, "explanation": "제13항." },
+  { "type": "short", "num": 3, "stem": "틀린 표기 '씩식하다'를 바르게 고쳐 쓰시오.", "answer": "씩씩하다", "explanation": "제13항." },
+  { "type": "choice", "num": 4, "stem": "바른 표기는?", "options": ["똑딱똑딱", "똑닥똑닥", "똑딱똑닥", "똑닥똑딱"], "answer": 1, "explanation": "제13항." },
+  { "type": "ox", "num": 5, "stem": "'유유상종(類類相從)'이 바른 표기이다.", "answer": "O", "explanation": "제13항." },
+  { "type": "short", "num": 6, "stem": "틀린 표기 '누루이'(여러 번 반복하여)를 바르게 고쳐 쓰시오.", "answer": "누누이", "explanation": "제13항." },
+  { "type": "choice", "num": 7, "stem": "바른 표기는?", "options": ["꼿꼿하다", "꼿곳하다", "꽂꽂하다", "꼳꼳하다"], "answer": 1, "explanation": "제13항." },
+  { "type": "ox", "num": 8, "stem": "'눅눅하다'가 바른 표기이다.", "answer": "O", "explanation": "제13항." },
+  { "type": "choice", "num": 9, "stem": "바른 표기는?", "options": ["씁쓸하다", "씁슬하다", "습쓸하다", "씁쑬하다"], "answer": 1, "explanation": "제13항." },
+  { "type": "short", "num": 10, "stem": "틀린 표기 '짭잘하다'를 바르게 고쳐 쓰시오.", "answer": "짭짤하다", "explanation": "제13항." },
+  { "type": "ox", "num": 11, "stem": "'연연불망(戀戀不忘)'은 겹침을 살려 '연연'으로 적는다.", "answer": "O", "explanation": "제13항." },
+  { "type": "choice", "num": 12, "stem": "바른 표기는?", "options": ["밋밋하다", "민밋하다", "밑밋하다", "믿밋하다"], "answer": 1, "explanation": "제13항." },
+  { "type": "short", "num": 13, "stem": "틀린 표기 '쌉살하다'를 바르게 고쳐 쓰시오.", "answer": "쌉쌀하다", "explanation": "제13항." },
+  { "type": "ox", "num": 14, "stem": "'싹싹하다'가 바른 표기이다.", "answer": "O", "explanation": "제13항." },
+  { "type": "choice", "num": 15, "stem": "'쌕쌕'과 같은 원리(겹치는 부분을 같은 글자로)로 적은 것은?", "options": ["쓱싹쓱싹", "냉랭하다", "연년생", "낭랑하다"], "answer": 1, "explanation": "'냉랭하다·연년생·낭랑하다'는 둘째 음절 이하를 본음대로 적는 경우(제13항 다만)." }
+ ]
+}
