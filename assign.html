@@ -22,12 +22,20 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .header h1 { font-family: 'Nanum Myeongjo', serif; font-size: 22px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; }
 .header .intro { font-size: 13px; color: #6A716C; margin-top: 8px; line-height: 1.7; }
 
-.cats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 6px 0 14px; }
-.cat-btn { padding: 11px 4px; background: white; border: 1.5px solid #E5EDE8; border-radius: 11px; font: inherit; font-size: 12.5px; font-weight: 700; color: #6A716C; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.cat-btn:hover { border-color: #C6D5D2; color: #4C6E66; }
-.cat-btn.active { background: #F0E0AC; color: #7A6224; border-color: #E5CE8F; }
-.cat-btn:disabled { opacity: .45; cursor: not-allowed; }
-@media (max-width: 560px) { .cats { grid-template-columns: repeat(3, 1fr); } .cat-btn { font-size: 12px; } }
+.cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 4px 0 18px; }
+.cat-card { background: white; border: 2px solid #F1F6F4; border-radius: 14px; padding: 16px 12px; text-align: center; cursor: pointer; font: inherit; box-shadow: 0 2px 10px rgba(45,128,104,0.04); transition: transform .14s ease, border-color .14s ease; -webkit-tap-highlight-color: transparent; }
+.cat-card:hover { transform: translateY(-2px); border-color: #C6D5D2; }
+.cat-card .cname { font-family: 'Nanum Myeongjo', serif; font-size: 15.5px; font-weight: 800; color: #3A544E; letter-spacing: -.3px; }
+.cat-card .ccnt { margin-top: 5px; font-size: 11.5px; font-weight: 700; color: #628C83; }
+.cat-card:disabled { cursor: not-allowed; box-shadow: none; }
+.cat-card:disabled:hover { transform: none; border-color: #F1F6F4; }
+.cat-card:disabled .cname { color: #A9B1AB; }
+.cat-card:disabled .ccnt { color: #B7BFB9; }
+.cat-back { display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 10px; font: inherit; font-size: 13px; font-weight: 700; color: #6A716C; background: none; border: none; cursor: pointer; padding: 4px 2px; -webkit-tap-highlight-color: transparent; }
+.cat-back svg { width: 15px; height: 15px; }
+.cat-back:hover { color: #628C83; }
+.hidden { display: none !important; }
+@media (max-width: 560px) { .cats { grid-template-columns: repeat(2, 1fr); } }
 
 .unit-title { font-family: 'Nanum Myeongjo', serif; font-size: 15px; font-weight: 800; color: #3A544E; margin: 6px 2px 10px; }
 
@@ -107,6 +115,7 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     </div>
   </div>
 
+  <div id="home-view">
   <!-- 학생 공통 입구 -->
   <div class="list">
     <div class="row">
@@ -122,11 +131,19 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     </div>
   </div>
 
-  <!-- 카테고리 탭 -->
+  <!-- 카테고리 목록 (첫 화면) -->
+  <div class="unit-title">카테고리</div>
   <div class="cats" id="cats"></div>
+  </div>
 
-  <div class="unit-title" id="sec-title"></div>
-  <div class="list" id="rounds"></div>
+  <!-- 회차 목록 (카테고리를 누르면) -->
+  <div id="round-view" class="hidden">
+    <button type="button" class="cat-back" id="cat-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+      카테고리로 돌아가기</button>
+    <div class="unit-title" id="sec-title"></div>
+    <div class="list" id="rounds"></div>
+  </div>
 
   <!-- 배정 현황 -->
   <div class="card">
@@ -181,24 +198,32 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     function cleanup(){ try { delete window[cb]; } catch(e){ window[cb] = undefined; } var el = $(cb + '_s'); if (el) el.remove(); }
   }
 
-  /* ===== 카테고리 탭 + 회차 목록 ===== */
+  /* ===== 카테고리 목록 → 회차 목록 (파고들기) ===== */
   var catWrap = $('cats');
   CATS.forEach(function(c){
     var n = roundsOf(c.code).length;
     var b = document.createElement('button');
     b.type = 'button';
-    b.className = 'cat-btn';
-    b.textContent = c.label + (n ? '' : ' ·준비 중');
+    b.className = 'cat-card';
+    b.innerHTML = '<span class="cname">' + esc(c.label) + '</span><span class="ccnt" style="display:block;">' + (n ? '전체 ' + n + '회' : '준비 중') + '</span>';
     b.disabled = !n;
     b.setAttribute('data-code', c.code);
-    b.addEventListener('click', function(){
-      current = c.code;
-      catWrap.querySelectorAll('.cat-btn').forEach(function(x){ x.classList.remove('active'); });
-      b.classList.add('active');
-      renderRounds();
-    });
+    b.addEventListener('click', function(){ openCat(c.code); });
     catWrap.appendChild(b);
-    if (!current && n) { current = c.code; b.classList.add('active'); }
+  });
+
+  function openCat(code){
+    current = code;
+    renderRounds();
+    $('home-view').classList.add('hidden');
+    $('round-view').classList.remove('hidden');
+    window.scrollTo({ top: 0 });
+  }
+  $('cat-back').addEventListener('click', function(){
+    $('round-view').classList.add('hidden');
+    $('home-view').classList.remove('hidden');
+    $('form-card').classList.remove('show');
+    picked = null;
   });
 
   function renderRounds(){
@@ -357,7 +382,6 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   $('entry-copy').addEventListener('click', function(){ copyText(BASE_URL + 'index.html', $('entry-copy')); });
 
   syncTargetUI();
-  if (current) renderRounds();
   aLoad();
 })();
 </script>
