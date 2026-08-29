@@ -15,21 +15,21 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="GRAMMA">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif; background: #C6D5D2; min-height: 100vh; padding: 16px; color: #2C2F2D; -webkit-text-size-adjust: 100%; }
 .container { max-width: 980px; margin: 0 auto; }
 
 .header { text-align: center; margin-bottom: 14px; padding: 18px 16px 14px; background: white; border-radius: 20px; box-shadow: 0 4px 16px rgba(45,128,104,0.08); border: 2px solid #C6D5D2; }
-.header .logo { font-family: 'Nanum Myeongjo', serif; font-size: 11px; font-weight: 800; letter-spacing: 5px; color: #A6C1BB; margin-bottom: 6px; }
-.header h1 { font-family: 'Nanum Myeongjo', serif; font-size: 22px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; }
+.header .logo { font-family: 'Gowun Batang', serif; font-size: 11px; font-weight: 800; letter-spacing: 5px; color: #A6C1BB; margin-bottom: 6px; }
+.header h1 { font-family: 'Gowun Batang', serif; font-size: 22px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; }
 
 .card { background: white; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; border: 2px solid #C6D5D2; }
 
 /* 요약 */
 .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
 .stat { background: white; border: 2px solid #C6D5D2; border-radius: 14px; padding: 14px; text-align: center; }
-.stat .big { font-family: 'Nanum Myeongjo', serif; font-size: 30px; font-weight: 800; color: #8E6BC8; line-height: 1.1; }
+.stat .big { font-family: 'Gowun Batang', serif; font-size: 30px; font-weight: 800; color: #8D83A8; line-height: 1.1; }
 .stat .lbl { font-size: 12px; font-weight: 700; color: #6A716C; margin-top: 4px; }
 
 /* 컨트롤 */
@@ -37,9 +37,9 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .ctrl { display: flex; flex-direction: column; gap: 3px; }
 .ctrl label { font-size: 11px; font-weight: 700; color: #6A716C; }
 .ctrl select, .ctrl input { padding: 9px 10px; font-size: 13px; font-family: inherit; font-weight: 700; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; background: white; -webkit-appearance: none; }
-.ctrl select:focus, .ctrl input:focus { border-color: #C4A9E4; }
-.btn { padding: 9px 16px; font-size: 13px; font-weight: 800; font-family: inherit; border: none; border-radius: 9px; background: #C4A9E4; color: #43307A; cursor: pointer; } /* 문법 포인트 = 지정 연보라 세트 #C4A9E4/#43307A/#8E6BC8 (2026-08-29) */
-.btn.ghost { background: white; color: #8E6BC8; border: 2px solid #C4A9E4; }
+.ctrl select:focus, .ctrl input:focus { border-color: #D9CCE8; }
+.btn { padding: 9px 16px; font-size: 13px; font-weight: 800; font-family: inherit; border: none; border-radius: 9px; background: #EDE4F4; color: #635A7D; cursor: pointer; } /* 문법 포인트 = 허브 '학습 관리' 아이콘 연보라 #EDE4F4/#8D83A8 (2026-08-29 사용자 확정) */
+.btn.ghost { background: white; color: #8D83A8; border: 2px solid #D9CCE8; }
 .btn.danger { background: white; color: #DB4C39; border: 2px solid #EFA9A5; }
 .btn.danger:hover { background: #FADED9; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
@@ -52,7 +52,7 @@ th { background: #E9F0EF; color: #3A544E; font-weight: 800; font-size: 12px; pos
 tbody tr:hover { background: #F4F5F3; }
 tr.sel-on > td { background: #F1F6F4; }
 .chk-cell { width: 34px; text-align: center; padding-right: 4px; padding-left: 12px; }
-.chk-cell input, th.chk-cell input { width: 16px; height: 16px; accent-color: #8E6BC8; cursor: pointer; }
+.chk-cell input, th.chk-cell input { width: 16px; height: 16px; accent-color: #8D83A8; cursor: pointer; }
 .score-cell { font-weight: 800; color: #2C2F2D; }
 .pct { display: inline-block; min-width: 46px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; text-align: center; }
 .pct.hi { background: #E4F1EA; color: #276B4E; }
