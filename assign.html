@@ -24,20 +24,23 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .header h1 { font-family: 'Gowun Batang', serif; font-size: 22px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; }
 .header .intro { font-size: 13px; color: #6A716C; margin-top: 8px; line-height: 1.7; }
 
-.cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 4px 0 18px; }
-.cat-card { background: white; border: 2px solid #F1F6F4; border-radius: 14px; padding: 16px 12px; text-align: center; cursor: pointer; font: inherit; box-shadow: 0 2px 10px rgba(45,128,104,0.04); transition: transform .14s ease, border-color .14s ease; -webkit-tap-highlight-color: transparent; }
+.cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 4px 0 18px; }
+.cat-card { display: flex; align-items: center; gap: 12px; background: white; border: 2px solid #F1F6F4; border-radius: 14px; padding: 14px 16px; text-align: left; cursor: pointer; font: inherit; box-shadow: 0 2px 10px rgba(45,128,104,0.04); transition: transform .14s ease, border-color .14s ease; -webkit-tap-highlight-color: transparent; }
 .cat-card:hover { transform: translateY(-2px); border-color: #C6D5D2; }
+.cat-card .cico { flex: none; width: 42px; height: 42px; border-radius: 12px; background: #F4F5F3; display: flex; align-items: center; justify-content: center; color: #6A716C; }
+.cat-card .cico svg { width: 21px; height: 21px; }
+.cat-card .cbody { min-width: 0; }
 .cat-card .cname { font-family: 'Gowun Batang', serif; font-size: 15.5px; font-weight: 800; color: #3A544E; letter-spacing: -.3px; }
-.cat-card .ccnt { margin-top: 5px; font-size: 11.5px; font-weight: 700; color: #8D83A8; }
+.cat-card .ccnt { margin-top: 4px; font-size: 11.5px; font-weight: 700; color: #8D83A8; }
 .cat-card:disabled { cursor: not-allowed; box-shadow: none; }
 .cat-card:disabled:hover { transform: none; border-color: #F1F6F4; }
+.cat-card:disabled .cico { color: #C0C6C1; background: #F8F9F7; }
 .cat-card:disabled .cname { color: #A9B1AB; }
 .cat-card:disabled .ccnt { color: #B7BFB9; }
 .cat-back { display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 10px; font: inherit; font-size: 13px; font-weight: 700; color: #6A716C; background: none; border: none; cursor: pointer; padding: 4px 2px; -webkit-tap-highlight-color: transparent; }
 .cat-back svg { width: 15px; height: 15px; }
 .cat-back:hover { color: #628C83; }
 .hidden { display: none !important; }
-@media (max-width: 560px) { .cats { grid-template-columns: repeat(2, 1fr); } }
 
 .unit-title { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 800; color: #3A544E; margin: 6px 2px 10px; }
 
@@ -54,6 +57,17 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .abtn.copy.done { color: #276B4E; background: #E4F1EA; border-color: #3E9B74; }
 .abtn.assign { color: #635A7D; background: #EDE4F4; border: 1.5px solid #D9CCE8; }
 .abtn.assign:hover { background: #E3D6EF; border-color: #8D83A8; }
+.abtn.assign.on { color: #fff; background: #8D83A8; border-color: #8D83A8; }
+.abtn.assign.on:hover { background: #635A7D; border-color: #635A7D; }
+.abtn.stat { color: #3A544E; background: white; border: 1.5px solid #E8EAE7; }
+.abtn.stat:hover { border-color: #A6C1BB; }
+
+/* 담은 테스트 칩 */
+.sel-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 4px; }
+.sel-chip { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 800; color: #635A7D; background: #EDE4F4; border: 1.5px solid #D9CCE8; border-radius: 16px; padding: 5px 8px 5px 11px; }
+.sel-chip button { border: none; background: none; color: #8D83A8; font-weight: 800; cursor: pointer; font-size: 14px; padding: 0 2px; line-height: 1; font-family: inherit; }
+.sel-chip button:hover { color: #635A7D; }
+.sel-empty { font-size: 12.5px; color: #6A716C; background: #F4F5F3; border-radius: 9px; padding: 10px 12px; line-height: 1.6; }
 
 /* 배정 폼 (H WORK 배정과 같은 구성 — 학생 선택 위젯 + 마감·비고) */
 .form-card { background: white; border: 2px solid #D9CCE8; border-radius: 16px; padding: 16px; margin-bottom: 14px; display: none; }
@@ -94,6 +108,18 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .pchip .sc { color: #8B928C; font-size: 11px; font-weight: 400; }
 .warn-box { background: #fbf3e3; border: 1px solid #ecd9af; color: #8F630F; font-size: 12px; border-radius: 9px; padding: 9px 12px; margin-bottom: 10px; line-height: 1.6; }
 
+/* 학생 선택 위젯을 문법 포인트 연보라로 — 공용 student-picker.css는 녹색(H WORK 등 공용)이라 이 페이지에서만 덮어씀 */
+.sp-tab.on { background: #8D83A8; border-color: #8D83A8; color: #fff; }
+.sp-chip.on { background: #8D83A8; border-color: #8D83A8; color: #fff; }
+.sp-all { background: #8D83A8; border-color: #8D83A8; }
+.sp-all:hover { background: #635A7D; }
+.sp-item:hover { background: #F4F5F3; }
+.sp-item.on { background: #EDE4F4; }
+.sp-item.on .sp-box { background: #8D83A8; border-color: #8D83A8; }
+.sp-search:focus, .sp-filters select:focus { border-color: #8D83A8; }
+.sp-tab { border-color: #D9CCE8; }
+.sp-clear, .sp-summary { color: #635A7D; }
+
 /* 배정 현황 */
 .card { background: white; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; border: 2px solid #C6D5D2; }
 .card .c-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
@@ -126,28 +152,31 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   <div class="header">
     <div class="logo">SHUEGUK</div>
     <h1>배정하기</h1>
-    <p class="intro">카테고리를 고르면 회차별 테스트가 나옵니다.<br />미리 보고, 학생을 선택해 배정하세요 (전 학년 · 학년 · 개인 · 일부).<br />배정된 학생은 '내 문법 테스트' 페이지에서 확인하고 응시합니다.</p>
+    <p class="intro">카테고리에서 배정할 회차를 [담기]로 골라 담으세요 — 여러 회차를 한 번에 담을 수 있어요.<br />그다음 아래 '학생 배정'에서 학생을 선택해 배정합니다 (전 학년 · 학년 · 개인 · 일부).<br />배정된 학생은 '내 문법 테스트' 페이지에서 확인하고 응시합니다.</p>
   </div>
 
-  <!-- 배정 폼 (회차의 [배정]을 누르면 열림 — H WORK 배정과 같은 구성) -->
-  <div class="form-card" id="form-card">
-    <div class="f-title" id="f-title"></div>
-    <div id="picker"></div>
+  <!-- 학생 배정 (페이지 공통 — H WORK 배정과 같은 구성, 담은 회차를 한 번에 배정) -->
+  <div class="form-card" id="assign-card" style="display:block;">
+    <div class="f-title">학생 배정 <span class="muted" style="font-weight:400;">— 담은 테스트를 아래에서 고른 학생들에게 한 번에 배정해요.</span></div>
+    <div class="s-title" style="font-size:12px;font-weight:800;color:#6A716C;margin-bottom:6px;">배정할 테스트</div>
+    <div id="sel-box"></div>
+    <div id="picker" style="margin-top:12px;"></div>
     <div class="f-row">
       <div class="f-field"><label>마감 (선택)</label><input type="date" id="f-due"></div>
       <div class="f-field"><label>비고 (선택)</label><input type="text" id="f-memo" placeholder="예: 1회차" autocomplete="off"></div>
     </div>
     <button class="f-submit" id="f-add">이 학생들에게 배정</button>
     <div class="f-status" id="f-status"></div>
+  </div>
 
-    <div class="f-sec">
-      <div class="s-title">제출 현황 <span class="muted" style="font-weight:400;">— 배정된 학생과 실제 제출을 대조합니다 (이름+학교 기준)</span></div>
-      <button class="fbtn ghost" type="button" id="st-load" style="width:100%;">현황 불러오기 / 새로고침</button>
-      <div id="st-body" style="margin-top:12px;"></div>
-    </div>
-
-    <div style="text-align:right;margin-top:14px;">
-      <button class="fbtn ghost" id="f-close">닫기</button>
+  <!-- 제출 현황 (회차의 [현황]을 누르면 열림) -->
+  <div class="form-card" id="st-card">
+    <div class="f-title" id="st-title"></div>
+    <p class="muted" style="margin-bottom:10px;">배정된 학생과 실제 제출을 대조합니다 (이름+학교 기준)</p>
+    <div id="st-body"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:14px;">
+      <button class="fbtn ghost" type="button" id="st-load">다시 불러오기</button>
+      <button class="fbtn ghost" type="button" id="st-close">닫기</button>
     </div>
   </div>
 
@@ -209,7 +238,8 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   var TESTS = (window.GRAMMA && GRAMMA.tests) || {};
   var A_ROWS = [];
   var current = '';          // 선택된 카테고리 코드
-  var picked = null;         // 배정 폼이 가리키는 {cat, round}
+  var SEL = [];              // 담은 테스트 [{cat, round}] — 여러 회차·카테고리 가능
+  var stPicked = null;       // 제출 현황이 가리키는 {cat, round}
 
   function $(id){ return document.getElementById(id); }
   function esc(s){ return ('' + (s==null?'':s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -237,13 +267,28 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   }
 
   /* ===== 카테고리 목록 → 회차 목록 (파고들기) ===== */
+  // 카테고리별 무채색 라인 아이콘 (가는 스트로크 SVG — 브랜드 지침)
+  function ico(inner){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>'; }
+  var CAT_ICONS = {
+    pho: ico('<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9.5 9.5 0 0 1 0 14"/>'),                                     // 음운 — 소리
+    mor: ico('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'), // 형태소 — 조각
+    pos: ico('<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>'),             // 품사 — 이름표
+    wfm: ico('<circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/>'),                                                  // 단어 형성법 — 합쳐짐
+    sen: ico('<line x1="21" y1="6" x2="3" y2="6"/><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/>'), // 문장 — 글줄
+    hon: ico('<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'),                                                           // 높임법 — 사람
+    cap: ico('<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>'), // 사동과 피동 — 주고받음
+    ten: ico('<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'),                                                                          // 시제 — 시계
+    ort: ico('<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>'),                                     // 한글 맞춤법 — 바르게 확인
+    mid: ico('<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>')                                     // 중세 국어 — 옛 책
+  };
   var catWrap = $('cats');
   CATS.forEach(function(c){
     var n = roundsOf(c.code).length;
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'cat-card';
-    b.innerHTML = '<span class="cname">' + esc(c.label) + '</span><span class="ccnt" style="display:block;">' + (n ? '전체 ' + n + '회' : '준비 중') + '</span>';
+    b.innerHTML = '<span class="cico">' + (CAT_ICONS[c.code] || ico('<circle cx="12" cy="12" r="9"/>')) + '</span>' +
+      '<span class="cbody"><span class="cname" style="display:block;">' + esc(c.label) + '</span><span class="ccnt" style="display:block;">' + (n ? '전체 ' + n + '회' : '준비 중') + '</span></span>';
     b.disabled = !n;
     b.setAttribute('data-code', c.code);
     b.addEventListener('click', function(){ openCat(c.code); });
@@ -260,10 +305,9 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   $('cat-back').addEventListener('click', function(){
     $('round-view').classList.add('hidden');
     $('home-view').classList.remove('hidden');
-    $('form-card').classList.remove('show');
-    picked = null;
   });
 
+  function selHas(cat, round){ return SEL.some(function(s){ return s.cat === cat && '' + s.round === '' + round; }); }
   function renderRounds(){
     var rounds = roundsOf(current);
     $('sec-title').textContent = catLabelOf(current) + ' · 전체 ' + rounds.length + '회';
@@ -271,6 +315,7 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     rounds.forEach(function(n){
       var t = TESTS[current + '-' + n];
       var url = BASE_URL + 'test.html?c=' + current + '&r=' + n;
+      var on = selHas(current, n);
       html += '<div class="row">' +
         '<span class="rd">' + n + '회</span>' +
         '<span class="ttl">' + esc(t && t.title ? t.title : catLabelOf(current) + ' ' + n + '회') + '</span>' +
@@ -280,7 +325,8 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
           '<button type="button" class="abtn copy" data-url="' + escAttr(url) + '">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
             '링크 복사</button>' +
-          '<button type="button" class="abtn assign" data-round="' + n + '">배정</button>' +
+          '<button type="button" class="abtn stat" data-round="' + n + '">현황</button>' +
+          '<button type="button" class="abtn assign' + (on ? ' on' : '') + '" data-round="' + n + '">' + (on ? '담김 ✓' : '담기') + '</button>' +
         '</span></div>';
     });
     $('rounds').innerHTML = html;
@@ -290,11 +336,39 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     var b = ev.target.closest('button');
     if (!b) return;
     if (b.classList.contains('copy')) { copyText(b.getAttribute('data-url'), b); }
-    else if (b.classList.contains('assign')) { openForm(current, b.getAttribute('data-round')); }
+    else if (b.classList.contains('assign')) { toggleSel(current, b.getAttribute('data-round')); }
+    else if (b.classList.contains('stat')) { openStatus(current, b.getAttribute('data-round')); }
   });
 
-  /* ===== 배정 폼 (H WORK과 같은 학생 선택 위젯) ===== */
-  var picker = null;       // 공용 StudentPicker — 처음 폼을 열 때 한 번 만든다
+  /* ===== 배정할 테스트 담기 (여러 회차·카테고리 한 번에) ===== */
+  function toggleSel(cat, round){
+    if (selHas(cat, round)) SEL = SEL.filter(function(s){ return !(s.cat === cat && '' + s.round === '' + round); });
+    else SEL.push({ cat: cat, round: '' + round });
+    renderRounds();
+    renderSelBox();
+  }
+  function renderSelBox(){
+    var box = $('sel-box');
+    if (!SEL.length){
+      box.innerHTML = '<div class="sel-empty">아직 담은 테스트가 없어요. 아래 카테고리에서 회차의 <b>[담기]</b>를 눌러 주세요 — 여러 회차를 한 번에 배정할 수 있어요.</div>';
+    } else {
+      box.innerHTML = '<div class="sel-chips">' + SEL.map(function(s, i){
+        return '<span class="sel-chip">' + esc(catLabelOf(s.cat)) + ' ' + esc(s.round) + '회' +
+          '<button type="button" data-i="' + i + '" aria-label="빼기">×</button></span>';
+      }).join('') + '</div>';
+    }
+    $('f-add').textContent = SEL.length > 1 ? ('이 학생들에게 배정 (테스트 ' + SEL.length + '개)') : '이 학생들에게 배정';
+  }
+  $('sel-box').addEventListener('click', function(ev){
+    var b = ev.target.closest('button');
+    if (!b) return;
+    SEL.splice(parseInt(b.getAttribute('data-i'), 10), 1);
+    renderRounds();
+    renderSelBox();
+  });
+
+  /* ===== 학생 배정 (H WORK과 같은 학생 선택 위젯) ===== */
+  var picker = null;
   var currentSel = null;   // 위젯이 onChange로 알려주는 최신 선택값
 
   function ensurePicker(){
@@ -308,42 +382,49 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
       }
     });
   }
-  function openForm(cat, round){
-    picked = { cat: cat, round: round };
-    var t = TESTS[cat + '-' + round];
-    $('f-title').innerHTML = '<b>' + esc(catLabelOf(cat)) + ' ' + esc(round) + '회</b>' +
-      (t && t.title ? ' · ' + esc(t.title) : '') + ' — 받을 학생을 선택하세요.';
-    ensurePicker();
-    fStatus('');
-    $('st-body').innerHTML = '';
-    $('form-card').classList.add('show');
-    $('form-card').scrollIntoView({ block: 'start', behavior: 'smooth' });
-  }
   function fStatus(msg, kind){
     var s = $('f-status');
     s.textContent = msg || '';
     s.className = 'f-status' + (kind ? (' ' + kind) : '');
   }
-  $('f-close').addEventListener('click', function(){ $('form-card').classList.remove('show'); picked = null; });
   $('f-add').addEventListener('click', function(){
-    if (!picked) return;
+    if (!SEL.length){ fStatus('배정할 테스트를 먼저 담아 주세요 — 카테고리에서 회차의 [담기]를 누르세요.', 'err'); return; }
     var sel = currentSel || (picker && picker.getSelection());
     if (!sel){ fStatus('대상을 먼저 선택해 주세요.', 'err'); return; }
+    var items = SEL.slice();
+    var due = $('f-due').value || '';
+    var memo = ($('f-memo').value || '').trim();
     var btn = $('f-add');
     btn.disabled = true; btn.textContent = '배정 중…';
     fStatus('배정하는 중…');
-    jsonp({ action: 'assignAdd', ttype: sel.type, target: sel.target, cat: picked.cat, catLabel: catLabelOf(picked.cat), round: picked.round, due: $('f-due').value || '', memo: ($('f-memo').value || '').trim() }, function(resp){
-      btn.disabled = false; btn.textContent = '이 학생들에게 배정';
-      if (!resp || resp.ok !== true || resp.kind !== 'assign'){
-        fStatus(resp && resp.error === 'unauthorized' ? '비밀키(ACCESS_KEY)가 일치하지 않습니다.' : '배정하지 못했어요 — Apps Script 재배포가 필요할 수 있어요.', 'err');
+    var okCnt = 0, failMsg = '';
+    (function next(i){
+      if (i >= items.length){
+        btn.disabled = false;
+        renderSelBox();
+        renderRounds();
+        if (failMsg){
+          fStatus('테스트 ' + okCnt + '개 배정됨 · 실패 ' + (items.length - okCnt) + '개 — ' + failMsg, 'err');
+        } else {
+          fStatus('✓ 테스트 ' + okCnt + '개 배정됨 — ' + sel.summary, 'ok');
+          if (picker) picker.reset();
+          $('f-memo').value = '';
+          $('f-due').value = '';
+        }
+        aLoad();
         return;
       }
-      fStatus('✓ 배정됨 — ' + sel.summary, 'ok');
-      if (picker) picker.reset();
-      $('f-memo').value = '';
-      $('f-due').value = '';
-      aLoad();
-    }, function(msg){ btn.disabled = false; btn.textContent = '이 학생들에게 배정'; fStatus(msg, 'err'); });
+      var it = items[i];
+      jsonp({ action: 'assignAdd', ttype: sel.type, target: sel.target, cat: it.cat, catLabel: catLabelOf(it.cat), round: it.round, due: due, memo: memo }, function(resp){
+        if (resp && resp.ok === true && resp.kind === 'assign'){
+          okCnt++;
+          SEL = SEL.filter(function(s){ return !(s.cat === it.cat && s.round === it.round); });   // 성공한 것만 목록에서 뺌
+        } else {
+          failMsg = resp && resp.error === 'unauthorized' ? '비밀키(ACCESS_KEY)가 일치하지 않습니다.' : '배정하지 못했어요 — Apps Script 재배포가 필요할 수 있어요.';
+        }
+        next(i + 1);
+      }, function(msg){ failMsg = msg; next(i + 1); });
+    })(0);
   });
 
   /* ===== 제출 현황 (배정 vs 제출 대조 — H WORK과 같은 방식) ===== */
@@ -391,11 +472,21 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
       .then(function(r){ return r.json(); })
       .then(function(d){ return (d && d.result === 'success' && d.students) || []; });
   }
+  function openStatus(cat, round){
+    stPicked = { cat: cat, round: '' + round };
+    var t = TESTS[cat + '-' + round];
+    $('st-title').innerHTML = '<b>' + esc(catLabelOf(cat)) + ' ' + esc(round) + '회</b>' +
+      (t && t.title ? ' · ' + esc(t.title) : '') + ' — 제출 현황';
+    $('st-card').classList.add('show');
+    $('st-card').scrollIntoView({ block: 'start', behavior: 'smooth' });
+    loadStatus();
+  }
   $('st-load').addEventListener('click', loadStatus);
+  $('st-close').addEventListener('click', function(){ $('st-card').classList.remove('show'); stPicked = null; });
   function loadStatus(){
-    if (!picked) return;
+    if (!stPicked) return;
     var body = $('st-body');
-    var cat = picked.cat, round = '' + picked.round, unit = catLabelOf(cat);
+    var cat = stPicked.cat, round = '' + stPicked.round, unit = catLabelOf(cat);
     body.innerHTML = '<p class="muted">현황 불러오는 중…</p>';
     var pAssign = new Promise(function(res, rej){ jsonp({ action: 'assignList' }, res, rej); });
     var pResult = new Promise(function(res, rej){ jsonp({}, res, rej); });   // 결과 전체 (기본 액션)
@@ -481,7 +572,7 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   function aRender(){
     var tb = $('a-tbody');
     if (!A_ROWS.length){
-      aStatus('loading', '아직 배정이 없습니다. 회차의 [배정] 버튼으로 첫 배정을 만들어 보세요.');
+      aStatus('loading', '아직 배정이 없습니다. 카테고리에서 회차를 [담기]로 담고 위 학생 배정에서 첫 배정을 만들어 보세요.');
       $('a-table-wrap').style.display = 'none';
       return;
     }
@@ -550,6 +641,8 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   }
   $('entry-copy').addEventListener('click', function(){ copyText(BASE_URL + 'index.html', $('entry-copy')); });
 
+  renderSelBox();
+  ensurePicker();
   aLoad();
 })();
 </script>
