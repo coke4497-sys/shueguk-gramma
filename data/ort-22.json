@@ -1,0 +1,25 @@
+{
+ "category": "한글 맞춤법",
+ "round": 22,
+ "title": "한글 맞춤법 — 준말 (1)",
+ "subtitle": "제4장 제5절 준말 (1) — 제32~36항",
+ "instruction": "제32~36항: 단어나 어미가 줄어진 대로 적는 규정입니다.",
+ "total": 15,
+ "questions": [
+  { "type": "choice", "num": 1, "stem": "'어제저녁'의 준말은?", "options": ["엊저녁", "얻저녁", "엇저녁", "어저녁"], "answer": 1, "explanation": "앞 음절의 받침으로 적는다(제32항)." },
+  { "type": "short", "num": 2, "stem": "'어제그저께'의 준말을 쓰시오.", "answer": "엊그저께", "explanation": "제32항." },
+  { "type": "ox", "num": 3, "stem": "'가지고'의 준말은 '갖고'이다.", "answer": "O", "explanation": "제32항." },
+  { "type": "choice", "num": 4, "stem": "'그것이'의 준말은?", "options": ["그게", "그개", "글이", "그기"], "answer": 1, "explanation": "제33항." },
+  { "type": "short", "num": 5, "stem": "'무엇을'의 준말 한 가지를 쓰시오.", "answer": "뭘", "answers": ["뭘", "무얼", "뭣을"], "explanation": "제33항 — 뭣을/무얼/뭘." },
+  { "type": "choice", "num": 6, "stem": "'하였다'의 준말은?", "options": ["했다", "핬다", "햇다", "하엿다"], "answer": 1, "explanation": "'하여'가 '해'로 줄 수 있다(제34항 붙임 2)." },
+  { "type": "short", "num": 7, "stem": "'개어'의 준말을 쓰시오.", "answer": "개", "explanation": "ㅐ 뒤의 '-어'가 줄 적(제34항 붙임 1)." },
+  { "type": "choice", "num": 8, "stem": "'보아'의 준말은?", "options": ["봐", "바", "보", "봐아"], "answer": 1, "explanation": "제35항." },
+  { "type": "short", "num": 9, "stem": "'두어'의 준말을 쓰시오.", "answer": "둬", "explanation": "제35항." },
+  { "type": "ox", "num": 10, "stem": "'놓아'는 '놔'로 줄 수 있다.", "answer": "O", "explanation": "제35항 붙임 1." },
+  { "type": "choice", "num": 11, "stem": "'되어'의 준말은?", "options": ["돼", "되", "뒈", "됀"], "answer": 1, "explanation": "ㅚ 뒤에 '-어'가 어울려 ㅙ로 될 적(제35항 붙임 2)." },
+  { "type": "ox", "num": 12, "stem": "'어른이 되어서'는 '되서'로 줄여 쓴다.", "answer": "X", "explanation": "'되어서'의 준말은 '돼서'(제35항 붙임 2)." },
+  { "type": "short", "num": 13, "stem": "'내일 뵈어요'에서 '뵈어요'의 준말을 쓰시오.", "answer": "봬요", "explanation": "제35항 붙임 2." },
+  { "type": "choice", "num": 14, "stem": "'가지어'의 준말은?", "options": ["가져", "가저", "갖어", "가쪄"], "answer": 1, "explanation": "ㅣ 뒤의 '-어'가 '-여'로 줄 적(제36항)." },
+  { "type": "short", "num": 15, "stem": "'견디어'의 준말을 쓰시오.", "answer": "견뎌", "explanation": "제36항." }
+ ]
+}

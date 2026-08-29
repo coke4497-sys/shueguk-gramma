@@ -1,0 +1,25 @@
+{
+ "category": "한글 맞춤법",
+ "round": 14,
+ "title": "한글 맞춤법 — 체언과 조사 (1)",
+ "subtitle": "제4장 제1절 체언과 조사 (1)",
+ "instruction": "제14항: 체언은 조사와 구별하여 적는다.",
+ "total": 15,
+ "questions": [
+  { "type": "ox", "num": 1, "stem": "체언은 조사와 구별하여 적는다.", "answer": "O", "explanation": "제14항." },
+  { "type": "choice", "num": 2, "stem": "'값 + 이'를 바르게 적은 것은?", "options": ["값이", "갑씨", "갑시", "값시"], "answer": 1, "explanation": "제14항." },
+  { "type": "short", "num": 3, "stem": "'흙 + 이'를 바르게 적으시오.", "answer": "흙이" },
+  { "type": "ox", "num": 4, "stem": "'꽃을'을 소리 나는 대로 '꼬츨'로 적어도 된다.", "answer": "X", "explanation": "체언의 형태를 고정해 '꽃을'로 적는다(제14항)." },
+  { "type": "choice", "num": 5, "stem": "'삶 + 이'의 바른 표기는?", "options": ["삶이", "살미", "삼미", "살이"], "answer": 1, "explanation": "제14항." },
+  { "type": "short", "num": 6, "stem": "'부엌 + 에'를 바르게 적으시오.", "answer": "부엌에" },
+  { "type": "ox", "num": 7, "stem": "'떡이, 떡을, 떡에'처럼 체언의 형태를 고정해 적는다.", "answer": "O", "explanation": "제14항." },
+  { "type": "choice", "num": 8, "stem": "'넋 + 이'의 바른 표기는?", "options": ["넋이", "넉씨", "넉시", "넋시"], "answer": 1, "explanation": "제14항." },
+  { "type": "short", "num": 9, "stem": "'무릎 + 을'을 바르게 적으시오.", "answer": "무릎을" },
+  { "type": "ox", "num": 10, "stem": "'밭이'는 [바치]로 소리 나지만 '밭이'로 적는다.", "answer": "O", "explanation": "제14항·제6항." },
+  { "type": "choice", "num": 11, "stem": "'여덟 + 이'의 바른 표기는?", "options": ["여덟이", "여덜비", "여더리", "여덟히"], "answer": 1, "explanation": "제14항." },
+  { "type": "short", "num": 12, "stem": "'옷 + 이'를 바르게 적으시오.", "answer": "옷이" },
+  { "type": "ox", "num": 13, "stem": "체언과 조사를 구별해 적으면 단어의 뜻을 한눈에 파악하기 쉽다.", "answer": "O", "explanation": "형태를 고정해 적는 까닭." },
+  { "type": "choice", "num": 14, "stem": "표기가 틀린 것은?", "options": ["낮이", "꽃도", "앞으로", "갑슬"], "answer": 4, "explanation": "'값을'이 바른 표기." },
+  { "type": "short", "num": 15, "stem": "'값 + 도'는 [갑또]로 소리 난다. 바르게 적으면?", "answer": "값도" }
+ ]
+}

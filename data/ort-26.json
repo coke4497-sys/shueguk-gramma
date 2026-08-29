@@ -1,0 +1,25 @@
+{
+ "category": "한글 맞춤법",
+ "round": 26,
+ "title": "한글 맞춤법 — 의존 명사·단위 명사 (1)",
+ "subtitle": "제5장 제2절 의존 명사, 단위 명사 및 열거하는 말 (1) — 제42·43항",
+ "instruction": "제42항: 의존 명사는 띄어 쓴다. 제43항: 단위를 나타내는 명사는 띄어 쓴다.",
+ "total": 15,
+ "questions": [
+  { "type": "ox", "num": 1, "stem": "의존 명사는 띄어 쓴다. 예: 아는 것이 힘이다.", "answer": "O", "explanation": "제42항." },
+  { "type": "choice", "num": 2, "stem": "띄어쓰기가 바른 것은?", "options": ["나도 할 수 있다", "나도 할수 있다", "나도 할수있다", "나도할 수 있다"], "answer": 1, "explanation": "'수'는 의존 명사(제42항)." },
+  { "type": "ox", "num": 3, "stem": "'먹을 만큼 먹어라'의 '만큼'은 의존 명사이므로 띄어 쓴다.", "answer": "O", "explanation": "제42항." },
+  { "type": "choice", "num": 4, "stem": "띄어쓰기가 바른 것은?", "options": ["떠난 지 오래다", "떠난지 오래다", "떠난 지오래다", "떠난지오래다"], "answer": 1, "explanation": "시간의 경과를 나타내는 '지'는 의존 명사." },
+  { "type": "short", "num": 5, "stem": "'그가 뜻한 바를 안다'의 '바'는 의존 명사와 조사 중 무엇인가?", "answer": "의존 명사", "answers": ["의존 명사", "의존명사"] },
+  { "type": "choice", "num": 6, "stem": "띄어쓰기가 바른 것은?", "options": ["소 한 마리", "소 한마리", "소한 마리", "소한마리"], "answer": 1, "explanation": "단위 명사는 띄어 쓴다(제43항)." },
+  { "type": "ox", "num": 7, "stem": "단위를 나타내는 명사는 띄어 쓴다. 예: 옷 한 벌, 열 살.", "answer": "O", "explanation": "제43항." },
+  { "type": "choice", "num": 8, "stem": "띄어쓰기가 바른 것은?", "options": ["연필 한 자루", "연필 한자루", "연필한 자루", "연필한자루"], "answer": 1, "explanation": "제43항." },
+  { "type": "ox", "num": 9, "stem": "순서를 나타내는 경우나 숫자와 어울려 쓰이는 경우는 붙여 쓸 수 있다. 예: 두시 삼십분, 삼학년, 10개.", "answer": "O", "explanation": "제43항 다만." },
+  { "type": "ox", "num": 10, "stem": "'1446년 10월 9일'처럼 아라비아 숫자와 어울린 단위 명사는 붙여 쓸 수 있다.", "answer": "O", "explanation": "제43항 다만." },
+  { "type": "choice", "num": 11, "stem": "띄어쓰기가 바른 것은?", "options": ["신 두 켤레", "신 두켤레", "신두 켤레", "신두켤레"], "answer": 1, "explanation": "제43항." },
+  { "type": "short", "num": 12, "stem": "'차 한 대'에서 단위를 나타내는 명사를 쓰시오.", "answer": "대" },
+  { "type": "choice", "num": 13, "stem": "띄어쓰기가 바른 것은?", "options": ["금 서 돈", "금 서돈", "금서 돈", "금서돈"], "answer": 1, "explanation": "제43항." },
+  { "type": "ox", "num": 14, "stem": "'열 살'은 '열살'로 붙여 씀이 원칙이다.", "answer": "X", "explanation": "단위 명사는 띄어 씀이 원칙(제43항)." },
+  { "type": "short", "num": 15, "stem": "'집 한 채'에서 단위를 나타내는 명사를 쓰시오.", "answer": "채" }
+ ]
+}

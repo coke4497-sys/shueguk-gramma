@@ -1,0 +1,25 @@
+{
+ "category": "한글 맞춤법",
+ "round": 15,
+ "title": "한글 맞춤법 — 체언과 조사 (2)",
+ "subtitle": "제4장 제1절 체언과 조사 (2)",
+ "instruction": "제14항: 체언은 조사와 구별하여 적는다.",
+ "total": 15,
+ "questions": [
+  { "type": "choice", "num": 1, "stem": "'밖 + 이'의 바른 표기는?", "options": ["밖이", "바끼", "밬이", "밖히"], "answer": 1, "explanation": "제14항." },
+  { "type": "short", "num": 2, "stem": "'곬 + 이'를 바르게 적으시오.", "answer": "곬이", "explanation": "제14항의 예." },
+  { "type": "ox", "num": 3, "stem": "'콩이', '콩을', '콩에'처럼 하나의 체언에 여러 조사가 바뀌어 붙는다.", "answer": "O" },
+  { "type": "choice", "num": 4, "stem": "'닭 + 을'의 바른 표기는?", "options": ["닭을", "달글", "닥을", "닭글"], "answer": 1, "explanation": "제14항." },
+  { "type": "short", "num": 5, "stem": "'낮 + 이'를 바르게 적으시오.", "answer": "낮이" },
+  { "type": "ox", "num": 6, "stem": "'앞이'는 [아피]로 소리 나므로 '아피'로 적는다.", "answer": "X", "explanation": "'앞이'로 적는다(제14항)." },
+  { "type": "choice", "num": 7, "stem": "'꽃 + 마저'의 바른 표기는?", "options": ["꽃마저", "꼰마저", "꼳마저", "꼿마저"], "answer": 1, "explanation": "제14항 — 조사는 앞말에 붙여 쓴다(제41항)." },
+  { "type": "short", "num": 8, "stem": "'흙 + 도'를 바르게 적으시오.", "answer": "흙도" },
+  { "type": "ox", "num": 9, "stem": "'밤이 깊다'의 '밤이'는 체언 '밤'과 조사 '이'를 구별해 적은 것이다.", "answer": "O" },
+  { "type": "choice", "num": 10, "stem": "표기가 틀린 것은?", "options": ["넋도", "값만", "무릎에", "꼬치(꽃+이)"], "answer": 4, "explanation": "'꽃이'가 바른 표기." },
+  { "type": "short", "num": 11, "stem": "'집 + 이'를 바르게 적으시오.", "answer": "집이" },
+  { "type": "ox", "num": 12, "stem": "조사가 붙을 때 체언의 받침을 소리 나는 대로 바꾸어 적는다.", "answer": "X", "explanation": "체언의 형태를 고정해 적는다(제14항)." },
+  { "type": "choice", "num": 13, "stem": "체언과 조사를 구별해 적는 것은 총칙의 어느 원칙과 관련이 깊은가?", "options": ["어법에 맞도록 한다", "소리대로 적는다", "띄어 쓴다", "외래어 표기법을 따른다"], "answer": 1, "explanation": "제1항의 '어법에 맞도록'." },
+  { "type": "short", "num": 14, "stem": "'밭 + 을'을 바르게 적으시오.", "answer": "밭을" },
+  { "type": "ox", "num": 15, "stem": "'값이 비싸다'를 '갑씨 비싸다'로 적으면 '값'이라는 단어의 형태가 드러나지 않아 뜻을 파악하기 어렵다.", "answer": "O" }
+ ]
+}

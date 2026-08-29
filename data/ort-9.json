@@ -1,0 +1,25 @@
+{
+ "category": "한글 맞춤법",
+ "round": 9,
+ "title": "한글 맞춤법 — 모음 (2)",
+ "subtitle": "제3장 제4절 모음 (2) — 'ㅢ'의 표기",
+ "instruction": "제9항: '의'나, 자음을 첫소리로 가지고 있는 음절의 'ㅢ'는 [ㅣ]로 소리 나는 경우가 있더라도 'ㅢ'로 적는다.",
+ "total": 15,
+ "questions": [
+  { "type": "ox", "num": 1, "stem": "자음을 첫소리로 가진 음절의 'ㅢ'는 [ㅣ]로 소리 나는 경우가 있어도 'ㅢ'로 적는다.", "answer": "O", "explanation": "제9항." },
+  { "type": "choice", "num": 2, "stem": "바른 표기는?", "options": ["무늬", "무니", "무희", "무이"], "answer": 1, "explanation": "제9항." },
+  { "type": "short", "num": 3, "stem": "틀린 표기 '히망'을 바르게 고쳐 쓰시오.", "answer": "희망", "explanation": "제9항." },
+  { "type": "choice", "num": 4, "stem": "바른 표기는?", "options": ["하늬바람", "하니바람", "하이바람", "한이바람"], "answer": 1, "explanation": "제9항." },
+  { "type": "ox", "num": 5, "stem": "'희다'는 [히다]로 소리 나지만 '희다'로 적는다.", "answer": "O", "explanation": "제9항." },
+  { "type": "short", "num": 6, "stem": "틀린 표기 '유히'(즐겁게 노는 놀이)를 바르게 고쳐 쓰시오.", "answer": "유희", "explanation": "제9항." },
+  { "type": "choice", "num": 7, "stem": "바른 표기는?", "options": ["늴리리", "닐리리", "닐니리", "늬리리"], "answer": 1, "explanation": "제9항." },
+  { "type": "ox", "num": 8, "stem": "'띄어쓰기'가 바른 표기이다.", "answer": "O", "explanation": "제9항." },
+  { "type": "ox", "num": 9, "stem": "'본의 아니게'의 '본의'는 소리 나는 대로 '본이'로 적는다.", "answer": "X", "explanation": "'본의'로 적는다(제9항)." },
+  { "type": "choice", "num": 10, "stem": "표기가 틀린 것은?", "options": ["의의", "무늬", "희다", "히미하다"], "answer": 4, "explanation": "'희미하다'가 바른 표기(제9항)." },
+  { "type": "short", "num": 11, "stem": "틀린 표기 '띠어쓰기'를 바르게 고쳐 쓰시오.", "answer": "띄어쓰기", "explanation": "제9항." },
+  { "type": "ox", "num": 12, "stem": "'닁큼'은 '닝큼'으로 적는다.", "answer": "X", "explanation": "'닁큼'으로 적는다(제9항의 예)." },
+  { "type": "choice", "num": 13, "stem": "바른 표기는?", "options": ["주의", "주이", "줏의", "주희"], "answer": 1, "explanation": "제9항." },
+  { "type": "short", "num": 14, "stem": "'무늬'의 표준 발음을 소리 나는 대로 쓰시오. (대괄호 없이)", "answer": "무니" },
+  { "type": "ox", "num": 15, "stem": "자음을 첫소리로 가진 음절의 'ㅢ'는 [ㅣ]로 발음하는 것이 표준 발음으로 인정된다.", "answer": "O", "explanation": "표기는 'ㅢ'로 하되, 발음은 [ㅣ]로 한다(표준 발음법)." }
+ ]
+}

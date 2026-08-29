@@ -1,0 +1,25 @@
+{
+ "category": "한글 맞춤법",
+ "round": 30,
+ "title": "한글 맞춤법 — 고유 명사 및 전문 용어 (1)",
+ "subtitle": "제5장 제4절 고유 명사 및 전문 용어 (1) — 제48항",
+ "instruction": "제48항: 성과 이름, 성과 호 등은 붙여 쓰고, 이에 덧붙는 호칭어·관직명 등은 띄어 쓴다.",
+ "total": 15,
+ "questions": [
+  { "type": "ox", "num": 1, "stem": "성과 이름, 성과 호는 붙여 쓴다. 예: 김양수, 서화담.", "answer": "O", "explanation": "제48항." },
+  { "type": "choice", "num": 2, "stem": "띄어쓰기가 바른 것은?", "options": ["최치원 선생", "최치원선생", "최 치원 선생", "최치 원선생"], "answer": 1, "explanation": "호칭어·관직명은 띄어 쓴다(제48항)." },
+  { "type": "ox", "num": 3, "stem": "이름에 덧붙는 호칭어와 관직명은 띄어 쓴다.", "answer": "O", "explanation": "제48항." },
+  { "type": "choice", "num": 4, "stem": "띄어쓰기가 바른 것은?", "options": ["채영신 씨", "채영신씨", "채 영신씨", "채영 신씨"], "answer": 1, "explanation": "호칭어 '씨'는 띄어 쓴다(제48항)." },
+  { "type": "short", "num": 5, "stem": "'박동식박사'를 바르게 띄어 쓰면 몇 어절이 되는지 숫자로 쓰시오.", "answer": "2", "explanation": "'박동식 박사'." },
+  { "type": "ox", "num": 6, "stem": "'남궁억'은 성과 이름을 분명히 구분할 필요가 있을 때 '남궁 억'으로 띄어 쓸 수 있다.", "answer": "O", "explanation": "제48항 다만." },
+  { "type": "choice", "num": 7, "stem": "띄어쓰기가 바른 것은?", "options": ["이순신 장군", "이순신장군", "이 순신 장군", "이순 신장군"], "answer": 1, "explanation": "제48항." },
+  { "type": "ox", "num": 8, "stem": "'홍길동 씨'처럼 호칭어 '씨'는 이름과 띄어 쓴다.", "answer": "O", "explanation": "제48항." },
+  { "type": "choice", "num": 9, "stem": "다음 중 띄어쓰기가 틀린 것은?", "options": ["박수미 씨", "정약용 선생", "김구선생", "안중근 의사"], "answer": 3, "explanation": "'김구 선생' — 호칭어는 띄어 쓴다." },
+  { "type": "short", "num": 10, "stem": "성과 이름을 붙여 쓰는 규정에 따라 '김 유신'을 바르게 쓰시오.", "answer": "김유신", "explanation": "제48항." },
+  { "type": "ox", "num": 11, "stem": "'충무공 이순신 장군'처럼 이름 앞뒤에 붙는 호나 관직명은 띄어 쓴다.", "answer": "O", "explanation": "제48항." },
+  { "type": "choice", "num": 12, "stem": "띄어쓰기가 바른 것은?", "options": ["김 과장", "김과장", "김 과 장", "깈과장"], "answer": 1, "explanation": "성 뒤에 붙는 관직명도 띄어 쓴다(제48항)." },
+  { "type": "ox", "num": 13, "stem": "'박사', '선생', '군', '양' 등은 호칭어로서 이름과 띄어 쓴다.", "answer": "O", "explanation": "제48항." },
+  { "type": "short", "num": 14, "stem": "호가 성에 붙은 '서화담'에서 호에 해당하는 부분을 쓰시오.", "answer": "화담" },
+  { "type": "choice", "num": 15, "stem": "띄어쓰기가 바른 것은?", "options": ["안창호 선생", "안창호선생", "안 창호선생", "안창 호 선생"], "answer": 1, "explanation": "제48항." }
+ ]
+}
