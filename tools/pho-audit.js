@@ -5,6 +5,7 @@
  *   - 회차를 넘나드는 start 단어 중복
  *   실행: node tools/pho-audit.js  (규칙·형태 불일치나 최종 발음 오류가 있으면 종료 코드 1)
  *   기존 데이터에서 알려진 예외는 ALLOW에 적어 둔다(사용자 결정이 난 것만).
+ *   연음은 규칙이 아니지만 항상 별도 단계로 둔다(2026-09-13 사용자 결정) — 규칙 단계의 결과에 연음을 녹이면 불일치로 잡는다.
  */
 'use strict';
 const fs = require('fs');
@@ -202,7 +203,7 @@ function unYeonEum(B) {
 function passes(rule, A, B) {
   const fn = CHECK[rule]; if (!fn) return `모르는 규칙 '${rule}'`;
   const r = fn(A, B); if (r === null) return null;
-  if (rule !== '연음' && rule !== '변동 없음') for (const X of unYeonEum(B)) if (fn(A, X) === null) return null; // 규칙 + 연음
+  // 2026-09-13 사용자 결정: 연음은 별도 단계 — 규칙 결과에 연음을 녹인 단계는 통과시키지 않는다(unYeonEum은 분리 도구용으로 남김)
   return r;
 }
 
