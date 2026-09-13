@@ -58,6 +58,12 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .cat-back { display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 10px; font: inherit; font-size: 13px; font-weight: 700; color: #6A716C; background: none; border: none; cursor: pointer; padding: 4px 2px; -webkit-tap-highlight-color: transparent; }
 .cat-back svg { width: 15px; height: 15px; }
 .cat-back:hover { color: #628C83; }
+/* 한 카드 안의 레벨 탭 (한글 맞춤법 레벨1/레벨2 — manifest의 menu/level) */
+.lvl-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 2px 12px; }
+.lvl-tab { font: inherit; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 999px; background: #fff; border: 1px solid #E5EDE8; color: #65726B; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.lvl-tab .n { font-weight: 400; color: #9BA8A1; margin-left: 5px; font-size: 12px; }
+.lvl-tab.on { background: #EDE4F4; border-color: #D6C9E4; color: #6B5B7B; }
+.lvl-tab.on .n { color: #8D83A8; }
 .hidden { display: none !important; }
 
 .unit-title { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 800; color: #3A544E; margin: 6px 2px 10px; }
@@ -210,6 +216,7 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     <button type="button" class="cat-back" id="cat-back">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
       카테고리로 돌아가기</button>
+    <div class="lvl-tabs" id="lvl-tabs" hidden></div>
     <div class="sec-line">
       <div class="unit-title" id="sec-title" style="margin:0;"></div>
       <div class="sec-btns">
@@ -299,26 +306,57 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   // 카테고리 공통 무채색 라인 아이콘 — 전 카테고리 동일한 체크 사각형 (2026-08-29 사용자 확정)
   var CAT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
     '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
+  // 카드는 '메뉴' 단위 — manifest에서 menu가 같은 카테고리(한글 맞춤법 레벨1/레벨2)는 한 카드에 접히고 회차 화면에서 레벨 탭으로 고른다
+  function menuOf(c){ return c.menu || c.code; }
+  function levelsOf(menu){ return CATS.filter(function(c){ return menuOf(c) === menu; }); }
   var catWrap = $('cats');
   CATS.forEach(function(c){
-    var n = roundsOf(c.code).length;
+    if (c.menu) return;                                  // 다른 카드 안의 레벨
+    var levels = levelsOf(c.code);
+    var total = 0, parts = [];
+    levels.forEach(function(l){ var n = roundsOf(l.code).length; total += n; if (n && levels.length > 1) parts.push(esc(l.level || l.label) + ' ' + n + '회'); });
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'cat-card';
     b.innerHTML = '<span class="cico">' + CAT_ICON + '</span>' +
-      '<span class="cbody"><span class="cname" style="display:block;">' + esc(c.label) + '</span><span class="ccnt" style="display:block;">' + (n ? '전체 ' + n + '회' : '준비 중') + '</span></span>';
-    b.disabled = !n;
+      '<span class="cbody"><span class="cname" style="display:block;">' + esc(c.label) + '</span><span class="ccnt" style="display:block;">' + (total ? (parts.length ? parts.join(' · ') : '전체 ' + total + '회') : '준비 중') + '</span></span>';
+    b.disabled = !total;
     b.setAttribute('data-code', c.code);
-    b.addEventListener('click', function(){ openCat(c.code); });
+    b.addEventListener('click', function(){ openMenu(c.code); });
     catWrap.appendChild(b);
   });
 
-  function openCat(code){
-    current = code;
-    renderRounds();
+  function openMenu(menu){
+    var levels = levelsOf(menu).filter(function(l){ return roundsOf(l.code).length; });
+    openCat(levels.length ? levels[0].code : menu);
     $('home-view').classList.add('hidden');
     $('round-view').classList.remove('hidden');
     window.scrollTo({ top: 0 });
+  }
+  function openCat(code){
+    current = code;
+    renderLevelTabs();
+    renderRounds();
+  }
+  function renderLevelTabs(){
+    var c = CATS.filter(function(x){ return x.code === current; })[0] || {};
+    var levels = levelsOf(menuOf(c)).filter(function(l){ return roundsOf(l.code).length; });
+    var box = $('lvl-tabs');
+    box.hidden = levels.length < 2;
+    box.innerHTML = levels.map(function(l){
+      return '<button type="button" class="lvl-tab' + (l.code === current ? ' on' : '') + '" data-code="' + escAttr(l.code) + '">' +
+        esc(l.level || l.label) + '<span class="n">' + roundsOf(l.code).length + '회</span></button>';
+    }).join('');
+  }
+  $('lvl-tabs').addEventListener('click', function(ev){
+    var b = ev.target.closest('.lvl-tab');
+    if (b && b.getAttribute('data-code') !== current) openCat(b.getAttribute('data-code'));
+  });
+  function menuTitle(code){   // 회차 화면 제목 — '한글 맞춤법 · 레벨2'
+    var c = CATS.filter(function(x){ return x.code === code; })[0] || {};
+    if (!c.level) return catLabelOf(code);
+    var top = CATS.filter(function(x){ return x.code === menuOf(c); })[0] || c;
+    return top.label + ' · ' + c.level;
   }
   $('cat-back').addEventListener('click', function(){
     $('round-view').classList.add('hidden');
@@ -343,7 +381,7 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   function renderRounds(){
     var rounds = roundsOf(current);
     var picked = rounds.filter(function(n){ return selHas(current, n); }).length;
-    $('sec-title').innerHTML = esc(catLabelOf(current)) + '<span class="sec-meta">전체 ' + rounds.length + '회 · 담김 ' + picked + '</span>';
+    $('sec-title').innerHTML = esc(menuTitle(current)) + '<span class="sec-meta">전체 ' + rounds.length + '회 · 담김 ' + picked + '</span>';
     var html = '';
     var grouped = rounds.some(function(n){ return !!groupOf(current, n); });
     if (!grouped) {
