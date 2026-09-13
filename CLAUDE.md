@@ -77,6 +77,9 @@
 - 검증(2026-08-28): 브라우저 E2E(tools/e2e-test.js — 정적 서빙 + script.google.com 가로채기)로
   응시→채점→배정 차단/허용→제출 payload, index.html 배정 목록, 대시보드 배정 CRUD 왕복 확인.
 
+## GitHub Pages 배포가 실패하면 (2026-09-13 겪음)
+- 머지 뒤 'pages build and deployment'가 **deploy 단계에서 'Failed to get ID Token'**으로 실패한 적이 있다(빌드는 성공, GitHub 쪽 일시 오류). 실패한 작업 재실행(`rerun_failed_jobs`)을 걸었더니 **14분 넘게 queued에서 안 움직이고 취소도 안 됐다**(409 "re-run that has not yet queued"). 이럴 땐 기다리지 말고 **새 커밋을 main에 올려 배포를 새로 시작**하는 편이 빠르다. 배포 상태는 `actions_list`(list_workflow_runs)로, 실패 원인은 `get_job_logs`로 본다 — 이 환경에서는 github.io 접속이 막혀 있어 화면을 직접 열어 볼 수 없다.
+
 ## 음운(pho) — 10회차를 20회차로 나눔 (2026-08-29 사용자 요청 "회차당 문항이 너무 많아 피로도가 크다")
 - 문항 내용·번호(1~422)는 그대로 두고 **옛 N회를 반씩 갈라 새 2N-1·2N회**로 만들었다
   (42문항 → 21+21, 옛 10회 44문항 → 19·20회 각 22). 회차마다 21~22문항.
