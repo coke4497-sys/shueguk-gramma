@@ -19,10 +19,28 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .back svg { width: 16px; height: 16px; }
 .back:hover { color: #628C83; }
 
-.header { text-align: center; margin-bottom: 14px; padding: 18px 16px 16px; background: white; border-radius: 20px; box-shadow: 0 4px 16px rgba(45,128,104,0.08); border: 2px solid #C6D5D2; }
+.topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+/* 진행 표시 — 배정하기 › 학생 선택 › 완료 (2026-09-13 사용자 디자인 지시) */
+.steps { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: #65726B; margin: 4px 0 10px; }
+.steps .sep { color: #A9B1AB; }
+.steps .cur { color: #4C6E66; }
+
+/* 상단 안내 카드 — 좌측 정렬 2단 (2026-09-13 사용자 디자인 지시) */
+.header { margin-bottom: 14px; padding: 18px 20px 14px; background: white; border-radius: 20px; box-shadow: 0 4px 16px rgba(45,128,104,0.08); border: 2px solid #C6D5D2; }
+.header .h-top { display: flex; align-items: stretch; gap: 18px; }
+.header .h-left { flex: none; display: flex; flex-direction: column; justify-content: center; padding-right: 18px; border-right: 1px solid #E5EDE8; min-width: 120px; }
 .header .logo { font-family: 'Gowun Batang', serif; font-size: 11px; font-weight: 800; letter-spacing: 5px; color: #A6C1BB; margin-bottom: 6px; }
 .header h1 { font-family: 'Gowun Batang', serif; font-size: 22px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; }
-.header .intro { font-size: 13px; color: #6A716C; margin-top: 8px; line-height: 1.7; }
+.header .h-right { flex: 1; min-width: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; align-content: center; }
+.header .h-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; color: #6A716C; line-height: 1.6; }
+.header .h-num { flex: none; width: 19px; height: 19px; border-radius: 50%; background: #EBF0ED; color: #4C6E66; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; margin-top: 1px; }
+.header .h-foot { display: flex; align-items: center; gap: 6px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #F0F4F1; font-size: 12px; color: #9BA8A1; }
+.header .h-foot svg { width: 14px; height: 14px; flex: none; }
+@media (max-width: 520px){
+  .header .h-top { flex-direction: column; gap: 12px; }
+  .header .h-left { padding-right: 0; border-right: none; padding-bottom: 10px; border-bottom: 1px solid #E5EDE8; }
+  .header .h-right { grid-template-columns: 1fr; }
+}
 
 .cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 4px 0 18px; }
 .cat-card { display: flex; align-items: center; gap: 12px; background: white; border: 2px solid #F1F6F4; border-radius: 14px; padding: 14px 16px; text-align: left; cursor: pointer; font: inherit; box-shadow: 0 2px 10px rgba(45,128,104,0.04); transition: transform .14s ease, border-color .14s ease; -webkit-tap-highlight-color: transparent; }
@@ -44,33 +62,54 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 
 .unit-title { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 800; color: #3A544E; margin: 6px 2px 10px; }
 
-.list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
-.row { display: flex; align-items: center; gap: 10px; background: white; border: 2px solid #F1F6F4; border-radius: 13px; padding: 12px 14px; flex-wrap: wrap; }
-.rd { flex: none; width: 44px; font-family: 'Gowun Batang', serif; font-weight: 800; color: #628C83; font-size: 15px; }
-.ttl { flex: 1; min-width: 140px; font-size: 13.5px; color: #2C2F2D; }
+/* 회차 목록 — 2열 그리드, 낮은 행, 라벤더 담기 (2026-09-13 사용자 디자인 지시) */
+.list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+@media (max-width: 520px){ .list { grid-template-columns: 1fr; } }
+.row { display: flex; align-items: center; gap: 13px; background: white; border: 1px solid #E5EDE8; border-radius: 14px; padding: 13px 14px; min-width: 0; transition: border-color .15s; }
+.row.on { border-color: #D6C9E4; }
+.rd { flex: none; width: 34px; height: 34px; border-radius: 10px; background: #EBF0ED; color: #65726B; font-family: 'Gowun Batang', serif; font-weight: 800; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; }
+.row.on .rd { background: #EDE4F4; color: #6B5B7B; }
+.ttl { flex: 1; min-width: 0; font-size: 13px; color: #2C2F2D; line-height: 1.4; }
 .acts { flex: none; display: flex; gap: 7px; align-items: center; }
 /* 회차가 많은 카테고리(한글 맞춤법 레벨2 222회)는 장(章)별로 접어 보여 준다 — manifest의 group */
-details.grp { background: white; border-radius: 13px; padding: 2px 12px 4px; }
+#rounds > details.grp { grid-column: 1 / -1; }
+details.grp { background: white; border: 1px solid #E5EDE8; border-radius: 14px; padding: 2px 12px 4px; }
 details.grp > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 10px 2px; cursor: pointer; font-family: 'Gowun Batang', serif; font-size: 14px; font-weight: 800; color: #3A544E; -webkit-tap-highlight-color: transparent; }
 details.grp > summary::-webkit-details-marker { display: none; }
 details.grp > summary .gn { flex: 1; }
 details.grp > summary .gc { font-family: 'Gowun Dodum', sans-serif; font-size: 12px; font-weight: 700; color: #6A716C; }
 details.grp > summary .gi { width: 16px; height: 16px; flex: none; color: #8B928C; transition: transform .15s; }
 details.grp[open] > summary .gi { transform: rotate(180deg); }
-details.grp .list { margin: 0 0 8px; gap: 6px; }
-details.grp .row { background: #F8FAF9; border-color: #F1F6F4; padding: 10px 12px; }
-.abtn { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; font-weight: 700; border-radius: 9px; padding: 7px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; text-decoration: none; transition: border-color .15s, background .15s; }
+details.grp .list { margin: 0 0 10px; gap: 8px; }
+details.grp .row { background: #F8FAF9; }
+details.grp .row.on { background: #FBF8FD; }
+.abtn { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; font-weight: 700; border-radius: 9px; padding: 7px 11px; cursor: pointer; -webkit-tap-highlight-color: transparent; text-decoration: none; transition: border-color .15s, background .15s; white-space: nowrap; }
 .abtn svg { width: 13px; height: 13px; }
-.abtn.preview { color: #628C83; background: none; border: none; padding: 7px 4px; }
-.abtn.assign { color: #635A7D; background: #EDE4F4; border: 1.5px solid #D9CCE8; }
-.abtn.assign:hover { background: #E3D6EF; border-color: #8D83A8; }
-.abtn.assign.on { color: #fff; background: #8D83A8; border-color: #8D83A8; }
-.abtn.assign.on:hover { background: #635A7D; border-color: #635A7D; }
+.abtn.preview { color: #628C83; background: none; border: none; padding: 7px 2px; }
+.abtn.assign { color: #65726B; background: #fff; border: 1px solid #E1E7E3; }
+.abtn.assign:hover { border-color: #D6C9E4; }
+.abtn.assign.on { color: #6B5B7B; background: #EDE4F4; border: 1px solid #D6C9E4; }
+.abtn.assign.on:hover { background: #E3D6EF; }
 
-/* 회차 화면 머리줄 + 학생 배정으로 이동 바 */
-.sec-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 6px 2px 10px; }
-.gobar { display: block; width: 100%; margin-bottom: 14px; padding: 12px; border: 1.5px solid #D9CCE8; border-radius: 12px; background: #EDE4F4; color: #635A7D; font: inherit; font-size: 13.5px; font-weight: 800; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+/* 회차 화면 머리줄 — 제목 + '전체 n회 · 담김 N' + [비우기][전체 회차 담기] */
+.sec-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 6px 2px 10px; flex-wrap: wrap; }
+.sec-line .sec-meta { font-weight: 400; color: #9BA8A1; font-size: 12.5px; margin-left: 6px; }
+.sec-btns { display: flex; gap: 7px; }
+.sbtn { font: inherit; font-size: 12px; font-weight: 700; border-radius: 9px; padding: 7px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; background: #fff; }
+.sbtn.clear { border: 1px solid #E5EDE8; color: #65726B; }
+.sbtn.all { border: 1px solid #D6C9E4; color: #6B5B7B; }
+.sbtn.all:hover { background: #EDE4F4; }
+
+/* 담긴 회차 바 — 페이지 하단 고정 */
+.selbar { position: sticky; bottom: 0; z-index: 5; margin: 0 -16px -80px; padding: 15px 26px; background: rgba(255,255,255,.94); border-top: 1px solid #E5EDE8; display: flex; align-items: center; justify-content: space-between; gap: 12px; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.selbar .sb-left { min-width: 0; display: flex; align-items: baseline; gap: 8px; font-size: 13px; color: #65726B; }
+.selbar .sb-left b { flex: none; color: #3A544E; font-weight: 800; }
+.selbar .sb-list { color: #6B5B7B; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.selbar .sb-list.none { color: #9BA8A1; font-weight: 400; }
+.gobar { flex: none; font: inherit; font-size: 13px; font-weight: 800; border: none; border-radius: 10px; padding: 10px 16px; cursor: pointer; background: #EDE4F4; color: #6B5B7B; -webkit-tap-highlight-color: transparent; }
 .gobar:hover { background: #E3D6EF; }
+.gobar.off { background: #F0F3F1; color: #9BA8A1; cursor: default; }
+.gobar.off:hover { background: #F0F3F1; }
 
 /* 담은 테스트 칩 */
 .sel-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 4px; }
@@ -135,15 +174,29 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
 </head>
 <body>
 <div class="container">
-  <a class="back" href="https://coke4497-sys.github.io/shueguk-hub/gramma.html">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
-    문법 테스트
-  </a>
+  <div class="topline">
+    <a class="back" href="https://coke4497-sys.github.io/shueguk-hub/gramma.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+      문법 테스트
+    </a>
+    <div class="steps" id="steps" aria-label="진행 단계"><span class="cur">배정하기</span><span class="sep">›</span><span>학생 선택</span><span class="sep">›</span><span>완료</span></div>
+  </div>
 
   <div class="header">
-    <div class="logo">SHUEGUK</div>
-    <h1>배정하기</h1>
-    <p class="intro">① 아래 카테고리에서 회차를 [담기]로 골라 배정할 테스트를 확정하고<br />② 그 아래 '학생 배정'에서 학생을 선택해 한 번에 배정합니다 (전 학년 · 학년 · 개인 · 일부).<br />배정된 학생은 '내 문법 테스트' 페이지에서 확인하고 응시합니다.</p>
+    <div class="h-top">
+      <div class="h-left">
+        <div class="logo">SHUEGUK</div>
+        <h1>배정하기</h1>
+      </div>
+      <div class="h-right">
+        <div class="h-item"><span class="h-num">1</span><span>카테고리에서 회차를 [담기]로 골라 배정할 테스트를 확정합니다.</span></div>
+        <div class="h-item"><span class="h-num">2</span><span>'학생 배정'에서 학생을 선택해 한 번에 배정합니다 (전 학년 · 학년 · 개인 · 일부).</span></div>
+      </div>
+    </div>
+    <div class="h-foot">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+      <span>배정된 학생은 '내 문법 테스트' 페이지에서 확인하고 응시합니다.</span>
+    </div>
   </div>
 
   <div id="home-view">
@@ -159,13 +212,13 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
       카테고리로 돌아가기</button>
     <div class="sec-line">
       <div class="unit-title" id="sec-title" style="margin:0;"></div>
-      <button type="button" class="abtn assign" id="sec-all">전체 회차 담기</button>
+      <div class="sec-btns">
+        <button type="button" class="sbtn clear" id="sec-clear">비우기</button>
+        <button type="button" class="sbtn all" id="sec-all">전체 회차 담기</button>
+      </div>
     </div>
     <div class="list" id="rounds"></div>
   </div>
-
-  <!-- 담은 테스트 → 학생 배정으로 이동 -->
-  <button type="button" class="gobar" id="go-assign" hidden></button>
 
   <!-- 2단계: 학생 배정 (H WORK 배정과 같은 구성 — 담은 회차를 한 번에 배정) -->
   <div class="form-card" id="assign-card" style="display:block;">
@@ -194,6 +247,12 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   </div>
 
   <footer>이수경국어 Shueguk · 교사용</footer>
+
+  <!-- 담긴 회차 바 (하단 고정) → 학생 배정으로 이동 -->
+  <div class="selbar" id="selbar">
+    <div class="sb-left"><b>담긴 회차</b><span class="sb-list none" id="sb-list">아직 없습니다</span></div>
+    <button type="button" class="gobar off" id="go-assign">학생 배정으로 →</button>
+  </div>
 </div>
 
 <script src="manifest.js"></script>
@@ -272,18 +331,19 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     var t = TESTS[current + '-' + n];
     var url = BASE_URL + 'test.html?c=' + current + '&r=' + n;
     var on = selHas(current, n);
-    return '<div class="row">' +
-      '<span class="rd">' + n + '회</span>' +
+    return '<div class="row' + (on ? ' on' : '') + '">' +
+      '<span class="rd">' + n + '</span>' +
       '<span class="ttl">' + esc(t && t.title ? t.title : catLabelOf(current) + ' ' + n + '회') + '</span>' +
       '<span class="acts">' +
         '<a class="abtn preview" href="' + url + '&preview=1" target="_blank" rel="noopener">미리보기' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
-        '<button type="button" class="abtn assign' + (on ? ' on' : '') + '" data-round="' + n + '">' + (on ? '담김 ✓' : '담기') + '</button>' +
+        '<button type="button" class="abtn assign' + (on ? ' on' : '') + '" data-round="' + n + '">' + (on ? '담김' : '담기') + '</button>' +
       '</span></div>';
   }
   function renderRounds(){
     var rounds = roundsOf(current);
-    $('sec-title').textContent = catLabelOf(current) + ' · 전체 ' + rounds.length + '회';
+    var picked = rounds.filter(function(n){ return selHas(current, n); }).length;
+    $('sec-title').innerHTML = esc(catLabelOf(current)) + '<span class="sec-meta">전체 ' + rounds.length + '회 · 담김 ' + picked + '</span>';
     var html = '';
     var grouped = rounds.some(function(n){ return !!groupOf(current, n); });
     if (!grouped) {
@@ -309,9 +369,8 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
       });
     }
     $('rounds').innerHTML = html;
-    var allOn = rounds.length && rounds.every(function(n){ return selHas(current, n); });
-    $('sec-all').textContent = allOn ? '전체 회차 빼기' : '전체 회차 담기';
-    $('sec-all').classList.toggle('on', !!allOn);
+    $('sec-clear').disabled = !picked;
+    $('sec-all').disabled = picked === rounds.length;
   }
 
   $('rounds').addEventListener('click', function(ev){
@@ -338,18 +397,28 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     renderSelBox();
   }
 
-  /* 회차 화면의 [전체 회차 담기/빼기] — 지금 보는 카테고리 전 회차를 한 번에 */
+  /* 회차 화면의 [전체 회차 담기] / [비우기] — 지금 보는 카테고리 전 회차를 한 번에 */
   $('sec-all').addEventListener('click', function(){
-    var rounds = roundsOf(current);
-    var allOn = rounds.length && rounds.every(function(n){ return selHas(current, n); });
-    if (allOn) SEL = SEL.filter(function(s){ return s.cat !== current; });
-    else rounds.forEach(function(n){ if (!selHas(current, n)) SEL.push({ cat: current, round: '' + n }); });
+    roundsOf(current).forEach(function(n){ if (!selHas(current, n)) SEL.push({ cat: current, round: '' + n }); });
+    renderRounds();
+    renderSelBox();
+  });
+  $('sec-clear').addEventListener('click', function(){
+    SEL = SEL.filter(function(s){ return s.cat !== current; });
     renderRounds();
     renderSelBox();
   });
 
-  /* 담은 테스트 n개 → 학생 배정으로 이동 바 */
+  /* 진행 표시 — 1 배정하기 · 2 학생 선택 · 3 완료 */
+  function setStep(k){
+    var spans = $('steps').querySelectorAll('span:not(.sep)');
+    for (var i = 0; i < spans.length; i++) spans[i].classList.toggle('cur', i === k);
+  }
+
+  /* 하단 고정 바의 [학생 배정으로 →] */
   $('go-assign').addEventListener('click', function(){
+    if (!SEL.length) return;
+    setStep(1);
     $('assign-card').scrollIntoView({ block: 'start', behavior: 'smooth' });
   });
   function renderSelBox(){
@@ -364,9 +433,16 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
       }).join('') + '</div>';
     }
     $('f-add').textContent = SEL.length > 1 ? ('이 학생들에게 배정 (테스트 ' + SEL.length + '개)') : '이 학생들에게 배정';
-    var go = $('go-assign');
-    go.hidden = !SEL.length;
-    go.textContent = '담은 테스트 ' + SEL.length + '개 — 아래에서 학생을 골라 배정하세요 ↓';
+    // 하단 고정 바 — '1회 · 2회', 7개 이상이면 'N개 회차', 없으면 '아직 없습니다'
+    var list = $('sb-list');
+    if (!SEL.length){ list.textContent = '아직 없습니다'; list.classList.add('none'); }
+    else if (SEL.length >= 7){ list.textContent = SEL.length + '개 회차'; list.classList.remove('none'); }
+    else {
+      var multi = SEL.some(function(s){ return s.cat !== SEL[0].cat; });
+      list.textContent = SEL.map(function(s){ return (multi ? catLabelOf(s.cat) + ' ' : '') + s.round + '회'; }).join(' · ');
+      list.classList.remove('none');
+    }
+    $('go-assign').classList.toggle('off', !SEL.length);
   }
   $('sel-box').addEventListener('click', function(ev){
     var b = ev.target.closest('button');
@@ -416,6 +492,7 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
           fStatus('테스트 ' + okCnt + '개 배정됨 · 실패 ' + (items.length - okCnt) + '개 — ' + failMsg, 'err');
         } else {
           fStatus('✓ 테스트 ' + okCnt + '개 배정됨 — ' + sel.summary, 'ok');
+          setStep(2);
           if (picker) picker.reset();
           $('f-memo').value = '';
           $('f-due').value = '';

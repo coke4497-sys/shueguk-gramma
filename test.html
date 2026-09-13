@@ -7,37 +7,68 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif; background: #C6D5D2; min-height: 100vh; padding: 14px; padding-bottom: 100px; color: #2C2F2D; -webkit-text-size-adjust: 100%; }
-#prog-top { position: fixed; top: 0; left: 0; right: 0; height: 4px; background: rgba(255,255,255,.5); z-index: 60; display: none; }
-#prog-top i { display: block; height: 100%; width: 0; background: #8D83A8; transition: width .25s ease; }
-.container { max-width: 580px; margin: 0 auto; }
+body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif; background: #C6D5D2; min-height: 100vh; color: #2C2F2D; -webkit-text-size-adjust: 100%; }
+.container { max-width: 580px; margin: 0 auto; padding: 12px 14px 60px; }
 
-.header { text-align: center; margin-bottom: 12px; padding: 18px 16px 14px; background: white; border-radius: 20px; box-shadow: 0 4px 16px rgba(45,128,104,0.08); }
-.header .logo { font-family: 'Gowun Batang', serif; font-size: 11px; font-weight: 800; letter-spacing: 5px; color: #A6C1BB; margin-bottom: 6px; }
-.header h1 { font-family: 'Gowun Batang', serif; font-size: 21px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; line-height: 1.3; }
-.header .round { display: inline-block; margin-top: 9px; font-size: 11px; font-weight: 800; color: #635A7D; background: #EDE4F4; padding: 5px 13px; border-radius: 999px; letter-spacing: .2px; }
+/* ===== 상단 고정 영역 — 제목 + 모드 토글 + 진행·제출 한 덩어리 (2026-09-13 사용자 디자인 지시) ===== */
+.topbar { position: sticky; top: 0; z-index: 40; background: rgba(198,213,210,.96); border-bottom: 1px solid rgba(42,51,47,.07); padding: 16px 22px 12px; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.tb-in { max-width: 580px; margin: 0 auto; }
+.tb-row1 { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.tb-title { min-width: 0; }
+.tb-title h1 { font-family: 'Gowun Batang', serif; font-size: 17px; font-weight: 700; color: #2A332F; line-height: 1.3; letter-spacing: -.2px; }
+.tb-sub { font-size: 11.5px; color: #5C6A64; margin-top: 3px; }
+.mode-tabs { display: flex; flex: none; background: #fff; border: 1px solid #E5EDE8; border-radius: 999px; padding: 3px; }
+.mode-label { padding: 7px 15px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #65726B; cursor: pointer; user-select: none; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+.mode-label.active { background: #EDE4F4; color: #6B5B7B; }
+.mode-label .m-ic { width: 13px; height: 13px; vertical-align: -2px; margin-right: 4px; }
+.tb-row2 { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+.tb-cnt { flex: none; font-size: 11.5px; color: #5C6A64; }
+.pmini { flex: 1; height: 5px; border-radius: 99px; background: rgba(255,255,255,.6); overflow: hidden; min-width: 40px; }
+.pmini i { display: block; height: 100%; width: 0; background: #B9A5CC; border-radius: 99px; transition: width .2s; }
+#result-display { flex: none; font-size: 11.5px; font-weight: 800; color: #6B5B7B; }
+.submit-btn { flex: none; font: inherit; font-size: 12px; font-weight: 700; padding: 6px 13px; border-radius: 999px; border: none; background: #EBF0ED; color: #65726B; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background .15s, color .15s; }
+.submit-btn.ready { background: #EDE4F4; color: #6B5B7B; }
+.submit-btn:disabled { opacity: .6; cursor: default; }
+@media (max-width: 420px){ .topbar { padding: 14px 16px 10px; } .tb-row1 { flex-wrap: wrap; } }
 
-.mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
-.mode-label { padding: 13px; background: white; border-radius: 12px; font-size: 13px; font-weight: 800; color: #8B928C; text-align: center; cursor: pointer; user-select: none; box-shadow: 0 2px 8px rgba(45,128,104,0.05); -webkit-tap-highlight-color: transparent; }
-.mode-label.active { background: #EDE4F4; color: #4F4668; }
-.mode-label .m-ic { width: 16px; height: 16px; vertical-align: -3px; margin-right: 6px; }
+/* ===== 개념 정리 — 분류 칩 + 카드 위계 ===== */
+.category-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
+.cat-label { padding: 8px 16px; border-radius: 999px; font-size: 12.5px; font-weight: 700; background: #fff; border: 1px solid #E5EDE8; color: #65726B; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.cat-label.active { background: #EDE4F4; border-color: #D6C9E4; color: #6B5B7B; }
+.cat-count { margin-left: auto; font-size: 11.5px; color: #5C6A64; }
+.cat-content { display: flex; flex-direction: column; gap: 10px; }
+.vocab-card { background: #fff; border: 1px solid #E5EDE8; border-radius: 16px; padding: 16px 20px 18px; }
+.vocab-word { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-family: 'Gowun Batang', serif; font-size: 17px; font-weight: 700; color: #2A332F; margin-bottom: 9px; }
+.vocab-tag { display: inline-block; padding: 4px 10px; border-radius: 999px; background: #EDE4F4; color: #6B5B7B; font-family: 'Gowun Dodum', sans-serif; font-size: 10.5px; font-weight: 800; letter-spacing: .2px; }
+.vocab-meaning { border-left: 2px solid #DDE6E1; padding-left: 12px; font-size: 13px; line-height: 1.7; color: #5C6A64; }
+.vocab-example { display: flex; align-items: flex-start; gap: 10px; margin-top: 11px; }
+.vocab-example b { flex: none; font-size: 11px; font-weight: 700; color: #9BA8A1; margin-top: 8px; }
+.ex-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ex-chip { padding: 7px 12px; border-radius: 9px; background: #F4F7F5; color: #2A332F; font-size: 12.5px; }
+.note-box { background: #FBEECF; color: #8F630F; font-size: 12px; line-height: 1.6; padding: 11px 13px; border-radius: 10px; }
 
-.category-tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; margin-bottom: 10px; }
-.cat-label { padding: 11px 4px; background: white; border-radius: 8px; font-size: 12px; font-weight: 700; color: #6A716C; text-align: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
-.cat-label.active { background: #DCE8E5; color: #2F4B45; }
+/* ===== 테스트 모드 — 학생 정보(접힘) ===== */
+.student-info { background: #fff; border: 1px solid #E5EDE8; border-radius: 16px; padding: 14px 18px; margin-bottom: 10px; transition: border-color .15s; }
+.student-info.collapsed { cursor: pointer; }
+.student-info.open { border-color: #D6C9E4; }
+.si-sum { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #2A332F; cursor: pointer; }
+.si-sum .s-ic { flex: none; width: 16px; height: 16px; color: #6B5B7B; }
+.si-sum .si-txt { flex: 1; min-width: 0; }
+.si-sum .miss { color: #9BA8A1; }
+.si-edit { flex: none; font: inherit; font-size: 11.5px; color: #9BA8A1; background: none; border: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.si-body { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #F0F4F1; }
+.student-info.open .si-body { display: block; }
+.si-title { font-size: 12px; font-weight: 800; color: #2A332F; margin-bottom: 10px; }
+.si-title .req { font-size: 11px; font-weight: 400; color: #9BA8A1; margin-left: 6px; }
+.si-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px 16px; }
+.si-field label { display: block; font-size: 11px; color: #65726B; margin-bottom: 4px; }
+.si-field input, .si-field select { width: 100%; padding: 10px 12px; font-size: 13px; font-family: inherit; border: 1px solid #E1E7E3; border-radius: 10px; outline: none; color: #2A332F; background: #fff; -webkit-appearance: none; appearance: none; }
+.si-field input:focus, .si-field select:focus { border-color: #D6C9E4; }
+.si-field select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239BA8A1' stroke-width='2.4'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 10px center; background-size: 13px; padding-right: 28px; }
+@media (max-width: 420px){ .si-grid { grid-template-columns: 1fr; } }
 
-/* 개념 정리 카드 — 상자 테두리는 쓰지 않고 옅은 바탕색으로만 구분한다 (사용자 확정, 2026-08-29) */
-.vocab-card { background: white; border-radius: 18px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(45,128,104,0.04); }
-.vocab-word { font-family: 'Gowun Batang', serif; font-size: 20px; font-weight: 800; color: #2C2F2D; margin-bottom: 4px; }
-.vocab-tag { display: inline-block; font-size: 10.5px; font-weight: 800; color: #635A7D; background: #EDE4F4; padding: 3px 9px; border-radius: 999px; margin-left: 7px; vertical-align: middle; letter-spacing: .2px; }
-.vocab-meaning { font-size: 13px; line-height: 1.7; background: #E9F0EF; padding: 11px 13px; border-radius: 10px; margin: 8px 0; }
-.vocab-example { font-size: 12px; line-height: 1.7; color: #4E534F; padding: 10px 12px; background: #F4F6F4; border-radius: 10px; }
-.vocab-example b { font-weight: 800; color: #628C83; margin-right: 6px; }
-.ex-line { display: block; margin-top: 4px; }
-.ex-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-.ex-chip { background: white; border-radius: 8px; padding: 4px 10px; font-size: 12px; color: #3A544E; font-weight: 700; }
-/* 지문(조항 원문·해설) — 한글 맞춤법 레벨2처럼 지문을 읽고 푸는 회차 (테두리 없이 흰 상자) */
-.psg { background: white; border-radius: 16px; padding: 16px 18px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(45,128,104,0.04); }
+/* 지문(조항 원문·해설) — 한글 맞춤법 레벨2처럼 지문을 읽고 푸는 회차 (개념 카드와 같은 흰 상자) */
+.psg { background: #fff; border: 1px solid #E5EDE8; border-radius: 16px; padding: 16px 20px 18px; margin-bottom: 10px; }
 .psg-lbl { font-size: 11px; font-weight: 800; color: #635A7D; background: #EDE4F4; display: inline-block; padding: 3px 9px; border-radius: 999px; margin-bottom: 8px; }
 .psg-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
 .psg-art { font-family: 'Gowun Batang', serif; font-size: 18px; font-weight: 800; color: #2C2F2D; }
@@ -49,67 +80,80 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .psg-toggle { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font: inherit; font-size: 12px; font-weight: 800; color: #635A7D; background: #EDE4F4; border: none; border-radius: 9px; padding: 7px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .psg-toggle svg { width: 13px; height: 13px; transition: transform .15s; }
 .psg-toggle.open svg { transform: rotate(180deg); }
-.note-box { background: #FBEECF; color: #8F630F; font-size: 12px; line-height: 1.6; padding: 11px 13px; border-radius: 10px; margin-bottom: 10px; }
+/* ===== 안내 문단 ===== */
+.section-label { display: flex; align-items: flex-start; gap: 10px; background: #EBF0ED; border-radius: 14px; padding: 12px 16px; margin: 0 0 10px; font-size: 12.5px; line-height: 1.65; color: #5C6A64; }
+.section-label .s-ic { flex: none; width: 15px; height: 15px; color: #65726B; margin-top: 3px; }
+.section-label .dim { color: #9BA8A1; }
+.section-label b { font-weight: 800; }
 
-.progress-bar { display: flex; align-items: center; gap: 10px; background: white; padding: 11px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 12px; font-weight: 700; box-shadow: 0 2px 10px rgba(45,128,104,0.05); }
-.progress-bar .filled { color: #635A7D; font-weight: 800; }
-.progress-bar .lbl { color: #6A716C; flex: none; }
-.pmini { flex: 1; height: 6px; background: #F1F6F4; border-radius: 999px; overflow: hidden; min-width: 60px; }
-.pmini i { display: block; height: 100%; width: 0; background: #8D83A8; border-radius: 999px; transition: width .25s ease; }
-#result-display { flex: none; }
-
-.q-card { background: white; border-radius: 16px; padding: 16px 18px; margin-bottom: 12px; border: 2px solid #F1F6F4; box-shadow: 0 2px 10px rgba(45,128,104,0.04); }
+/* ===== 문항 카드 — 한 줄 배치 ===== */
+#questions { display: flex; flex-direction: column; gap: 10px; }
+.q-card { background: #fff; border: 1px solid #E5EDE8; border-radius: 16px; padding: 12px 16px; transition: border-color .15s; }
+.q-card.filled { border-color: #D6C9E4; }
 .q-card.correct { border-color: #3E9B74; background: #F1F6F4; }
 .q-card.wrong { border-color: #EFA9A5; background: #FBE8E7; }
-.q-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-.q-num { display: inline-block; font-family: 'Gowun Batang', serif; font-size: 16px; font-weight: 800; color: #3A544E; padding: 0 2px 3px; border-bottom: 2.5px solid #8D83A8; line-height: 1.1; }
-.q-start { font-family: 'Gowun Batang', serif; font-size: 19px; font-weight: 800; color: #2C2F2D; }
-.q-start .arrow { color: #A6C1BB; font-size: 15px; margin-left: 6px; }
-.q-stem { font-size: 13.5px; line-height: 1.75; margin-bottom: 9px; }
+.q-line { display: flex; align-items: center; gap: 14px; }
+.q-id { flex: none; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.q-num { font-size: 11px; font-weight: 700; color: #9BA8A1; line-height: 1; }
+.q-bar { display: block; width: 22px; height: 2px; border-radius: 9px; background: #E1E7E3; }
+.q-card.filled .q-bar { background: #B9A5CC; }
+.q-start { flex: none; font-family: 'Gowun Batang', serif; font-size: 16px; font-weight: 700; color: #2A332F; min-width: 74px; }
+.q-steps { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.step-row { display: flex; align-items: center; gap: 10px; }
+.step-arrow { flex: none; font-size: 13px; color: #BCC8C2; }
+.rule-select { flex: 1; min-width: 0; padding: 9px 30px 9px 12px; font-size: 12.5px; font-family: inherit; border: 1px solid #E1E7E3; border-radius: 10px; outline: none; color: #2A332F; background: #fff; -webkit-appearance: none; appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239BA8A1' stroke-width='2.4'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat; background-position: right 10px center; background-size: 13px; }
+.rule-select:focus { border-color: #D6C9E4; }
+.form-input { flex: none; width: 130px; padding: 9px 12px; font-size: 13px; font-family: inherit; font-weight: 700; text-align: center; border-radius: 10px; background: #F4F7F5; border: 1px solid #E1E7E3; color: #2A332F; outline: none; -webkit-appearance: none; }
+.form-input::placeholder { color: #9BA8A1; font-weight: 400; }
+.form-input:focus { border-color: #D6C9E4; background: #fff; }
+.form-input.has { background: #FAF7FC; border-color: #D6C9E4; color: #2A332F; }
+.step-del { flex: none; width: 22px; height: 22px; border: none; border-radius: 7px; background: #F4F7F5; color: #9BA8A1; font: inherit; font-size: 13px; line-height: 1; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.step-del:hover { color: #6B5B7B; background: #EDE4F4; }
+.step-add { flex: none; width: 28px; height: 28px; border: none; border-radius: 9px; background: #F4F7F5; color: #65726B; font: inherit; font-size: 18px; line-height: 1; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.step-add:hover { background: #EDE4F4; color: #6B5B7B; }
+.step-add:disabled { opacity: .35; cursor: default; }
+.rule-select.ok, .form-input.ok { border-color: #3E9B74; background: #E4F1EA; }
+.rule-select.ng, .form-input.ng { border-color: #EFA9A5; background: #FADED9; }
+.q-hint { font-size: 12.5px; color: #6B5B7B; background: #EDE4F4; padding: 7px 11px; border-radius: 8px; margin: 10px 0 0; line-height: 1.5; }
+.q-hint b { font-weight: 800; margin-right: 4px; }
+@media (max-width: 520px){
+  .q-line { flex-wrap: wrap; gap: 10px 12px; }
+  .q-steps { flex-basis: 100%; order: 3; }
+  .step-add { order: 2; margin-left: auto; }
+  .form-input { width: 112px; }
+}
+
+/* 단답/OX/선택 문항 (배치는 그대로, 강조색만 통일) */
+.q-stem { font-size: 13.5px; line-height: 1.75; margin: 6px 0 9px; }
 .q-example { font-size: 12px; color: #6A716C; background: #F4F5F3; padding: 8px 11px; border-radius: 8px; margin: 6px 0; font-style: italic; }
 .blank { display: inline-block; min-width: 50px; padding: 0 8px; border-bottom: 2px solid #628C83; color: #628C83; font-weight: 800; font-style: normal; }
-.section-label { font-size: 12px; font-weight: 800; color: #3A544E; background: #E0EAE7; padding: 8px 12px; border-radius: 8px; margin: 14px 0 8px; }
-.chosung { display: inline-block; background: #E9F0EF; border: 1.5px solid #A6C1BB; color: #3A544E; padding: 1px 8px; border-radius: 6px; font-weight: 800; margin-right: 5px; }
-.boxki { background: #E9F0EF; border: 1.5px dashed #A6C1BB; border-radius: 10px; padding: 10px 12px; margin: 6px 0; font-size: 12px; color: #3A544E; }
+.chosung { display: inline-block; background: #E9F0EF; border: 1.5px solid #A6C1BB; color: #3A544E; padding: 1px 8px; border-radius: 6px; font-weight: 800; margin-left: 6px; font-size: 12px; }
+.boxki { background: #E9F0EF; border: 1.5px dashed #A6C1BB; border-radius: 10px; padding: 10px 12px; margin: 0; font-size: 12px; color: #3A544E; }
 .boxki b { display: block; margin-bottom: 4px; font-size: 11px; }
 .boxki-words { display: flex; flex-wrap: wrap; gap: 6px; }
 .boxki-word { background: white; border: 1.5px solid #A6C1BB; color: #3A544E; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
-
-/* 과정형(음운 변동 실습) 문항 */
-.step-row { display: flex; align-items: center; gap: 6px; margin: 7px 0; }
-.step-badge { flex: 0 0 22px; height: 22px; line-height: 22px; text-align: center; background: #E9F0EF; color: #628C83; border-radius: 6px; font-size: 11px; font-weight: 800; }
-.step-arrow { flex: 0 0 auto; color: #A6C1BB; font-weight: 800; }
-.rule-select { flex: 1 1 50%; min-width: 0; padding: 10px 24px 10px 10px; font-size: 13px; font-family: inherit; font-weight: 700; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; background: white; -webkit-appearance: none; appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235fb8a8' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
-    background-repeat: no-repeat; background-position: right 8px center; background-size: 14px; }
-.form-input { flex: 1 1 40%; min-width: 0; width: 100%; padding: 10px; font-size: 14px; font-family: inherit; font-weight: 700; text-align: center; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; background: white; -webkit-appearance: none; }
-.rule-select:focus, .form-input:focus { border-color: #A6C1BB; }
-.step-final .form-input { border-color: #A6C1BB; background: #F4F5F3; }
-.final-tag { flex: 0 0 auto; font-size: 10px; font-weight: 800; color: #628C83; }
-.rule-select.ok, .form-input.ok { border-color: #3E9B74; background: #E4F1EA; }
-.rule-select.ng, .form-input.ng { border-color: #EFA9A5; background: #FADED9; }
-
-/* 단답/OX/선택 문항 */
-.answer-input { width: 100%; padding: 12px; font-size: 15px; font-family: inherit; font-weight: 700; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; -webkit-appearance: none; background: white; }
-.answer-input:focus { border-color: #A6C1BB; }
+.answer-input { width: 100%; padding: 11px 12px; font-size: 14px; font-family: inherit; font-weight: 700; border: 1px solid #E1E7E3; border-radius: 10px; outline: none; color: #2A332F; -webkit-appearance: none; background: white; }
+.answer-input:focus { border-color: #D6C9E4; }
 .answer-input.ok { border-color: #3E9B74; background: #E4F1EA; color: #276B4E; }
 .answer-input.ng { border-color: #EFA9A5; background: #FADED9; color: #992F20; }
 .ox-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
-.ox-label { background: white; border: 2px solid #E8EAE7; padding: 14px; border-radius: 9px; font-size: 17px; font-weight: 800; color: #6A716C; text-align: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
-.ox-label.active { background: #EDE4F4; border-color: #8D83A8; color: #635A7D; }
+.ox-label { background: white; border: 1px solid #E1E7E3; padding: 13px; border-radius: 10px; font-size: 17px; font-weight: 800; color: #6A716C; text-align: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.ox-label.active { background: #EDE4F4; border-color: #D6C9E4; color: #6B5B7B; }
 .ox-label.ans, .opt-label.ans { background: #E4F1EA; border-color: #3E9B74; color: #276B4E; }
 .ox-label.pick-ng, .opt-label.pick-ng { background: #FADED9; border-color: #EFA9A5; color: #992F20; }
 .opt-label.ans .opt-num { color: #276B4E; }
 .opt-label.pick-ng .opt-num { color: #992F20; }
 .ox-tag { display: block; font-size: 10.5px; font-weight: 800; margin-top: 3px; letter-spacing: .2px; }
 .opt-tag { float: right; margin-left: 8px; font-size: 10.5px; font-weight: 800; letter-spacing: .2px; }
-@media (hover:hover) { .ox-label:hover:not(.active) { border-color: #C6D5D2; background: #FAFBFA; } }
+@media (hover:hover) { .ox-label:hover:not(.active) { border-color: #D6C9E4; background: #FAF7FC; } }
 .opt-buttons { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
-.opt-label { background: white; border: 2px solid #E8EAE7; padding: 12px 13px; border-radius: 9px; font-size: 13.5px; font-weight: 700; color: #2C2F2D; text-align: left; line-height: 1.6; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
-.opt-label.active { background: #EDE4F4; border-color: #8D83A8; color: #635A7D; }
-.opt-label.active .opt-num { color: #635A7D; }
-@media (hover:hover) { .opt-label:hover:not(.active) { border-color: #C6D5D2; background: #FAFBFA; } }
-.opt-label .opt-num { font-weight: 800; color: #8D83A8; margin-right: 6px; }
+.opt-label { background: white; border: 1px solid #E1E7E3; padding: 11px 13px; border-radius: 10px; font-size: 13.5px; font-weight: 700; color: #2C2F2D; text-align: left; line-height: 1.6; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.opt-label.active { background: #EDE4F4; border-color: #D6C9E4; color: #6B5B7B; }
+.opt-label.active .opt-num { color: #6B5B7B; }
+@media (hover:hover) { .opt-label:hover:not(.active) { border-color: #D6C9E4; background: #FAF7FC; } }
+.opt-label .opt-num { font-weight: 800; color: #6B5B7B; margin-right: 6px; }
 
 /* 채점 결과(오답 확인) — 판정 한 줄 / 내 답·정답 줄 / 해설을 층으로 나눠 읽게 한다 */
 .feedback { margin-top: 10px; padding: 11px 13px; border-radius: 10px; font-size: 12.5px; line-height: 1.7; display: none; }
@@ -130,55 +174,32 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .fb-v.mine { font-weight: 700; color: #8B6B64; }
 .fb-v .alt { font-weight: 700; font-size: 11.5px; color: #7B807C; margin-left: 6px; }
 .fb-why { margin-top: 9px; padding-top: 9px; border-top: 1px solid rgba(0,0,0,.08); font-size: 13px; line-height: 1.8; color: #3D453F; }
-.fb-art { display: inline-block; margin-top: 7px; font-size: 11px; font-weight: 800; color: #635A7D; background: #EDE4F4; border-radius: 999px; padding: 4px 11px; }
+.fb-art { display: inline-block; margin-top: 7px; font-size: 11px; font-weight: 800; color: #6B5B7B; background: #EDE4F4; border-radius: 999px; padding: 4px 11px; }
 .fb-lab { display: block; font-size: 11px; font-weight: 800; color: #7B807C; margin-bottom: 3px; }
 .fb-chain + .fb-why { margin-top: 10px; }
-/* 음운 변동 과정 — 문항의 입력 줄과 같은 모양으로 단계마다 한 줄 */
 .fb-chain { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
 .fb-srow { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
 .fb-sn { flex: 0 0 30px; height: 22px; line-height: 22px; text-align: center; background: rgba(255,255,255,.7); border-radius: 6px; font-size: 10.5px; font-weight: 800; color: #7B807C; }
 .ch-f { font-family: 'Gowun Batang', serif; font-size: 14.5px; font-weight: 800; color: #2C2F2D; background: white; border-radius: 8px; padding: 4px 11px; }
-.ch-f.fin { background: #EDE4F4; color: #463F58; }
-.ch-r { font-size: 11.5px; font-weight: 800; color: #635A7D; background: #EDE4F4; border-radius: 999px; padding: 4px 11px; }
-.ch-ar { font-size: 11px; font-weight: 800; color: #A6C1BB; }
+.ch-f.fin { background: #EDE4F4; color: #6B5B7B; }
+.ch-r { font-size: 11.5px; font-weight: 800; color: #6B5B7B; background: #EDE4F4; border-radius: 999px; padding: 4px 11px; }
+.ch-ar { font-size: 11px; font-weight: 800; color: #BCC8C2; }
 .only-wrong .q-card.correct { display: none; }
-.review-btn { display: inline-block; background: white; color: #635A7D; border: 2px solid #8D83A8; padding: 11px 18px; border-radius: 10px; font-size: 13px; font-weight: 800; font-family: inherit; cursor: pointer; margin: 0 0 10px; -webkit-tap-highlight-color: transparent; }
+.review-btn { display: inline-block; background: white; color: #6B5B7B; border: 1px solid #D6C9E4; padding: 11px 18px; border-radius: 10px; font-size: 13px; font-weight: 800; font-family: inherit; cursor: pointer; margin: 0 0 10px; -webkit-tap-highlight-color: transparent; }
 
-.student-info { background: white; border-radius: 14px; padding: 16px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(45,128,104,0.05); }
-.si-sum { display: none; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700; color: #3A544E; }
-.si-sum .s-ic { width: 15px; height: 15px; color: #8D83A8; }
-.student-info.collapsed .si-sum { display: flex; }
-.student-info.collapsed .si-body, .student-info.collapsed .si-title { display: none; }
-.si-edit { margin-left: auto; font: inherit; font-size: 12px; font-weight: 700; color: #628C83; background: #E9F0EF; border: 1.5px solid #C6D5D2; border-radius: 8px; padding: 6px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.student-info .si-title { font-size: 13px; font-weight: 800; color: #3A544E; margin-bottom: 10px; }
-.student-info .si-title .req { font-size: 11px; font-weight: 700; color: #EE7455; margin-left: 5px; }
-.si-row { display: flex; gap: 8px; margin-bottom: 8px; }
-.si-row:last-child { margin-bottom: 0; }
-.si-field { flex: 1; }
-.si-field.small { flex: 0 0 92px; }
-.si-field label { display: block; font-size: 11px; font-weight: 700; color: #6A716C; margin-bottom: 3px; }
-.si-field input, .si-field select { width: 100%; padding: 10px; font-size: 14px; font-family: inherit; font-weight: 700; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; background: white; -webkit-appearance: none; }
-.si-field input:focus, .si-field select:focus { border-color: #A6C1BB; }
-.si-field select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235fb8a8' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 8px center; background-size: 14px; padding-right: 26px; }
-
-.final { display: none; text-align: center; background: white; padding: 24px 18px; border-radius: 20px; box-shadow: 0 6px 20px rgba(45,128,104,0.12); margin: 12px 0; }
+/* 결과 카드 */
+.final { display: none; text-align: center; background: white; padding: 24px 18px; border-radius: 20px; border: 1px solid #E5EDE8; margin: 12px 0; }
 .final.show { display: block; }
-.final .score-big { font-family: 'Gowun Batang', serif; font-size: 42px; font-weight: 800; color: #628C83; }
+.final .score-big { font-family: 'Gowun Batang', serif; font-size: 42px; font-weight: 700; color: #628C83; }
 .final .total { font-size: 18px; color: #8B928C; }
 .final .msg { font-size: 13px; color: #6A716C; margin: 8px 0 14px; line-height: 1.6; }
 .send-btn { display: inline-block; background: #628C83; color: white; border: none; padding: 14px 22px; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; text-decoration: none; margin: 4px; -webkit-tap-highlight-color: transparent; }
-.send-btn.reset { background: white; color: #628C83; border: 2px solid #628C83; }
+.send-btn.reset { background: white; color: #628C83; border: 1px solid #628C83; }
 .send-status-box { font-size: 13px; font-weight: 700; padding: 12px 14px; border-radius: 10px; margin: 4px 0 10px; line-height: 1.5; }
 .send-status-box .s-ic { width: 15px; height: 15px; vertical-align: -2px; margin-right: 5px; }
-.send-status-box.sending { background: #F4F5F3; color: #6A716C; border: 1.5px solid #E8EAE7; }
-.send-status-box.done { background: #E4F1EA; color: #276B4E; border: 1.5px solid #3E9B74; }
-.send-status-box.fail { background: #FADED9; color: #992F20; border: 1.5px solid #EFA9A5; }
-
-.submit-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 2px solid #C6D5D2; padding: 12px 14px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 14px rgba(45,128,104,0.1); z-index: 50; display: none; }
-.submit-inner { max-width: 580px; margin: 0 auto; display: flex; gap: 8px; align-items: center; }
-.submit-status { flex: 1; font-size: 12px; font-weight: 700; color: #6A716C; }
-.submit-status .num { color: #628C83; font-weight: 800; font-size: 14px; }
-.submit-btn { background: #628C83; color: white; border: none; padding: 12px 22px; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.send-status-box.sending { background: #F4F5F3; color: #6A716C; border: 1px solid #E8EAE7; }
+.send-status-box.done { background: #E4F1EA; color: #276B4E; border: 1px solid #3E9B74; }
+.send-status-box.fail { background: #FADED9; color: #992F20; border: 1px solid #EFA9A5; }
 
 .loading-msg { text-align: center; padding: 40px 20px; color: #6A716C; font-weight: 700; }
 .loading-msg .s-ic { width: 16px; height: 16px; vertical-align: -3px; margin-right: 5px; }
@@ -187,22 +208,31 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 </style>
 </head>
 <body>
-<div id="prog-top"><i id="prog-top-fill"></i></div>
-
 <div id="loading" class="loading-msg">불러오는 중…</div>
 
-<div class="container hidden" id="app">
-    <div class="header">
-        <div class="logo">SHUEGUK</div>
-        <h1 id="h-title">문법, 개념이 힘이다.</h1>
-        <div class="round" id="h-round"></div>
+<div class="hidden" id="app">
+    <div class="topbar" id="topbar">
+        <div class="tb-in">
+            <div class="tb-row1">
+                <div class="tb-title">
+                    <h1 id="h-title">문법, 개념이 힘이다.</h1>
+                    <div class="tb-sub" id="h-round"></div>
+                </div>
+                <div class="mode-tabs" id="mode-tabs">
+                    <div class="mode-label active" id="tab-study"><svg class="m-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>개념 정리</div>
+                    <div class="mode-label" id="tab-test"><svg class="m-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>테스트 모드</div>
+                </div>
+            </div>
+            <div class="tb-row2 hidden" id="tb-row2">
+                <span class="tb-cnt">완료: <span id="filled-count">0</span> / <span id="total-count">0</span></span>
+                <span class="pmini"><i id="pfill"></i></span>
+                <span id="result-display"></span>
+                <button type="button" class="submit-btn" id="submit-btn">전체 제출</button>
+            </div>
+        </div>
     </div>
 
-    <div class="mode-tabs" id="mode-tabs">
-        <div class="mode-label active" id="tab-study"><svg class="m-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>개념 정리</div>
-        <div class="mode-label" id="tab-test"><svg class="m-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>테스트 모드</div>
-    </div>
-
+    <div class="container">
     <!-- 개념 정리 -->
     <div class="study-section" id="study-section">
         <div class="category-tabs" id="cat-tabs"></div>
@@ -211,42 +241,26 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 
     <!-- 테스트 모드 -->
     <div class="test-section hidden" id="test-section">
-        <div class="student-info" id="student-info">
-            <div class="si-sum">
+        <div class="student-info collapsed" id="student-info">
+            <div class="si-sum" id="si-sum">
                 <svg class="s-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <span id="si-sum-text"></span>
+                <span class="si-txt" id="si-sum-text"></span>
                 <button type="button" class="si-edit" id="si-edit">수정</button>
             </div>
-            <div class="si-title">학생 정보<span class="req">* 제출 전 꼭 입력해 주세요</span></div>
             <div class="si-body">
-                <div class="si-row">
+                <div class="si-title">학생 정보<span class="req">제출 전 꼭 입력해 주세요</span></div>
+                <div class="si-grid">
                     <div class="si-field"><label for="si-name">이름</label><input type="text" id="si-name" placeholder="박보검" autocomplete="off"></div>
-                </div>
-                <div class="si-row">
+                    <div class="si-field"><label for="si-grade">학년</label><select id="si-grade"></select></div>
                     <div class="si-field"><label for="si-school">학교</label><input type="text" id="si-school" placeholder="○○중 또는 ○○고" autocomplete="off"></div>
-                    <div class="si-field small"><label for="si-grade">학년</label><select id="si-grade"></select></div>
-                </div>
-                <div class="si-row">
                     <div class="si-field"><label for="si-phone8">학부모님 휴대전화번호 8자리</label><input type="text" id="si-phone8" inputmode="numeric" maxlength="8" placeholder="12345678" autocomplete="off"></div>
                 </div>
             </div>
         </div>
 
-        <div class="progress-bar">
-            <span class="lbl">완료: <span class="filled" id="filled-count">0</span> / <span id="total-count">0</span></span>
-            <span class="pmini"><i id="pfill"></i></span>
-            <span id="result-display"></span>
-        </div>
-
         <div id="questions"></div>
         <div id="final" class="final"></div>
     </div>
-</div>
-
-<div class="submit-bar" id="submit-bar">
-    <div class="submit-inner">
-        <div class="submit-status"><span class="num" id="bar-filled">0</span> / <span id="bar-total">0</span> 완료</div>
-        <button type="button" class="submit-btn" id="submit-btn">전체 제출</button>
     </div>
 </div>
 
@@ -323,7 +337,6 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         $('h-round').textContent = CAT_LABEL + ' ' + round + '회' + (data.subtitle ? ' · ' + data.subtitle : '');
         document.title = 'SHUEGUK 문법 ' + CAT_LABEL + ' ' + round + '회';
         $('total-count').textContent = TOTAL;
-        $('bar-total').textContent = TOTAL;
 
         var gradeSel = $('si-grade');
         gradeSel.innerHTML = '<option value="">선택</option>';
@@ -343,12 +356,17 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         if (pGrade && GRADES.indexOf(pGrade) >= 0) gradeSel.value = pGrade;
         if (pPhone8.length === 8) $('si-phone8').value = pPhone8;
         $('si-phone8').addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8); });
-        // 개인 페이지에서 넷 다 채워져 넘어왔으면 요약 한 줄로 접는다 — [수정]으로 펼침
-        if (pName && pSchool && gradeSel.value && pPhone8.length === 8) {
-            $('si-sum-text').textContent = pName + ' · ' + pSchool + ' ' + gradeSel.value;
-            $('student-info').classList.add('collapsed');
-        }
-        $('si-edit').addEventListener('click', function() { $('student-info').classList.remove('collapsed'); });
+        // 학생 정보 카드는 기본 접힘(요약 한 줄) — 카드를 누르면 펼쳐지고, [접기]로 다시 접는다 (2026-09-13 디자인 지시)
+        ['si-name', 'si-school', 'si-grade', 'si-phone8'].forEach(function(id) {
+            $(id).addEventListener('input', siSummary);
+            $(id).addEventListener('change', siSummary);
+        });
+        siSummary();
+        $('student-info').addEventListener('click', function(ev) {
+            var card = $('student-info');
+            if (card.classList.contains('collapsed')) { siOpen(true); return; }
+            if (ev.target.closest('#si-sum')) siOpen(false);
+        });
 
         buildStudy(data.study || {});
         buildQuestions();
@@ -364,18 +382,32 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         $('app').classList.remove('hidden');
     }
 
+    /* ===== 학생 정보 요약/접기 ===== */
+    function siSummary() {
+        var name = ($('si-name').value || '').trim(), grade = $('si-grade').value || '', p8 = ($('si-phone8').value || '').trim();
+        var parts = [
+            name ? esc(name) : '<span class="miss">이름 미입력</span>',
+            grade ? esc(grade) : '<span class="miss">학년 미선택</span>',
+            /^[0-9]{8}$/.test(p8) ? esc(p8) : '<span class="miss">전화번호 8자리 미입력</span>'
+        ];
+        $('si-sum-text').innerHTML = parts.join(' · ');
+    }
+    function siOpen(open) {
+        var card = $('student-info');
+        card.classList.toggle('open', !!open);
+        card.classList.toggle('collapsed', !open);
+        $('si-edit').textContent = open ? '접기' : '수정';
+    }
+
     /* ===== 개념 정리 ===== */
-    // 용례를 '/' 단위 줄로 나누고, 짧은 낱말 나열이면 칩으로 보여 준다 (규정집 느낌)
+    // 용례를 '/' 단위 줄·쉼표 단위 낱말로 나눠 전부 칩으로 보여 준다 (2026-09-13 디자인 지시 — 큰 회색 상자 없이)
     function exHtml(ex) {
         if (!ex) return '';
-        var h = '<div class="vocab-example"><b>예)</b>';
+        var chips = [];
         ('' + ex).split(' / ').forEach(function(line) {
-            var toks = line.split(/,\s*/);
-            var chippy = toks.length >= 3 && toks.every(function(t) { return t.trim().length > 0 && t.trim().length <= 14 && t.indexOf('=') < 0; });
-            if (chippy) h += '<span class="ex-chips">' + toks.map(function(t) { return '<span class="ex-chip">' + esc(t.trim()) + '</span>'; }).join('') + '</span>';
-            else h += '<span class="ex-line">' + esc(line) + '</span>';
+            line.split(/,\s*/).forEach(function(t) { if (t.trim()) chips.push('<span class="ex-chip">' + esc(t.trim()) + '</span>'); });
         });
-        return h + '</div>';
+        return '<div class="vocab-example"><b>예</b><span class="ex-chips">' + chips.join('') + '</span></div>';
     }
 
     function buildStudy(study) {
@@ -386,6 +418,9 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             $('study-section').classList.add('hidden'); return;
         }
 
+        var cnt = document.createElement('span');
+        cnt.className = 'cat-count'; cnt.id = 'cat-count';
+        function ruleCount(idx) { return (tabsData[idx].items || []).filter(function(v) { return !v.note; }).length; }
         tabsData.forEach(function(d, idx) {
             var t = document.createElement('div');
             t.className = 'cat-label' + (idx === 0 ? ' active' : '');
@@ -412,6 +447,8 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             });
             body.appendChild(wrap);
         });
+        tabs.appendChild(cnt);
+        cnt.textContent = ruleCount(0) + '개 규칙';
 
         tabs.querySelectorAll('.cat-label').forEach(function(t) {
             t.addEventListener('click', function() {
@@ -419,6 +456,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
                 t.classList.add('active');
                 tabsData.forEach(function(_, idx) { $('cat-' + idx).classList.add('hidden'); });
                 $('cat-' + t.getAttribute('data-cat')).classList.remove('hidden');
+                cnt.textContent = ruleCount(parseInt(t.getAttribute('data-cat'), 10)) + '개 규칙';
             });
         });
     }
@@ -459,6 +497,48 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         });
         return el;
     }
+    /* 과정형 문항 — 단계 줄은 학생이 [+]로 늘린다 (2026-09-13 디자인 지시: 처음엔 한 줄, 맨 오른쪽 + 버튼).
+     * FREE_STEPS=false 로 두면 예전처럼 정답 단계 수만큼 줄을 미리 만든다. */
+    var FREE_STEPS = true, MAX_STEPS = 6;
+    function stepRowHTML(i, si) {
+        return '<div class="step-row" data-i="' + i + '">' +
+            '<span class="step-arrow">→</span>' +
+            '<select class="rule-select" id="sel-' + i + '-' + si + '">' + ruleOptionsHTML() + '</select>' +
+            '<span class="step-arrow">→</span>' +
+            '<input type="text" class="form-input" id="frm-' + i + '-' + si + '" autocomplete="off" autocorrect="off" autocapitalize="off">' +
+            '<button type="button" class="step-del" aria-label="단계 빼기" hidden>×</button>' +
+            '</div>';
+    }
+    // 줄 번호·placeholder·빼기 버튼을 다시 매긴다 (마지막 줄 = 최종 발음)
+    function relabelSteps(i) {
+        var rows = $('card-' + i).querySelectorAll('.step-row');
+        rows.forEach(function(r, si) {
+            r.querySelector('.rule-select').id = 'sel-' + i + '-' + si;
+            var inp = r.querySelector('.form-input');
+            inp.id = 'frm-' + i + '-' + si;
+            inp.placeholder = (si === rows.length - 1) ? '최종 발음' : '바뀐 형태';
+            r.querySelector('.step-del').hidden = !(FREE_STEPS && rows.length > 1 && si === rows.length - 1);
+        });
+        var add = $('card-' + i).querySelector('.step-add');
+        if (add) add.disabled = rows.length >= MAX_STEPS;
+    }
+    function addStep(i) {
+        var box = $('card-' + i).querySelector('.q-steps');
+        if (box.querySelectorAll('.step-row').length >= MAX_STEPS) return;
+        box.insertAdjacentHTML('beforeend', stepRowHTML(i, box.querySelectorAll('.step-row').length));
+        relabelSteps(i);
+        var last = box.lastElementChild.querySelector('.rule-select');
+        if (last) last.focus();
+        updateProgress();
+    }
+    function removeStep(i, row) {
+        var box = $('card-' + i).querySelector('.q-steps');
+        if (box.querySelectorAll('.step-row').length <= 1) return;
+        row.remove();
+        relabelSteps(i);
+        updateProgress();
+    }
+    function stepRows(i) { return $('card-' + i).querySelectorAll('.step-row'); }
 
     function buildQuestions() {
         var box = $('questions');
@@ -466,7 +546,9 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         if (DATA.instruction) {
             var il = document.createElement('div');
             il.className = 'section-label';
-            il.innerHTML = DATA.instruction; // 데이터 파일의 지시문(자체 제작 콘텐츠 — <b> 강조 허용)
+            // 데이터 파일의 지시문(자체 제작 콘텐츠 — <b> 강조 허용). '(대괄호 없이 한글만)'은 흐리게.
+            il.innerHTML = ic('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>') +
+                '<span>' + DATA.instruction.replace(/\(대괄호 없이 한글만\)/, '<span class="dim">(대괄호 없이 한글만)</span>') + '</span>';
             box.appendChild(il);
         }
         QUESTIONS.forEach(function(q, i) {
@@ -487,23 +569,26 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             card.className = 'q-card';
             card.id = 'card-' + i;
             if (q.type === 'process') {
-                var h = '<div class="q-head"><span class="q-num">' + esc(pad2(q.num)) + '</span><span class="q-start">' + esc(q.start) + '<span class="arrow">→ ?</span></span></div>';
-                (q.steps || []).forEach(function(st, si) {
-                    var isFinal = (si === q.steps.length - 1);
-                    h += '<div class="step-row' + (isFinal ? ' step-final' : '') + '">' +
-                        '<span class="step-badge">' + (si + 1) + '</span>' +
-                        '<select class="rule-select" id="sel-' + i + '-' + si + '">' + ruleOptionsHTML() + '</select>' +
-                        '<span class="step-arrow">→</span>' +
-                        '<input type="text" class="form-input" id="frm-' + i + '-' + si + '" placeholder="' + (isFinal ? '최종 발음' : '바뀐 형태') + '" autocomplete="off" autocorrect="off" autocapitalize="off">' +
-                        (isFinal ? '<span class="final-tag">[발음]</span>' : '') +
-                        '</div>';
-                });
+                var nRows = FREE_STEPS ? 1 : (q.steps || []).length;
+                var rows = '';
+                for (var si = 0; si < nRows; si++) rows += stepRowHTML(i, si);
+                var h = '<div class="q-line">' +
+                    '<span class="q-id"><span class="q-num">' + esc(pad2(q.num)) + '</span><i class="q-bar"></i></span>' +
+                    '<span class="q-start">' + esc(q.start) + '</span>' +
+                    '<span class="q-steps">' + rows + '</span>' +
+                    (FREE_STEPS ? '<button type="button" class="step-add" data-i="' + i + '" aria-label="단계 추가">+</button>' : '') +
+                    '</div>';
+                if (q.hint) h += '<div class="q-hint"><b>힌트</b>' + esc(q.hint) + '</div>';
                 card.innerHTML = h + '<div class="feedback" id="feedback-' + i + '"></div>';
+                box.appendChild(card);
+                relabelSteps(i);
+                return;
             } else {
                 var head = '<div><span class="q-num">' + esc(pad2(q.num)) + '</span>' +
                     (q.chosung ? '<span class="chosung">' + esc(q.chosung) + '</span>' : '') + '</div>' +
                     '<div class="q-stem">' + esc(q.stem) + '</div>' +
-                    (q.example ? '<div class="q-example">' + blankify(q.example) + '</div>' : '');
+                    (q.example ? '<div class="q-example">' + blankify(q.example) + '</div>' : '') +
+                    (q.hint ? '<div class="q-hint"><b>힌트</b>' + esc(q.hint) + '</div>' : '');
                 if (q.type === 'ox') {
                     card.innerHTML = head +
                         '<div class="ox-buttons">' +
@@ -530,7 +615,9 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     var oxChoice = {}, choiceSel = {};
     function itemFilled(q, i) {
         if (q.type === 'process') {
-            for (var si = 0; si < q.steps.length; si++) {
+            var rows = stepRows(i);
+            if (!rows.length) return false;
+            for (var si = 0; si < rows.length; si++) {
                 if (!$('sel-' + i + '-' + si).value) return false;
                 if (!$('frm-' + i + '-' + si).value.trim()) return false;
             }
@@ -543,12 +630,15 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     }
     function updateProgress() {
         var filled = 0;
-        QUESTIONS.forEach(function(q, i) { if (itemFilled(q, i)) filled++; });
-        $('bar-filled').textContent = filled;
+        QUESTIONS.forEach(function(q, i) {
+            var f = itemFilled(q, i);
+            if (f) filled++;
+            if (!submitted) $('card-' + i).classList.toggle('filled', f);
+            if (q.type === 'process') stepRows(i).forEach(function(r) { var inp = r.querySelector('.form-input'); inp.classList.toggle('has', !!inp.value.trim()); });
+        });
         $('filled-count').textContent = filled;
-        var pct = TOTAL ? Math.round(filled / TOTAL * 100) + '%' : '0%';
-        $('pfill').style.width = pct;
-        $('prog-top-fill').style.width = pct;
+        $('pfill').style.width = (TOTAL ? Math.round(filled / TOTAL * 100) : 0) + '%';
+        $('submit-btn').classList.toggle('ready', TOTAL > 0 && filled === TOTAL);
     }
 
     function attachListeners() {
@@ -578,6 +668,13 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         var qbox = $('questions');
         qbox.addEventListener('input', updateProgress);
         qbox.addEventListener('change', updateProgress);
+        qbox.addEventListener('click', function(ev) {
+            if (submitted) return;
+            var add = ev.target.closest('.step-add');
+            if (add) { addStep(parseInt(add.getAttribute('data-i'), 10)); return; }
+            var del = ev.target.closest('.step-del');
+            if (del) { var row = del.closest('.step-row'); removeStep(parseInt(row.getAttribute('data-i'), 10), row); }
+        });
         $('tab-study').addEventListener('click', function() { setMode('study'); });
         $('tab-test').addEventListener('click', function() { setMode('test'); });
         $('submit-btn').addEventListener('click', submit);
@@ -589,8 +686,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         $('tab-test').classList.toggle('active', !study);
         $('study-section').classList.toggle('hidden', !study);
         $('test-section').classList.toggle('hidden', study);
-        $('submit-bar').style.display = (!study && !submitted) ? 'block' : 'none';
-        $('prog-top').style.display = (!study && !submitted) ? 'block' : 'none';
+        $('tb-row2').classList.toggle('hidden', study);
     }
 
     /* ===== 채점/제출 ===== */
@@ -675,7 +771,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         var sGrade = $('si-grade').value || '';
         var sPhone8 = ($('si-phone8').value || '').trim();
         if (!sName || !sSchool || !sGrade || !/^[0-9]{8}$/.test(sPhone8)) {
-            $('student-info').classList.remove('collapsed');
+            siOpen(true);
             alert('제출 전에 이름·학교·학년·학부모님 휴대전화번호 8자리를 모두 입력해 주세요!');
             $('si-name').scrollIntoView({ block: 'center' });
             return;
@@ -710,16 +806,18 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             var card = $('card-' + i), fb = $('feedback-' + i), qNum = q.num;
             var isCorrect = false;
             if (q.type === 'process') {
-                var itemOK = true;
-                q.steps.forEach(function(st, si) {
-                    var sel = $('sel-' + i + '-' + si), frm = $('frm-' + i + '-' + si);
-                    var ruleOK = st.accept.indexOf(sel.value) >= 0;
-                    var fOK = formOK(frm.value, st.form);
+                // 학생이 만든 줄 수와 정답 단계 수가 같고 줄마다 규칙·형태가 맞아야 정답. 남는 줄은 오답, 모자란 단계는 정답 과정에서 보인다.
+                var rows = stepRows(i), itemOK = rows.length === q.steps.length;
+                rows.forEach(function(r, si) {
+                    var sel = $('sel-' + i + '-' + si), frm = $('frm-' + i + '-' + si), st = q.steps[si];
+                    var ruleOK = !!st && st.accept.indexOf(sel.value) >= 0;
+                    var fOK = !!st && formOK(frm.value, st.form);
                     sel.className = 'rule-select ' + (ruleOK ? 'ok' : 'ng');
                     frm.className = 'form-input ' + (fOK ? 'ok' : 'ng');
                     sel.disabled = true; frm.disabled = true;
                     if (!(ruleOK && fOK)) itemOK = false;
                 });
+                card.querySelectorAll('.step-add, .step-del').forEach(function(b) { b.remove(); });
                 isCorrect = itemOK;
                 fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
                 if (isCorrect) {
@@ -828,8 +926,8 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             if (on) $('card-' + wrongIdx[0]).scrollIntoView({ block: 'center' });
         });
 
-        $('result-display').innerHTML = '<span class="filled">맞힌 문항: ' + score + ' / ' + TOTAL + '</span>';
-        $('submit-bar').style.display = 'none';
+        $('result-display').textContent = '맞힌 문항: ' + score + ' / ' + TOTAL;
+        $('submit-btn').hidden = true;
         setTimeout(function() { finalEl.scrollIntoView({ block: 'center' }); }, 300);
     }
 
