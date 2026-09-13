@@ -103,10 +103,15 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .q-steps { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
 .step-row { display: flex; align-items: center; gap: 10px; }
 .step-arrow { flex: none; font-size: 13px; color: #BCC8C2; }
+.hy { flex: none; width: 12px; text-align: center; font-weight: 800; color: #6B5B7B; }   /* 형태소 빈칸 앞뒤의 붙임표 표시 */
+.hy.off { width: 12px; }
 .rule-select { flex: 1; min-width: 0; padding: 9px 30px 9px 12px; font-size: 12.5px; font-family: inherit; border: 1px solid #E1E7E3; border-radius: 10px; outline: none; color: #2A332F; background: #fff; -webkit-appearance: none; appearance: none;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239BA8A1' stroke-width='2.4'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
     background-repeat: no-repeat; background-position: right 10px center; background-size: 13px; }
 .rule-select:focus { border-color: #D6C9E4; }
+.step-row.two .rule-select { padding-right: 24px; padding-left: 10px; }   /* 드롭다운이 둘인 줄(형태소): 글자가 잘리지 않게 여백 축소 + 빈칸 폭 축소 */
+.step-row.two .form-input { width: 104px; }
+.step-row.two .rule-select.sel2 { flex: 0 0 96px; }
 .form-input { flex: none; width: 130px; padding: 9px 12px; font-size: 13px; font-family: inherit; font-weight: 700; text-align: center; border-radius: 10px; background: #F4F7F5; border: 1px solid #E1E7E3; color: #2A332F; outline: none; -webkit-appearance: none; }
 .form-input::placeholder { color: #9BA8A1; font-weight: 400; }
 .form-input:focus { border-color: #D6C9E4; background: #fff; }
@@ -125,6 +130,11 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
   .q-steps { flex-basis: 100%; order: 3; }
   .step-add { order: 2; margin-left: auto; }
   .form-input { width: 112px; }
+  .step-row.two { gap: 6px; }
+  .step-row.two .form-input { width: 76px; }
+  .step-row.two .rule-select { padding: 9px 20px 9px 8px; font-size: 12px; background-position: right 6px center; }
+  .step-row.two .rule-select.sel2 { flex: 1; }
+  .step-row.two .hy { width: 9px; }
 }
 
 /* 단답/OX/선택 문항 (배치는 그대로, 강조색만 통일) */
@@ -298,15 +308,16 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         return s.replace(/[①-⑩]/g, function(c) { return map[c] || c; });
     }
     // 과정형: 대괄호·공백 제거 (기존 음운 변동 페이지의 norm과 동일)
-    function normForm(s) { return (s || '').replace(/[\[\]\s]/g, '').trim(); }
+    function normForm(s) { return (s || '').replace(/[\[\]\s]/g, '').replace(/[\u2010-\u2015\uFF0D\u2212]/g, '-').trim(); }
     // "기어서/기여서"처럼 빗금으로 복수 표기된 형태는 어느 쪽을 써도 정답
     function formOK(user, form) {
-        var u = normForm(user);
+        var bare = function(x) { return PUI.hyphenMarks ? x.replace(/^-+|-+$/g, '') : x; };   // 붙임표를 빈칸 옆에 보여 주는 파일은 형태소만 대조
+        var u = bare(normForm(user));
         if (!u) return false;
-        if (u === normForm(form)) return true;
+        if (u === bare(normForm(form))) return true;
         var alts = ('' + form).split('/');
         if (alts.length < 2) return false;
-        return alts.some(function(a) { return normForm(a) && normForm(a) === u; });
+        return alts.some(function(a) { return bare(normForm(a)) && bare(normForm(a)) === u; });
     }
     function circ(n) { var s = '①②③④⑤⑥⑦⑧⑨⑩'; n = parseInt(n, 10); return (n >= 1 && n <= 10) ? s.charAt(n - 1) : ('(' + n + ')'); }
     function pad2(n) { n = '' + n; return n.length < 2 ? '0' + n : n; }
@@ -522,12 +533,15 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
      * FREE_STEPS=true 로 두면 한 줄로 시작해 학생이 [+]로 늘린다(디자인 지시서의 + 버튼 방식). */
     var FREE_STEPS = false, MAX_STEPS = 6;
     var PUI = {}, RULES2 = [];
-    function stepRowHTML(i, si) {
+    function stepRowHTML(i, si, st) {
+        var f0 = st ? ('' + st.form).split('/')[0] : '';
+        var hyL = (PUI.hyphenMarks && /^-/.test(f0)) ? '<span class="hy">-</span>' : (PUI.hyphenMarks ? '<span class="hy off"></span>' : '');
+        var hyR = (PUI.hyphenMarks && /-$/.test(f0)) ? '<span class="hy">-</span>' : (PUI.hyphenMarks ? '<span class="hy off"></span>' : '');
         var sel = '<select class="rule-select" id="sel-' + i + '-' + si + '">' + ruleOptionsHTML() + '</select>' +
             (RULES2.length ? '<select class="rule-select sel2" id="sel2-' + i + '-' + si + '">' + ruleOptionsHTML(RULES2, PUI.select2) + '</select>' : '');
-        var inp = '<input type="text" class="form-input" id="frm-' + i + '-' + si + '" autocomplete="off" autocorrect="off" autocapitalize="off">';
+        var inp = hyL + '<input type="text" class="form-input" id="frm-' + i + '-' + si + '" autocomplete="off" autocorrect="off" autocapitalize="off">' + hyR;
         var sep = '<span class="step-arrow">' + esc(PUI.sep) + '</span>';
-        return '<div class="step-row" data-i="' + i + '">' +
+        return '<div class="step-row' + (RULES2.length ? ' two' : '') + '" data-i="' + i + '">' +
             '<span class="step-arrow">' + esc(PUI.arrow) + '</span>' +
             (PUI.formFirst ? inp + sep + sel : sel + sep + inp) +
             (FREE_STEPS ? '<button type="button" class="step-del" aria-label="단계 빼기" hidden>×</button>' : '') +
@@ -597,7 +611,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             if (q.type === 'process') {
                 var nRows = FREE_STEPS ? 1 : (q.steps || []).length;
                 var rows = '';
-                for (var si = 0; si < nRows; si++) rows += stepRowHTML(i, si);
+                for (var si = 0; si < nRows; si++) rows += stepRowHTML(i, si, (q.steps || [])[si]);
                 var h = '<div class="q-line">' +
                     '<span class="q-id"><span class="q-num">' + esc(pad2(q.num)) + '</span><i class="q-bar"></i></span>' +
                     '<span class="q-start">' + esc(q.start) + '</span>' +
@@ -726,7 +740,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         var s = q.start;
         (q.steps || []).forEach(function(st, si) {
             var label = st.accept.join('/') + (st.accept2 ? '·' + st.accept2.join('/') : '');
-            var f = (si === q.steps.length - 1 && PUI.brackets) ? '[' + st.form + ']' : st.form;
+            var f = (si === q.steps.length - 1 && PUI.brackets) ? '[' + dispForm(st.form) + ']' : dispForm(st.form);
             s += ' ' + PUI.arrow + ' ' + (PUI.formFirst ? f + ' (' + label + ')' : '(' + label + ') ' + PUI.sep + ' ' + f);
         });
         return s;
@@ -772,6 +786,8 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             (kind === 'ans' ? '정답' : '내 답') + '</span>');
     }
     // 음운 변동 과정 — 문항의 입력 줄과 같은 순서로, 단계마다 한 줄씩 보여 준다
+    // 정답 표시용 형태 — processUI.firstForm이면 빗금 목록의 첫 표기만(형태소: '믿-/믿/-믿/-믿-' → '믿-'), 음운은 '기어서/기여서'처럼 둘 다 보여 준다
+    function dispForm(form) { return PUI.firstForm ? ('' + form).split('/')[0] : form; }
     function chainHTML(q) {
         var h = '<b class="fb-lab">' + esc(PUI.chainTitle) + '</b><div class="fb-chain">' +
                 '<div class="fb-srow"><span class="fb-sn">' + esc(PUI.startLabel) + '</span><span class="ch-f">' + esc(q.start) + '</span></div>';
@@ -779,7 +795,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             var fin = (si === q.steps.length - 1);
             var rule = '<span class="ch-r">' + esc(st.accept.join(' 또는 ')) + '</span>' +
                  (st.accept2 ? '<span class="ch-r">' + esc(st.accept2.join(' 또는 ')) + '</span>' : '');
-            var formEl = '<span class="ch-f' + (fin ? ' fin' : '') + '">' + esc((fin && PUI.brackets) ? '[' + st.form + ']' : st.form) + '</span>';
+            var formEl = '<span class="ch-f' + (fin ? ' fin' : '') + '">' + esc((fin && PUI.brackets) ? '[' + dispForm(st.form) + ']' : dispForm(st.form)) + '</span>';
             var arEl = '<span class="ch-ar">' + esc(PUI.sep) + '</span>';
             h += '<div class="fb-srow"><span class="fb-sn">' + (si + 1) + '</span>' +
                  (PUI.formFirst ? formEl + arEl + rule : rule + arEl + formEl) + '</div>';

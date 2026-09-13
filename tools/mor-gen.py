@@ -4,8 +4,8 @@
    실행: python3 tools/mor-gen.py  →  이어서 node tools/data-check.js
 
    문항 형식
-   - 나누기(process 재사용): start=단어/문장, steps=형태소마다 {accept:[종류], form:'형태-/형태'} —
-     종류 드롭다운(ruleOptions) = 실질·자립 / 실질·의존 / 형식·의존, 형태는 붙임표 있고 없고 둘 다 인정.
+   - 나누기(process 재사용): start=단어/문장, steps=형태소마다 {accept:[실질/형식], accept2:[자립/의존], form} —
+     form의 붙임표(어간·어미·접사)는 빈칸 앞뒤에 표시되고 학생은 형태소만 쓴다.
    - 단답(short): 개념·판정·개수·이형태.
    단어·문장 뒤의 '※' = 자료(PDF 5개)에 없는 것을 문서 규칙으로 새로 분석한 예(사용자 검수 대상).
 """
@@ -41,14 +41,9 @@ def parse(spec):
     return out
 
 def variants(form):
-    """붙임표가 있는 형태소(어간·어미·접사)는 붙임표 있고 없고 다 인정, 자립 형태소·조사는 붙임표 없이만."""
-    bare = form.strip('-')
-    if '-' not in form: return bare
-    v = [form, bare, '-' + bare, bare + '-', '-' + bare + '-']
-    seen, res = set(), []
-    for x in v:
-        if x not in seen: seen.add(x); res.append(x)
-    return '/'.join(res)
+    """form은 붙임표를 포함한 대표 표기('믿-', '-음', '-었-', 조사·자립은 없음). 페이지가 그 붙임표를 빈칸 앞뒤에 표시하고
+       학생은 형태소만 쓴다(2026-09-13 사용자 "조사를 제외한 의존 형태소는 - 표시가 필요합니다" → "빈칸 앞뒤로 표시")."""
+    return form
 
 def explain(ms, note=''):
     parts = [f"{f}: {n}({KIND[c][1]})" for f, c, n in ms]
@@ -463,17 +458,17 @@ def make_level1():
         w = cand[2]; ms = parse(w[1])
         qs.append(short(f"'{w[0]}'은/는 몇 개의 형태소로 이루어졌는가? (숫자만)", str(len(ms)), [str(len(ms)), f'{len(ms)}개'], explain(ms)))
         for i, q in enumerate(qs): q['num'] = i + 1
-        qs[0]['section'] = '단어를 형태소로 나누기 — 빈칸 수가 형태소 수입니다. 빈칸마다 형태소를 쓰고 실질/형식, 자립/의존을 각각 고르세요. 붙임표(-)는 써도 되고 안 써도 됩니다.'
+        qs[0]['section'] = '단어를 형태소로 나누기 — 빈칸 수가 형태소 수입니다. 빈칸마다 형태소를 쓰고 실질/형식, 자립/의존을 각각 고르세요. 빈칸 앞뒤의 붙임표(-)는 어간·어미·접사처럼 다른 말과 결합하는 자리를 뜻합니다. 붙임표는 이미 표시되어 있으니 형태소만 쓰세요.'
         qs[10]['section'] = '개념과 판정 — 단답'
         rounds.append({
             'category': '형태소', 'round': r + 1, 'title': f'단어의 형태소 분석 ({r + 1})', 'subtitle': '레벨1',
-            'instruction': '단어를 형태소 개수만큼의 빈칸에 나누어 쓰고, 빈칸마다 실질/형식과 자립/의존을 고릅니다. 어간·어미·접사는 기본형 그대로 씁니다(귀여워 → 귀엽, 어). 붙임표(-)는 있어도 없어도 됩니다.',
+            'instruction': '단어를 형태소 개수만큼의 빈칸에 나누어 쓰고, 빈칸마다 실질/형식과 자립/의존을 고릅니다. 어간·어미·접사는 기본형 그대로 씁니다(귀여워 → 귀엽, 어). 붙임표(-)는 빈칸 앞뒤에 표시되어 있습니다.',
             'ruleOptions': RULES, 'ruleOptions2': RULES2, 'processUI': PUI, 'total': len(qs), 'questions': qs,
         })
     return rounds
 
 PUI = {'select': '실질/형식', 'select2': '자립/의존', 'mid': '형태소', 'last': '형태소', 'arrow': '/', 'sep': '', 'chainTitle': '정답 분석', 'startLabel': '전체',
-       'brackets': False, 'formFirst': True, 'freeSteps': False}   # 형태소 개수만큼 빈칸을 미리 주고, 빈칸마다 실질/형식·자립/의존을 각각 고른다(2026-09-13 사용자 지정)
+       'brackets': False, 'formFirst': True, 'freeSteps': False, 'firstForm': True, 'hyphenMarks': True}   # 붙임표는 빈칸 앞뒤에 표시(학생은 형태소만 씀)   # 형태소 개수만큼 빈칸을 미리 주고, 빈칸마다 실질/형식·자립/의존을 각각 고른다(2026-09-13 사용자 지정)
 
 def make_level2():
     sents = list(S2); phrases = list(P2)
@@ -506,12 +501,12 @@ def make_level2():
             if ans in ('였', '너라'): alts += ['-' + ans + '-', '-' + ans, ans + '-']
             qs.append(short(stem, ans, alts, ex))
         for i, q in enumerate(qs): q['num'] = i + 1
-        qs[0]['section'] = '문장을 형태소로 나누기 — 빈칸 수가 형태소 수입니다. 빈칸마다 형태소를 순서대로 쓰고 실질/형식, 자립/의존을 각각 고르세요. 붙임표(-)는 써도 되고 안 써도 됩니다.'
+        qs[0]['section'] = '문장을 형태소로 나누기 — 빈칸 수가 형태소 수입니다. 빈칸마다 형태소를 순서대로 쓰고 실질/형식, 자립/의존을 각각 고르세요. 빈칸 앞뒤의 붙임표(-)는 어간·어미·접사처럼 다른 말과 결합하는 자리를 뜻합니다. 붙임표는 이미 표시되어 있으니 형태소만 쓰세요.'
         qs[6]['section'] = '어절·긴 단어 나누기'
         qs[9]['section'] = '개수 세기와 이형태 — 단답'
         rounds.append({
             'category': '형태소 레벨2', 'round': r + 1, 'title': f'문장의 형태소 분석과 이형태 ({r + 1})', 'subtitle': '레벨2',
-            'instruction': '문장을 형태소 개수만큼의 빈칸에 순서대로 나누어 쓰고, 빈칸마다 실질/형식과 자립/의존을 고릅니다. 활용형은 기본형 어간으로 되돌려 쓰고(따라 → 따르, 아), 선어말 어미도 따로 셉니다. 붙임표(-)는 있어도 없어도 됩니다.',
+            'instruction': '문장을 형태소 개수만큼의 빈칸에 순서대로 나누어 쓰고, 빈칸마다 실질/형식과 자립/의존을 고릅니다. 활용형은 기본형 어간으로 되돌려 쓰고(따라 → 따르-, -아), 선어말 어미도 따로 셉니다. 붙임표(-)는 빈칸 앞뒤에 표시되어 있습니다.',
             'ruleOptions': RULES, 'ruleOptions2': RULES2, 'processUI': PUI, 'total': len(qs), 'questions': qs,
         })
     return rounds
