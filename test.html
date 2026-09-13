@@ -67,6 +67,21 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .si-field select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239BA8A1' stroke-width='2.4'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 10px center; background-size: 13px; padding-right: 28px; }
 @media (max-width: 420px){ .si-grid { grid-template-columns: 1fr; } }
 
+/* 지문(조항 원문·해설) — 한글 맞춤법 레벨2처럼 지문을 읽고 푸는 회차 (개념 카드와 같은 흰 상자) */
+.psg { background: #fff; border: 1px solid #E5EDE8; border-radius: 16px; padding: 16px 20px 18px; margin-bottom: 10px; }
+.psg-lbl { font-size: 11px; font-weight: 800; color: #635A7D; background: #EDE4F4; display: inline-block; padding: 3px 9px; border-radius: 999px; margin-bottom: 8px; }
+.psg-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.psg-art { font-family: 'Gowun Batang', serif; font-size: 18px; font-weight: 800; color: #2C2F2D; }
+.psg-chap { font-size: 12px; color: #6A716C; }
+.psg-text { font-family: 'Gowun Batang', serif; font-size: 14.5px; line-height: 1.75; color: #2C2F2D; background: #E9F0EF; padding: 11px 13px; border-radius: 10px; }
+.psg-body { margin-top: 10px; }
+.psg-body p { font-size: 13px; line-height: 1.8; color: #3A3F3C; margin: 0 0 9px; padding: 0 2px; word-break: keep-all; }
+.psg-body p:last-child { margin-bottom: 0; }
+.psg-ex { background: #F4F7F5; border-radius: 10px; padding: 9px 12px; margin: 0 0 9px; font-size: 12.5px; line-height: 1.75; color: #2A332F; }
+.psg-ex span { display: block; }
+.psg-toggle { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font: inherit; font-size: 12px; font-weight: 800; color: #635A7D; background: #EDE4F4; border: none; border-radius: 9px; padding: 7px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.psg-toggle svg { width: 13px; height: 13px; transition: transform .15s; }
+.psg-toggle.open svg { transform: rotate(180deg); }
 /* ===== 안내 문단 ===== */
 .section-label { display: flex; align-items: flex-start; gap: 10px; background: #EBF0ED; border-radius: 14px; padding: 12px 16px; margin: 0 0 10px; font-size: 12.5px; line-height: 1.65; color: #5C6A64; }
 .section-label .s-ic { flex: none; width: 15px; height: 15px; color: #65726B; margin-top: 3px; }
@@ -409,7 +424,10 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     function buildStudy(study) {
         var tabsData = study.tabs || [];
         var tabs = $('cat-tabs'), body = $('study-body');
-        if (!tabsData.length) { $('study-section').classList.add('hidden'); return; }
+        if (!tabsData.length) {
+            if (DATA.passage) { body.appendChild(passageEl(true)); return; }   // 지문형 회차 — 개념 정리 = 지문 전문
+            $('study-section').classList.add('hidden'); return;
+        }
 
         var cnt = document.createElement('span');
         cnt.className = 'cat-count'; cnt.id = 'cat-count';
@@ -462,6 +480,38 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         return h;
     }
 
+    /* ===== 지문(조항 원문 + 해설) =====
+       data.passage = { article:'제5항', chapter:'제3장 …', section:'된소리', text:'조항 원문', paras:['해설 문단', …] }
+       테스트 모드에서는 문항 위에 원문만 펼치고 해설은 [해설 펼치기]로, 개념 정리 탭에서는 전부 펼친다. */
+    function passageEl(open) {
+        var ps = DATA.passage || {};
+        var el = document.createElement('div');
+        el.className = 'psg';
+        var chap = [ps.chapter, ps.section].filter(Boolean).join(' · ');
+        var h = (open ? '' : '<div class="psg-lbl">지문 — 조항과 해설을 읽고 O/X를 고르세요</div>') +
+            '<div class="psg-head"><span class="psg-art">' + esc(ps.article || '') + '</span>' +
+            (chap ? '<span class="psg-chap">' + esc(chap) + '</span>' : '') + '</div>' +
+            (ps.text ? '<div class="psg-text">' + esc(ps.text) + '</div>' : '');
+        var paras = ps.paras || [];
+        if (paras.length) {
+            // 문단은 문자열, 예시 표는 {ex:[줄, …]} — 표는 줄마다 한 줄(칸은 ' · ')
+            h += '<div class="psg-body"' + (open ? '' : ' hidden') + '>' + paras.map(function(t) {
+                if (t && t.ex) return '<div class="psg-ex">' + t.ex.map(function(r) { return '<span>' + esc(r) + '</span>'; }).join('') + '</div>';
+                return '<p>' + esc(t) + '</p>';
+            }).join('') + '</div>';
+            if (!open) h += '<button type="button" class="psg-toggle">해설 펼치기' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>';
+        }
+        el.innerHTML = h;
+        var tg = el.querySelector('.psg-toggle');
+        if (tg) tg.addEventListener('click', function() {
+            var body = el.querySelector('.psg-body');
+            body.hidden = !body.hidden;
+            tg.classList.toggle('open', !body.hidden);
+            tg.firstChild.textContent = body.hidden ? '해설 펼치기' : '해설 접기';
+        });
+        return el;
+    }
     /* 과정형 문항 — 정답 단계 수만큼 줄을 미리 만든다(몇 단계인지가 힌트 — 2026-09-13 사용자 "원래대로").
      * FREE_STEPS=true 로 두면 한 줄로 시작해 학생이 [+]로 늘린다(디자인 지시서의 + 버튼 방식). */
     var FREE_STEPS = false, MAX_STEPS = 6;
@@ -508,6 +558,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 
     function buildQuestions() {
         var box = $('questions');
+        if (DATA.passage) box.appendChild(passageEl(false));
         if (DATA.instruction) {
             var il = document.createElement('div');
             il.className = 'section-label';

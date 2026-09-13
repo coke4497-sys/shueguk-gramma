@@ -1,0 +1,179 @@
+{
+ "category": "한글 맞춤법 레벨2",
+ "round": 9,
+ "title": "제3항 총칙 (2/3)",
+ "subtitle": "제1장 총칙 · 제3항",
+ "source": "국어공방 가맹자료 26-9월호 / 한글맞춤법 조항반영 OX문제 모음",
+ "passage": {
+  "article": "제3항",
+  "chapter": "제1장 총칙",
+  "section": "",
+  "text": "외래어는 '외래어 표기법'에 따라 적는다.",
+  "paras": [
+   "외래어 표기도 여기서 다루어야 할 것이다. 그러나 외래어의 표기에서는 각 언어가 지닌 특질이 고려되어야 하므로, 외래어 표기법을 따로 정하고(1986년 1월 7일 문교부 고시), 그 규정에 따라 적도록 한 것이다."
+  ]
+ },
+ "total": 20,
+ "questions": [
+  {
+   "type": "ox",
+   "num": 1,
+   "id": "HM-003-021",
+   "stem": "영어 ‘chocolate’의 표준 표기는 ‘초콜릿’이다.",
+   "answer": "O",
+   "explanation": "‘chocolate’은 ‘초콜릿’으로 적는다."
+  },
+  {
+   "type": "ox",
+   "num": 2,
+   "id": "HM-003-022",
+   "stem": "영어 ‘chocolate’은 일상 발음대로 ‘초코렛’으로 적어도 표준 표기이다.",
+   "answer": "X",
+   "explanation": "규범 표기는 ‘초콜릿’이다."
+  },
+  {
+   "type": "ox",
+   "num": 3,
+   "id": "HM-003-023",
+   "stem": "영어 ‘cake’는 ‘케이크’로 적는다.",
+   "answer": "O",
+   "explanation": "‘cake’의 표준 표기는 ‘케이크’이다."
+  },
+  {
+   "type": "ox",
+   "num": 4,
+   "id": "HM-003-024",
+   "stem": "영어 ‘cake’는 받침을 써서 ‘케익’으로 적는 것이 표준이다.",
+   "answer": "X",
+   "explanation": "표준 표기는 ‘케이크’이며 ‘케익’이 아니다."
+  },
+  {
+   "type": "ox",
+   "num": 5,
+   "id": "HM-003-025",
+   "stem": "영어 ‘service’의 표준 표기는 ‘서비스’이다.",
+   "answer": "O",
+   "explanation": "‘service’는 ‘서비스’로 적는다."
+  },
+  {
+   "type": "ox",
+   "num": 6,
+   "id": "HM-003-026",
+   "stem": "영어 ‘service’는 첫소리를 된소리로 적은 ‘써비스’가 표준이다.",
+   "answer": "X",
+   "explanation": "규범 표기는 ‘서비스’이다."
+  },
+  {
+   "type": "ox",
+   "num": 7,
+   "id": "HM-003-027",
+   "stem": "영어 ‘center’는 ‘센터’로 적는 것이 표준이다.",
+   "answer": "O",
+   "explanation": "‘center’의 규범 표기는 ‘센터’이다."
+  },
+  {
+   "type": "ox",
+   "num": 8,
+   "id": "HM-003-028",
+   "stem": "영어 ‘center’의 표준 표기는 ‘센타’이다.",
+   "answer": "X",
+   "explanation": "표준 표기는 ‘센터’이다."
+  },
+  {
+   "type": "ox",
+   "num": 9,
+   "id": "HM-003-029",
+   "stem": "영어 ‘camera’는 ‘카메라’로 적는다.",
+   "answer": "O",
+   "explanation": "‘camera’의 표준 표기는 ‘카메라’이다."
+  },
+  {
+   "type": "ox",
+   "num": 10,
+   "id": "HM-003-030",
+   "stem": "영어 ‘camera’는 마지막 모음을 길게 적어 ‘카메라아’로 써야 한다.",
+   "answer": "X",
+   "explanation": "규범 표기는 ‘카메라’이며 불필요하게 모음을 덧붙이지 않는다."
+  },
+  {
+   "type": "ox",
+   "num": 11,
+   "id": "HM-003-031",
+   "stem": "영어 ‘taxi’는 ‘택시’로 적는다.",
+   "answer": "O",
+   "explanation": "‘taxi’의 표준 표기는 ‘택시’이다."
+  },
+  {
+   "type": "ox",
+   "num": 12,
+   "id": "HM-003-032",
+   "stem": "영어 ‘taxi’는 된소리를 살려 ‘택씨’로 적는 것이 표준이다.",
+   "answer": "X",
+   "explanation": "규범 표기는 ‘택시’이다."
+  },
+  {
+   "type": "ox",
+   "num": 13,
+   "id": "HM-003-033",
+   "stem": "영어 ‘gas’는 ‘가스’로 적는다.",
+   "answer": "O",
+   "explanation": "‘gas’의 표준 표기는 ‘가스’이다."
+  },
+  {
+   "type": "ox",
+   "num": 14,
+   "id": "HM-003-034",
+   "stem": "영어 ‘gas’는 ‘까스’로 적어야 외래어 표기법에 맞다.",
+   "answer": "X",
+   "explanation": "파열음 표기에 된소리를 쓰지 않는 원칙에 따라 ‘가스’로 적는다."
+  },
+  {
+   "type": "ox",
+   "num": 15,
+   "id": "HM-003-035",
+   "stem": "영어 ‘game’은 ‘게임’으로 적는다.",
+   "answer": "O",
+   "explanation": "‘game’의 규범 표기는 ‘게임’이다."
+  },
+  {
+   "type": "ox",
+   "num": 16,
+   "id": "HM-003-036",
+   "stem": "영어 ‘game’은 첫소리를 된소리로 적은 ‘께임’이 표준이다.",
+   "answer": "X",
+   "explanation": "표준 표기는 ‘게임’이다."
+  },
+  {
+   "type": "ox",
+   "num": 17,
+   "id": "HM-003-037",
+   "stem": "영어 ‘internet’은 ‘인터넷’으로 적는다.",
+   "answer": "O",
+   "explanation": "‘internet’의 표준 표기는 ‘인터넷’이다."
+  },
+  {
+   "type": "ox",
+   "num": 18,
+   "id": "HM-003-038",
+   "stem": "영어 ‘internet’은 원어 철자의 끝을 모두 살려 ‘인터네트’로 적어야 한다.",
+   "answer": "X",
+   "explanation": "규범 표기는 ‘인터넷’이다."
+  },
+  {
+   "type": "ox",
+   "num": 19,
+   "id": "HM-003-039",
+   "stem": "영어 ‘robot’은 ‘로봇’으로 적는 것이 표준이다.",
+   "answer": "O",
+   "explanation": "‘robot’의 규범 표기는 ‘로봇’이다."
+  },
+  {
+   "type": "ox",
+   "num": 20,
+   "id": "HM-003-040",
+   "stem": "영어 ‘robot’은 음절을 하나 더 보태 ‘로보트’로 적는 것이 표준이다.",
+   "answer": "X",
+   "explanation": "표준 표기는 ‘로봇’이다."
+  }
+ ]
+}

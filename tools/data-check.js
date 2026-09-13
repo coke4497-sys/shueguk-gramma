@@ -24,6 +24,11 @@ for (const f of fs.readdirSync(DIR).sort()) {
   if (!list.length) { err(f, '문항 없음'); continue; }
   if (d.total !== list.length) err(f, `total(${d.total}) ≠ 문항 수(${list.length})`);
   if (!d.category) err(f, 'category 없음');
+  if (d.passage) {   // 지문형 회차(한글 맞춤법 레벨2)
+    if (!d.passage.article || !d.passage.text) err(f, 'passage.article/text 없음');
+    const okPara = x => (typeof x === 'string' && x) || (x && Array.isArray(x.ex) && x.ex.length && x.ex.every(r => typeof r === 'string' && r));
+    if (!Array.isArray(d.passage.paras) || !d.passage.paras.every(okPara)) err(f, 'passage.paras 형식 (문자열 또는 {ex:[…]})');
+  }
   list.forEach((q, i) => {
     qs++;
     const tag = `${q.num}번`;

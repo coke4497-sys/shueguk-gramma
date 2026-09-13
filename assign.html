@@ -71,6 +71,18 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .row.on .rd { background: #EDE4F4; color: #6B5B7B; }
 .ttl { flex: 1; min-width: 0; font-size: 13px; color: #2C2F2D; line-height: 1.4; }
 .acts { flex: none; display: flex; gap: 7px; align-items: center; }
+/* 회차가 많은 카테고리(한글 맞춤법 레벨2 222회)는 장(章)별로 접어 보여 준다 — manifest의 group */
+#rounds > details.grp { grid-column: 1 / -1; }
+details.grp { background: white; border: 1px solid #E5EDE8; border-radius: 14px; padding: 2px 12px 4px; }
+details.grp > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 10px 2px; cursor: pointer; font-family: 'Gowun Batang', serif; font-size: 14px; font-weight: 800; color: #3A544E; -webkit-tap-highlight-color: transparent; }
+details.grp > summary::-webkit-details-marker { display: none; }
+details.grp > summary .gn { flex: 1; }
+details.grp > summary .gc { font-family: 'Gowun Dodum', sans-serif; font-size: 12px; font-weight: 700; color: #6A716C; }
+details.grp > summary .gi { width: 16px; height: 16px; flex: none; color: #8B928C; transition: transform .15s; }
+details.grp[open] > summary .gi { transform: rotate(180deg); }
+details.grp .list { margin: 0 0 10px; gap: 8px; }
+details.grp .row { background: #F8FAF9; }
+details.grp .row.on { background: #FBF8FD; }
 .abtn { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; font-weight: 700; border-radius: 9px; padding: 7px 11px; cursor: pointer; -webkit-tap-highlight-color: transparent; text-decoration: none; transition: border-color .15s, background .15s; white-space: nowrap; }
 .abtn svg { width: 13px; height: 13px; }
 .abtn.preview { color: #628C83; background: none; border: none; padding: 7px 2px; }
@@ -314,24 +326,48 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   });
 
   function selHas(cat, round){ return SEL.some(function(s){ return s.cat === cat && '' + s.round === '' + round; }); }
+  function groupOf(cat, n){ var t = TESTS[cat + '-' + n]; return (t && t.group) || ''; }
+  function rowHtml(n){
+    var t = TESTS[current + '-' + n];
+    var url = BASE_URL + 'test.html?c=' + current + '&r=' + n;
+    var on = selHas(current, n);
+    return '<div class="row' + (on ? ' on' : '') + '">' +
+      '<span class="rd">' + n + '</span>' +
+      '<span class="ttl">' + esc(t && t.title ? t.title : catLabelOf(current) + ' ' + n + '회') + '</span>' +
+      '<span class="acts">' +
+        '<a class="abtn preview" href="' + url + '&preview=1" target="_blank" rel="noopener">미리보기' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
+        '<button type="button" class="abtn assign' + (on ? ' on' : '') + '" data-round="' + n + '">' + (on ? '담김' : '담기') + '</button>' +
+      '</span></div>';
+  }
   function renderRounds(){
     var rounds = roundsOf(current);
     var picked = rounds.filter(function(n){ return selHas(current, n); }).length;
     $('sec-title').innerHTML = esc(catLabelOf(current)) + '<span class="sec-meta">전체 ' + rounds.length + '회 · 담김 ' + picked + '</span>';
     var html = '';
-    rounds.forEach(function(n){
-      var t = TESTS[current + '-' + n];
-      var url = BASE_URL + 'test.html?c=' + current + '&r=' + n;
-      var on = selHas(current, n);
-      html += '<div class="row' + (on ? ' on' : '') + '">' +
-        '<span class="rd">' + n + '</span>' +
-        '<span class="ttl">' + esc(t && t.title ? t.title : catLabelOf(current) + ' ' + n + '회') + '</span>' +
-        '<span class="acts">' +
-          '<a class="abtn preview" href="' + url + '&preview=1" target="_blank" rel="noopener">미리보기' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
-          '<button type="button" class="abtn assign' + (on ? ' on' : '') + '" data-round="' + n + '">' + (on ? '담김' : '담기') + '</button>' +
-        '</span></div>';
-    });
+    var grouped = rounds.some(function(n){ return !!groupOf(current, n); });
+    if (!grouped) {
+      rounds.forEach(function(n){ html += rowHtml(n); });
+    } else {
+      // 장(章)별 접이식 — 열림 상태는 다시 그려도 유지
+      var openSet = {};
+      $('rounds').querySelectorAll('details.grp[open]').forEach(function(d){ openSet[d.getAttribute('data-group')] = true; });
+      var groups = [], byG = {};
+      rounds.forEach(function(n){
+        var g = groupOf(current, n) || '기타';
+        if (!byG[g]) { byG[g] = []; groups.push(g); }
+        byG[g].push(n);
+      });
+      groups.forEach(function(g){
+        var list = byG[g];
+        var allOn = list.every(function(n){ return selHas(current, n); });
+        html += '<details class="grp" data-group="' + escAttr(g) + '"' + (openSet[g] ? ' open' : '') + '>' +
+          '<summary><span class="gn">' + esc(g) + '</span><span class="gc">' + list.length + '회</span>' +
+            '<button type="button" class="abtn assign grp-all' + (allOn ? ' on' : '') + '" data-group="' + escAttr(g) + '">' + (allOn ? '이 장 빼기' : '이 장 담기') + '</button>' +
+            '<svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>' +
+          '<div class="list">' + list.map(rowHtml).join('') + '</div></details>';
+      });
+    }
     $('rounds').innerHTML = html;
     $('sec-clear').disabled = !picked;
     $('sec-all').disabled = picked === rounds.length;
@@ -340,6 +376,16 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   $('rounds').addEventListener('click', function(ev){
     var b = ev.target.closest('button');
     if (!b) return;
+    if (b.classList.contains('grp-all')) {          // 장 전체 담기/빼기 (summary 안 버튼 — 접힘 토글은 막는다)
+      ev.preventDefault();
+      var g = b.getAttribute('data-group');
+      var list = roundsOf(current).filter(function(n){ return (groupOf(current, n) || '기타') === g; });
+      var allOn = list.every(function(n){ return selHas(current, n); });
+      if (allOn) SEL = SEL.filter(function(s){ return !(s.cat === current && list.indexOf(parseInt(s.round, 10)) >= 0); });
+      else list.forEach(function(n){ if (!selHas(current, n)) SEL.push({ cat: current, round: '' + n }); });
+      renderRounds(); renderSelBox();
+      return;
+    }
     if (b.classList.contains('assign')) { toggleSel(current, b.getAttribute('data-round')); }
   });
 
@@ -381,7 +427,8 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
       box.innerHTML = '<div class="sel-empty">아직 담은 테스트가 없어요. 위 카테고리에서 회차의 <b>[담기]</b>를 눌러 배정할 테스트를 골라 주세요 — 여러 회차를 한 번에 배정할 수 있어요.</div>';
     } else {
       box.innerHTML = '<div class="sel-chips">' + SEL.map(function(s, i){
-        return '<span class="sel-chip">' + esc(catLabelOf(s.cat)) + ' ' + esc(s.round) + '회' +
+        var st = TESTS[s.cat + '-' + s.round];
+        return '<span class="sel-chip">' + esc(catLabelOf(s.cat)) + ' ' + esc(s.round) + '회' + (st && st.group && st.title ? ' · ' + esc(st.title) : '') +
           '<button type="button" data-i="' + i + '" aria-label="빼기">×</button></span>';
       }).join('') + '</div>';
     }

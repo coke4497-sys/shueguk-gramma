@@ -232,7 +232,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p7.goto(`http://localhost:${PORT}/assign.html`);
   await p7.waitForSelector('#a-tbody tr');
   ok((await p7.textContent('#a-tbody')).includes('학년') && (await p7.textContent('#a-tbody')).includes('음운 1회'), '배정 현황 표시');
-  ok((await p7.$$('.cat-card')).length === 10, '카테고리 카드 10개');
+  ok((await p7.$$('.cat-card')).length === 11, '카테고리 카드 11개');
   ok((await p7.$$('.cat-card[disabled]')).length === 8, '문항 없는 카테고리 8개는 비활성(준비 중)');
   ok(!(await p7.$('#round-view:not(.hidden)')), '첫 화면에는 회차 목록 없음');
   // 음운 → 회차 20개 → 뒤로 → 한글 맞춤법 → 32개
@@ -392,6 +392,63 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await p9.$$('.fb-art')).length >= 1, '해설의 근거 조항이 칩으로 분리');
   ok((await p9.textContent('.fb-art')).startsWith('제'), '근거 조항 칩 내용 (제○항)');
   await p9.close();
+
+  /* ========== 11) 한글 맞춤법 레벨2 — 장별 묶음 배정 + 지문 상자 ========== */
+  const p10 = await ctx.newPage();
+  await p10.goto(`http://localhost:${PORT}/assign.html`);
+  await p10.waitForSelector('.cat-card[data-code="ort2"]');
+  ok(!(await p10.$eval('.cat-card[data-code="ort2"]', el => el.disabled)) && (await p10.textContent('.cat-card[data-code="ort2"]')).includes('222회'), "'한글 맞춤법 레벨2' 카드 활성 · 222회");
+  await p10.click('.cat-card[data-code="ort2"]');
+  await p10.waitForSelector('#round-view:not(.hidden)');
+  ok((await p10.$$('#rounds .row')).length === 222, '레벨2 회차 222개');
+  ok((await p10.$$('#rounds details.grp')).length === 6, '장(章)별 묶음 6개');
+  const g1 = await p10.textContent('#rounds details.grp:first-child summary');
+  ok(g1.includes('제1장 총칙') && g1.includes('10회'), '첫 묶음 = 제1장 총칙 · 10회');
+  ok((await p10.$$('#rounds details.grp[open]')).length === 0, '묶음은 처음에 접혀 있음');
+  await p10.click('#rounds details.grp:first-child summary .gn');
+  ok((await p10.$$('#rounds details.grp[open]')).length === 1, '묶음 제목을 누르면 펼쳐짐');
+  ok((await p10.textContent('#rounds details.grp:first-child .row .ttl')).includes('제1항 총칙 (1/3)'), '회차 제목 (조항·주제·차례)');
+  await p10.click('#rounds details.grp:first-child .grp-all');
+  await p10.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 10);
+  ok(true, "[이 장 담기] → 제1장 10회 담김");
+  ok((await p10.$$('#rounds details.grp[open]')).length === 1, '담기 버튼을 눌러도 묶음이 접히지 않음');
+  ok((await p10.textContent('#sel-box .sel-chip')).includes('한글 맞춤법 레벨2 1회 · 제1항 총칙 (1/3)'), '담은 칩에 회차 제목 표시');
+  ok((await p10.textContent('#rounds details.grp:first-child .grp-all')).includes('이 장 빼기'), "다 담기면 '이 장 빼기'");
+  await p10.click('#rounds details.grp:first-child .grp-all');
+  await p10.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 0);
+  ok(true, "[이 장 빼기] → 비움");
+  await p10.click('#sec-all');
+  await p10.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 222);
+  ok((await p10.textContent('#sec-title')).includes('담김 222') && (await p10.$$('#rounds .row.on')).length === 222, "'전체 회차 담기'로 222회 전부 담김 + 담긴 행 표시");
+  ok((await p10.$$('#rounds details.grp .grp-all.on')).length === 6, '여섯 장 모두 [이 장 빼기]');
+  ok(await p10.$eval('#rounds > details.grp', el => getComputedStyle(el).gridColumnEnd === '-1' || el.getBoundingClientRect().width > document.getElementById('rounds').getBoundingClientRect().width * 0.9), '묶음이 2열 그리드 전체 폭');
+  await p10.click('#sec-clear');
+  await p10.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 0);
+  await p10.close();
+
+  const p11 = await ctx.newPage();
+  await p11.goto(`http://localhost:${PORT}/test.html?c=ort2&r=1&preview=1`);
+  await p11.waitForSelector('#app:not(.hidden)');
+  ok(!(await p11.$eval('#mode-tabs', el => el.classList.contains('hidden'))), '레벨2: 개념 정리/테스트 모드 탭 표시');
+  ok((await p11.textContent('#h-round')).includes('한글 맞춤법 레벨2 1회') && (await p11.textContent('#h-round')).includes('제1항'), '머리글에 카테고리·회차·조항');
+  ok((await p11.$$('#study-body .psg')).length === 1 && !(await p11.$eval('#study-body .psg .psg-body', el => el.hidden)), '개념 정리 탭 = 지문 전문(해설 펼침)');
+  ok((await p11.textContent('#study-body .psg-text')).includes('한글 맞춤법은 표준어를 소리대로 적되'), '조항 원문 표시');
+  ok((await p11.$$('#study-body .psg-body p')).length >= 3, '해설이 문단으로 나뉨');
+  await p11.click('#tab-test');
+  ok((await p11.$$('#questions .psg')).length === 1, '테스트 모드 문항 위 지문 상자');
+  ok(await p11.$eval('#questions .psg .psg-body', el => el.hidden), '테스트 모드 해설은 접힘');
+  await p11.click('#questions .psg-toggle');
+  ok(!(await p11.$eval('#questions .psg .psg-body', el => el.hidden)) && (await p11.textContent('#questions .psg-toggle')).includes('접기'), '[해설 펼치기] → 펼침');
+  ok((await p11.$$('.q-card')).length === 20 && (await p11.$$('.ox-label')).length === 40, 'OX 20문항');
+  await p11.close();
+  const p12 = await ctx.newPage();   // 제5항(16회) — 예시 표가 줄 단위로 보이는지
+  await p12.goto(`http://localhost:${PORT}/test.html?c=ort2&r=16&preview=1`);
+  await p12.waitForSelector('#app:not(.hidden)');
+  ok((await p12.$$('#study-body .psg-ex')).length >= 3, '예시 표 블록 표시');
+  const exRows = await p12.$$eval('#study-body .psg-ex:first-of-type span', els => els.map(e => e.textContent));
+  ok(exRows.length === 3 && exRows[0].startsWith('소쩍새 · 어깨') && exRows[2].startsWith('거꾸로'), '표 줄이 줄 단위로(소쩍새 · 어깨 … / 거꾸로 …)');
+  ok(await p12.$$eval('#study-body .psg-body p, #study-body .psg-ex span', els => els.every(e => !e.textContent.includes('된소리소쩍새') && !e.textContent.includes('아끼다기쁘다'))), '헤딩·표 칸이 낱말끼리 붙지 않음');
+  await p12.close();
 
   await browser.close();
   server.close();
