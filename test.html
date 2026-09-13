@@ -54,6 +54,8 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .q-start .arrow { color: #A6C1BB; font-size: 15px; margin-left: 6px; }
 .q-stem { font-size: 13.5px; line-height: 1.75; margin-bottom: 9px; }
 .q-example { font-size: 12px; color: #6A716C; background: #F4F5F3; padding: 8px 11px; border-radius: 8px; margin: 6px 0; font-style: italic; }
+.q-hint { font-size: 12.5px; color: #635A7D; background: #EDE4F4; padding: 7px 11px; border-radius: 8px; margin: 0 0 10px; line-height: 1.5; }
+.q-hint b { font-weight: 800; margin-right: 4px; }
 .blank { display: inline-block; min-width: 50px; padding: 0 8px; border-bottom: 2px solid #628C83; color: #628C83; font-weight: 800; font-style: normal; }
 .section-label { font-size: 12px; font-weight: 800; color: #3A544E; background: #E0EAE7; padding: 8px 12px; border-radius: 8px; margin: 14px 0 8px; }
 .chosung { display: inline-block; background: #E9F0EF; border: 1.5px solid #A6C1BB; color: #3A544E; padding: 1px 8px; border-radius: 6px; font-weight: 800; margin-right: 5px; }
@@ -452,12 +454,14 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
                         (isFinal ? '<span class="final-tag">[발음]</span>' : '') +
                         '</div>';
                 });
+                if (q.hint) h += '<div class="q-hint"><b>힌트</b>' + esc(q.hint) + '</div>';
                 card.innerHTML = h + '<div class="feedback" id="feedback-' + i + '"></div>';
             } else {
                 var head = '<div><span class="q-num">' + esc(pad2(q.num)) + '</span>' +
                     (q.chosung ? '<span class="chosung">' + esc(q.chosung) + '</span>' : '') + '</div>' +
                     '<div class="q-stem">' + esc(q.stem) + '</div>' +
-                    (q.example ? '<div class="q-example">' + blankify(q.example) + '</div>' : '');
+                    (q.example ? '<div class="q-example">' + blankify(q.example) + '</div>' : '') +
+                    (q.hint ? '<div class="q-hint"><b>힌트</b>' + esc(q.hint) + '</div>' : '');
                 if (q.type === 'ox') {
                     card.innerHTML = head +
                         '<div class="ox-buttons">' +
