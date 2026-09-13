@@ -13,6 +13,7 @@
   - `shueguk-teacher-dashboard.html` — 결과 확인 + **배정 관리**(학년/학교/개인 대상)
   - `links.html` — 카테고리·회차별 링크 복사
 - **백엔드**: `apps-script/Code.gs` (결과 시트 + '배정' 탭)
+- **문법 지식 자료**: `knowledge/` — 문항을 만들거나 검토할 때 먼저 읽는 규칙·용어·기출 유형 정리(`knowledge/README.md`). 음운 정합성 검사 `node tools/pho-audit.js`.
 
 ## 배정
 

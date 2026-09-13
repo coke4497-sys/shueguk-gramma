@@ -89,13 +89,24 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(await page.inputValue('#si-name') === '박검증', '학생 정보 미리 채움');
   ok(await page.inputValue('#si-grade') === '고1', '학년 미리 선택');
   ok(await page.inputValue('#si-phone8') === '12345678', '학부모 전화 8자리 미리 채움');
-  ok(await page.$eval('#student-info', el => el.classList.contains('collapsed')), '넷 다 채워지면 학생 정보 한 줄 접힘');
+  ok(await page.$eval('#student-info', el => el.classList.contains('collapsed')), '학생 정보 카드는 기본 접힘(요약 한 줄)');
+  ok((await page.textContent('#si-sum-text')).replace(/\s/g,'') === '박검증·고1·12345678', "요약 줄 '이름 · 학년 · 전화번호'");
+  ok(await page.$eval('#topbar', el => getComputedStyle(el).position === 'sticky'), '상단 영역 고정(sticky)');
+  ok(await page.$eval('#tb-row2', el => !el.classList.contains('hidden')), '테스트 모드에서 완료·진행바·제출 줄 표시');
+  ok((await page.$$('#card-0 .step-row')).length === 1 && await page.$('#card-0 .step-add'), '과정형 문항은 한 줄로 시작 + [+] 단계 추가 버튼');
+  // [+]로 단계 추가 → 2줄, 마지막 줄만 '최종 발음', [×]로 다시 1줄
+  await page.click('#card-1 .step-add');
+  ok((await page.$$('#card-1 .step-row')).length === 2, '[+]로 단계 줄 추가');
+  ok(await page.getAttribute('#frm-1-0', 'placeholder') === '바뀐 형태' && await page.getAttribute('#frm-1-1', 'placeholder') === '최종 발음', '마지막 줄만 최종 발음 placeholder');
+  await page.click('#card-1 .step-row:last-child .step-del');
+  ok((await page.$$('#card-1 .step-row')).length === 1, '[×]로 단계 줄 빼기');
 
   // 1번 문항 정답 입력 → 진행 카운트
   await page.selectOption('#sel-0-0', '비음화');
   await page.fill('#frm-0-0', '종노');
   await page.waitForFunction(() => document.getElementById('filled-count').textContent === '1');
   ok(true, '진행 카운트 1 (과정형 완료 판정)');
+  ok(await page.$eval('#card-0', el => el.classList.contains('filled')) && await page.$eval('#frm-0-0', el => el.classList.contains('has')), '답을 채운 문항 카드·입력칸 강조');
 
   // 배정 없음 → 제출 차단
   assignItems = [{ cat: 'pho', round: '2' }];   // 다른 회차만 배정
@@ -133,6 +144,10 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p2.goto(`http://localhost:${PORT}/test.html?c=pho&r=5&preview=1`);
   await p2.waitForSelector('#app:not(.hidden)');
   await p2.click('#tab-test');
+  ok(await p2.$eval('#student-info', el => el.classList.contains('collapsed')), '정보 없이 열어도 카드는 접힘');
+  ok((await p2.textContent('#si-sum-text')).includes('이름 미입력') && (await p2.textContent('#si-sum-text')).includes('학년 미선택'), "빈 항목은 '이름 미입력 · 학년 미선택'으로");
+  await p2.click('#student-info');
+  ok(await p2.$eval('#student-info', el => el.classList.contains('open')) && (await p2.textContent('#si-edit')) === '접기', "카드를 누르면 펼쳐지고 오른쪽 글씨 '접기'");
   await p2.fill('#si-name', '미리보기'); await p2.fill('#si-school', '슈국'); await p2.selectOption('#si-grade', '고2'); await p2.fill('#si-phone8', '87654321');
   await p2.click('#submit-btn');
   await p2.waitForSelector('.final.show');
@@ -213,14 +228,24 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
     const card = document.getElementById('assign-card');
     return !!(el.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING);
   }), '학생 배정 카드가 카테고리 아래(2단계) 위치');
-  // [전체 회차 담기] → 32개 담김 + 이동 바 표시 → 다시 눌러 비움
+  // 하단 고정 바 — 비어 있을 때
+  ok((await p7.textContent('#sb-list')).includes('아직 없습니다') && await p7.$('#go-assign.off'), '하단 바: 담긴 회차 없음 + 버튼 비활성 색');
+  ok((await p7.textContent('#sec-title')).includes('전체 32회 · 담김 0'), "제목 옆 '전체 32회 · 담김 0'");
+  // [전체 회차 담기] → 32개 담김 + 하단 바 'N개 회차' → [비우기]
   await p7.click('#sec-all');
   await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 32);
   ok(true, "'전체 회차 담기'로 32회 전부 담김");
-  ok(!(await p7.$eval('#go-assign', el => el.hidden)) && (await p7.textContent('#go-assign')).includes('32개'), "'담은 테스트 n개' 이동 바 표시");
-  await p7.click('#sec-all');
+  ok((await p7.textContent('#sb-list')).includes('32개 회차') && !(await p7.$('#go-assign.off')), "하단 바 '32개 회차' + 버튼 활성");
+  ok((await p7.textContent('#sec-title')).includes('담김 32') && (await p7.$$('#rounds .row.on')).length === 32, "'담김 32' + 담긴 행 표시");
+  ok(await p7.$eval('#sec-all', el => el.disabled), '전부 담기면 [전체 회차 담기] 비활성');
+  await p7.click('#sec-clear');
   await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 0);
-  ok(await p7.$eval('#go-assign', el => el.hidden), "'전체 회차 빼기'로 비우면 이동 바 숨김");
+  ok((await p7.textContent('#sb-list')).includes('아직 없습니다') && await p7.$('#go-assign.off'), "[비우기]로 비우면 하단 바 '아직 없습니다'");
+  ok((await p7.$$('#rounds .row.on')).length === 0, '비우면 담긴 행 표시 해제');
+  // 회차 목록이 2열 그리드
+  ok(await p7.$eval('#rounds', el => getComputedStyle(el).gridTemplateColumns.split(' ').length === 2), '회차 목록 2열 그리드');
+  ok(await p7.$eval('#selbar', el => getComputedStyle(el).position === 'sticky'), '하단 담긴 회차 바 고정(sticky)');
+  ok((await p7.textContent('#steps')).replace(/\s/g,'') === '배정하기›학생선택›완료' && (await p7.textContent('#steps .cur')) === '배정하기', '진행 표시: 배정하기 › 학생 선택 › 완료');
   // ① 여러 회차 담기 — 한글 맞춤법 1회 + (다른 카테고리) 음운 1회
   await p7.click('#rounds .row .abtn.assign');   // ort 1회 담기
   await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 1);
@@ -233,6 +258,9 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 2);
   const chipTxt = await p7.textContent('#sel-box');
   ok(chipTxt.includes('한글 맞춤법 1회') && chipTxt.includes('음운 1회'), '담은 테스트 칩 2개 (카테고리 섞어 담기)');
+  ok((await p7.textContent('#sb-list')).replace(/\s/g,'') === '한글맞춤법1회·음운1회', "하단 바 목록 '한글 맞춤법 1회 · 음운 1회'");
+  await p7.click('#go-assign');
+  ok((await p7.textContent('#steps .cur')) === '학생 선택', "[학생 배정으로 →] 누르면 진행 표시 '학생 선택'");
   ok((await p7.textContent('#f-add')).includes('테스트 2개'), '배정 버튼에 담은 개수 표시');
   // 전 학년 + 마감일로 한 번에 배정 → assignAdd 2건
   await p7.waitForFunction(() => document.querySelector('.sp-summary').textContent.includes('전 학년'));
@@ -246,6 +274,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await p7.textContent('#a-tbody')).includes('전 학년') && (await p7.textContent('#a-tbody')).includes('2026-09-05'), "현황에 '전 학년'·마감일 표시");
   await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 0);
   ok(true, '배정 후 담긴 목록 비움');
+  ok((await p7.textContent('#steps .cur')) === '완료', "배정 성공 뒤 진행 표시 '완료'");
   // ② 일부 — 재원 명단에서 두 명 선택해 음운 1회 배정
   await p7.click('#rounds .row .abtn.assign');   // pho 1회 다시 담기
   await p7.click('.sp-tab[data-mode="일부"]');
@@ -299,10 +328,13 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(!(await p8.$eval('#mode-tabs', el => el.classList.contains('hidden'))), '개념 정리/테스트 모드 탭 표시');
   ok((await p8.textContent('#study-body')).includes('된소리로 적는다'), '개념 정리에 규정 내용');
   ok((await p8.$$('#study-body .note-box')).length >= 1, "'다만' 안내 상자 표시");
-  // 개념 정리 화면의 상자에는 테두리를 쓰지 않는다 (바탕색·그림자로만 구분)
-  const borders = await p8.$$eval('.header, .mode-label, .cat-label, .vocab-card, .vocab-example, .ex-chip, .note-box',
-    els => els.map(e => getComputedStyle(e).borderTopWidth));
-  ok(borders.every(w => w === '0px'), '개념 정리 상자·탭·헤더에 테두리 없음');
+  // 2026-09-13 디자인: 개념 카드·분류 칩은 1px #E5EDE8 테두리, 규칙 문장은 왼쪽 2px 선, 예시는 칩(회색 상자 없음)
+  ok(await p8.$eval('.vocab-card', el => getComputedStyle(el).borderTopWidth === '1px' && getComputedStyle(el).borderTopColor === 'rgb(229, 237, 232)'), '개념 카드 1px #E5EDE8 테두리');
+  ok(await p8.$eval('.cat-label.active', el => getComputedStyle(el).backgroundColor === 'rgb(237, 228, 244)' && getComputedStyle(el).borderRadius === '999px'), '선택된 분류 칩 = 연보라 알약');
+  ok((await p8.textContent('#cat-count')).match(/^\d+개 규칙$/), "칩 줄 오른쪽 'N개 규칙'");
+  ok(await p8.$eval('.vocab-meaning', el => getComputedStyle(el).borderLeftWidth === '2px' && getComputedStyle(el).backgroundColor === 'rgba(0, 0, 0, 0)'), '규칙 문장은 왼쪽 선만(회색 박스 없음)');
+  ok((await p8.$$('.vocab-example .ex-chip')).length >= 3 && await p8.$eval('.vocab-example', el => getComputedStyle(el).backgroundColor === 'rgba(0, 0, 0, 0)'), '예시 단어 칩 + 감싸는 상자 없음');
+  ok(await p8.$eval('.mode-tabs', el => getComputedStyle(el).borderRadius === '999px') && await p8.$eval('.mode-label.active', el => getComputedStyle(el).borderTopWidth === '0px'), '모드 토글 = 알약형');
   await p8.close();
 
   /* ========== 10) 한글 맞춤법 채점 화면 — 보기 정오 표시·근거 조항 ========== */
@@ -311,6 +343,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p9.goto(`http://localhost:${PORT}/test.html?c=ort&r=2&preview=1`);
   await p9.waitForSelector('#app:not(.hidden)');
   await p9.click('#tab-test');
+  await p9.click('#student-info');
   await p9.fill('#si-name', '박검증'); await p9.fill('#si-school', '화정고');
   await p9.selectOption('#si-grade', '고1'); await p9.fill('#si-phone8', '12345678');
   await p9.$$eval('.opt-label[data-opt="1"]', els => els[0] && els[0].click());   // 선택형 1번 고름
