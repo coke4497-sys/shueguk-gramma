@@ -232,7 +232,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p7.goto(`http://localhost:${PORT}/assign.html`);
   await p7.waitForSelector('#a-tbody tr');
   ok((await p7.textContent('#a-tbody')).includes('학년') && (await p7.textContent('#a-tbody')).includes('음운 1회'), '배정 현황 표시');
-  ok((await p7.$$('.cat-card')).length === 11, '카테고리 카드 11개');
+  ok((await p7.$$('.cat-card')).length === 10, '카테고리 카드 10개 (레벨2는 한글 맞춤법 카드 안)');
   ok((await p7.$$('.cat-card[disabled]')).length === 8, '문항 없는 카테고리 8개는 비활성(준비 중)');
   ok(!(await p7.$('#round-view:not(.hidden)')), '첫 화면에는 회차 목록 없음');
   // 음운 → 회차 20개 → 뒤로 → 한글 맞춤법 → 32개
@@ -396,10 +396,19 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   /* ========== 11) 한글 맞춤법 레벨2 — 장별 묶음 배정 + 지문 상자 ========== */
   const p10 = await ctx.newPage();
   await p10.goto(`http://localhost:${PORT}/assign.html`);
-  await p10.waitForSelector('.cat-card[data-code="ort2"]');
-  ok(!(await p10.$eval('.cat-card[data-code="ort2"]', el => el.disabled)) && (await p10.textContent('.cat-card[data-code="ort2"]')).includes('222회'), "'한글 맞춤법 레벨2' 카드 활성 · 222회");
-  await p10.click('.cat-card[data-code="ort2"]');
+  await p10.waitForSelector('.cat-card[data-code="ort"]');
+  ok(!(await p10.$('.cat-card[data-code="ort2"]')) && (await p10.textContent('.cat-card[data-code="ort"]')).includes('레벨1 32회 · 레벨2 222회'), "'한글 맞춤법' 카드 하나에 '레벨1 32회 · 레벨2 222회'");
+  await p10.click('.cat-card[data-code="pho"]');
   await p10.waitForSelector('#round-view:not(.hidden)');
+  ok(await p10.$eval('#lvl-tabs', el => el.hidden), '음운에는 레벨 탭 없음');
+  await p10.click('#cat-back');
+  await p10.click('.cat-card[data-code="ort"]');
+  await p10.waitForSelector('#round-view:not(.hidden)');
+  ok(!(await p10.$eval('#lvl-tabs', el => el.hidden)) && (await p10.$$('.lvl-tab')).length === 2 && (await p10.textContent('.lvl-tab.on')).includes('레벨1'), '한글 맞춤법 = 레벨 탭 2개, 레벨1 기본');
+  ok((await p10.$$('#rounds .row')).length === 32 && (await p10.textContent('#sec-title')).includes('한글 맞춤법 · 레벨1'), '레벨1 = 32회');
+  await p10.click('.lvl-tab[data-code="ort2"]');
+  await p10.waitForFunction(() => document.querySelectorAll('#rounds .row').length === 222);
+  ok((await p10.textContent('.lvl-tab.on')).includes('레벨2') && (await p10.textContent('#sec-title')).includes('한글 맞춤법 · 레벨2'), '[레벨2] 탭 → 제목 한글 맞춤법 · 레벨2');
   ok((await p10.$$('#rounds .row')).length === 222, '레벨2 회차 222개');
   ok((await p10.$$('#rounds details.grp')).length === 6, '장(章)별 묶음 6개');
   const g1 = await p10.textContent('#rounds details.grp:first-child summary');

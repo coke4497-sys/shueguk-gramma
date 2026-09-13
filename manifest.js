@@ -15,8 +15,8 @@ window.GRAMMA = {
     { code: "hon", label: "높임법" },
     { code: "cap", label: "사동과 피동" },
     { code: "ten", label: "시제와 부정 표현" },
-    { code: "ort", label: "한글 맞춤법" },
-    { code: "ort2", label: "한글 맞춤법 레벨2" },
+    { code: "ort", label: "한글 맞춤법", level: "레벨1" },
+    { code: "ort2", label: "한글 맞춤법 레벨2", level: "레벨2", menu: "ort" },   // menu: 배정 페이지에서 ort 카드 안의 레벨 탭으로 접힘
     { code: "mid", label: "중세 국어" }
   ],
   tests: {
