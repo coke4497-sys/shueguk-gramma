@@ -407,6 +407,14 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(!(await p11.$eval('#questions .psg .psg-body', el => el.hidden)) && (await p11.textContent('#questions .psg-toggle')).includes('접기'), '[해설 펼치기] → 펼침');
   ok((await p11.$$('.q-card')).length === 20 && (await p11.$$('.ox-label')).length === 40, 'OX 20문항');
   await p11.close();
+  const p12 = await ctx.newPage();   // 제5항(16회) — 예시 표가 줄 단위로 보이는지
+  await p12.goto(`http://localhost:${PORT}/test.html?c=ort2&r=16&preview=1`);
+  await p12.waitForSelector('#app:not(.hidden)');
+  ok((await p12.$$('#study-body .psg-ex')).length >= 3, '예시 표 블록 표시');
+  const exRows = await p12.$$eval('#study-body .psg-ex:first-of-type span', els => els.map(e => e.textContent));
+  ok(exRows.length === 3 && exRows[0].startsWith('소쩍새 · 어깨') && exRows[2].startsWith('거꾸로'), '표 줄이 줄 단위로(소쩍새 · 어깨 … / 거꾸로 …)');
+  ok(await p12.$$eval('#study-body .psg-body p, #study-body .psg-ex span', els => els.every(e => !e.textContent.includes('된소리소쩍새') && !e.textContent.includes('아끼다기쁘다'))), '헤딩·표 칸이 낱말끼리 붙지 않음');
+  await p12.close();
 
   await browser.close();
   server.close();

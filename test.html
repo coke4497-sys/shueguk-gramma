@@ -77,6 +77,8 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .psg-body { margin-top: 10px; }
 .psg-body p { font-size: 13px; line-height: 1.8; color: #3A3F3C; margin: 0 0 9px; padding: 0 2px; word-break: keep-all; }
 .psg-body p:last-child { margin-bottom: 0; }
+.psg-ex { background: #F4F7F5; border-radius: 10px; padding: 9px 12px; margin: 0 0 9px; font-size: 12.5px; line-height: 1.75; color: #2A332F; }
+.psg-ex span { display: block; }
 .psg-toggle { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font: inherit; font-size: 12px; font-weight: 800; color: #635A7D; background: #EDE4F4; border: none; border-radius: 9px; padding: 7px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .psg-toggle svg { width: 13px; height: 13px; transition: transform .15s; }
 .psg-toggle.open svg { transform: rotate(180deg); }
@@ -483,7 +485,11 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             (ps.text ? '<div class="psg-text">' + esc(ps.text) + '</div>' : '');
         var paras = ps.paras || [];
         if (paras.length) {
-            h += '<div class="psg-body"' + (open ? '' : ' hidden') + '>' + paras.map(function(t) { return '<p>' + esc(t) + '</p>'; }).join('') + '</div>';
+            // 문단은 문자열, 예시 표는 {ex:[줄, …]} — 표는 줄마다 한 줄(칸은 ' · ')
+            h += '<div class="psg-body"' + (open ? '' : ' hidden') + '>' + paras.map(function(t) {
+                if (t && t.ex) return '<div class="psg-ex">' + t.ex.map(function(r) { return '<span>' + esc(r) + '</span>'; }).join('') + '</div>';
+                return '<p>' + esc(t) + '</p>';
+            }).join('') + '</div>';
             if (!open) h += '<button type="button" class="psg-toggle">해설 펼치기' +
                 '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>';
         }
