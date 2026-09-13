@@ -341,6 +341,30 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p7.click('#a-tbody .a-del');
   await p7.waitForFunction(() => document.querySelectorAll('#a-tbody tr').length === 4);
   ok(reqLog.some(q => q.action === 'assignDel'), '삭제 요청·목록 갱신');
+  // 줄 선택 — 클릭·Shift 범위·전체 선택·선택 삭제(아래 줄부터)
+  {
+    const n0 = (await p7.$$('#a-tbody tr[data-key]')).length;
+    ok(n0 >= 4, '현황 4줄 이상(선택 검사 준비)');
+    await p7.click('#a-tbody tr[data-key]:nth-child(1) td:nth-child(2)');
+    ok((await p7.textContent('#a-seln')) === '1' && await p7.$('#a-selbar.on'), '줄 클릭 → 1개 선택 + 선택 줄 표시');
+    await p7.click('#a-tbody tr[data-key]:nth-child(3) td:nth-child(2)', { modifiers: ['Shift'] });
+    ok((await p7.textContent('#a-seln')) === '3' && (await p7.$$('#a-tbody tr.sel')).length === 3, 'Shift+클릭 → 1~3줄 범위 선택');
+    await p7.click('#a-tbody tr[data-key]:nth-child(2) td:nth-child(2)');
+    ok((await p7.textContent('#a-seln')) === '2', '선택된 줄을 다시 누르면 해제');
+    await p7.click('#a-tbody tr[data-key]:nth-child(1) .a-toggle');   // 버튼은 선택과 무관
+    await p7.waitForFunction(() => document.getElementById('a-status').textContent === '' || document.getElementById('a-status').style.display === 'none');
+    ok((await p7.textContent('#a-seln')) === '0', '동작 뒤 목록을 새로 받으면 선택 초기화');
+    await p7.click('#a-all');
+    ok((await p7.textContent('#a-seln')) === '' + n0, '[전체 선택] 체크 → 모두 선택');
+    await p7.click('#a-tbody tr[data-key]:nth-child(1) td:nth-child(2)');
+    const before = reqLog.filter(q => q.action === 'assignDel').length;
+    await p7.click('#a-sel-del');
+    await p7.waitForFunction(n => document.querySelectorAll('#a-tbody tr[data-key]').length === n, n0 - (n0 - 1) );
+    const dels = reqLog.filter(q => q.action === 'assignDel').slice(before);
+    ok(dels.length === n0 - 1, `[선택 삭제] → 선택한 ${n0 - 1}개만 삭제 요청`);
+    ok(dels.every((q, i) => i === 0 || +q.row < +dels[i - 1].row), '삭제는 아래 줄(행번호 큰 것)부터 차례로');
+    ok((await p7.$$('#a-tbody tr[data-key]')).length === 1 && (await p7.textContent('#a-seln')) === '0', '삭제 뒤 1줄 남고 선택 없음');
+  }
   await p7.close();
 
   /* ========== 8) 배정하기 — 옛 배포본(assign 미지원) 안내 ========== */
