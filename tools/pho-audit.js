@@ -214,7 +214,6 @@ const KNOWN = {
   'pho-6:119': '값있다: 자음군 단순화 + 연음 + 끝소리 규칙을 한 단계에',
   'pho-6:124': '뚫네: ㅎ 탈락 + 유음화를 유음화 한 단계에',
   'pho-10:201': '맞혀: 거센소리되기와 ㅕ→ㅓ(표준 발음법 5항 다만1)를 한 단계에',
-  'pho-13:267': '맑게: 자음군 단순화(ㄺ→ㄹ) + 된소리되기를 한 단계에 — 미결 사항 ①',
   'pho-17:341': '낳습니다: ㅎ+ㅅ→[ㅆ] — 교체+탈락/축약 논쟁(교재 485), 출제 회피 권고',
   'pho-19:379': '닦달하다: 3단계 초성 ㅎ 탈락[닥딸아다]은 표준 발음이 아님(표준 [닥딸하다])'
 };
@@ -257,10 +256,20 @@ for (const f of fs.readdirSync(DIR).sort((a, b) => a.localeCompare(b, 'en', { nu
       const bad7 = dec(fa).filter(s => s && FINAL_OK.indexOf(s[2]) < 0).map(s => s[2]);
       if (bad7.length) warn(f, q, `최종 발음 '${fa}'의 받침 ${bad7.join(',')}은 대표음이 아님`);
     }
-    // 미결 순서 유형 집계
+    // 겹받침+된소리 순서(2026-09-13 사용자 결정): 자음군 단순화로 '조건이 되는 자음'(ㄾ의 ㅌ, ㄼ의 ㅂ, ㄱ 앞 ㄺ의 ㄱ)이
+    // 떨어져 나가는 단어는 된소리되기가 먼저여야 한다. 남는 자음(ㄱ·ㅂ, 어간 ㄴ·ㅁ)이 조건이면 순서 무관.
+    let cur = normStart(q.start);
     for (let i = 0; i + 1 < rules.length; i++) {
-      if (rules[i] === '된소리되기' && rules[i + 1] === '자음군 단순화') pat.tenseThenCluster.push(`${f.replace('.json', '')}#${q.num} ${q.start}`);
-      if (rules[i] === '자음군 단순화' && rules[i + 1] === '된소리되기') pat.clusterThenTense.push(`${f.replace('.json', '')}#${q.num} ${q.start}`);
+      const tag = `${f.replace('.json', '')}#${q.num} ${q.start}`;
+      if (rules[i] === '된소리되기' && rules[i + 1] === '자음군 단순화') pat.tenseThenCluster.push(tag);
+      if (rules[i] === '자음군 단순화' && rules[i + 1] === '된소리되기') {
+        pat.clusterThenTense.push(tag);
+        const A = dec(cur), B = dec('' + q.steps[i].form);
+        const k = diffIdx(A, B)[0]; const a = A[k], b = B[k];
+        if (a && b && ((a[2] === 'ㄾ' && b[2] === 'ㄹ') || (a[2] === 'ㄼ' && b[2] === 'ㄹ') || (a[2] === 'ㄺ' && b[2] === 'ㄹ')))
+          warn(f, q, `자음군 단순화(${a[2]}→ㄹ)로 된소리되기 조건이 사라짐 — 된소리되기를 먼저 둘 것`);
+      }
+      cur = '' + q.steps[i].form;
     }
     const iN = rules.indexOf('ㄴ 첨가'), iF = rules.indexOf('음절의 끝소리 규칙');
     if (iN >= 0 && iF >= 0) (iN < iF ? pat.nAddBeforeFinal : pat.finalBeforeNAdd).push(`${f.replace('.json', '')}#${q.num} ${q.start}`);
@@ -268,7 +277,7 @@ for (const f of fs.readdirSync(DIR).sort((a, b) => a.localeCompare(b, 'en', { nu
   }
 }
 const dups = [...starts.entries()].filter(([, v]) => v.length > 1);
-console.log(`\n[미결 순서 유형] 된소리되기→자음군 단순화 ${pat.tenseThenCluster.length}건: ${pat.tenseThenCluster.join(', ') || '없음'}`);
+console.log(`\n[순서 유형] 된소리되기→자음군 단순화 ${pat.tenseThenCluster.length}건: ${pat.tenseThenCluster.join(', ') || '없음'}`);
 console.log(`                자음군 단순화→된소리되기 ${pat.clusterThenTense.length}건: ${pat.clusterThenTense.join(', ') || '없음'}`);
 console.log(`                ㄴ 첨가→끝소리 규칙 ${pat.nAddBeforeFinal.length}건: ${pat.nAddBeforeFinal.join(', ') || '없음'}`);
 console.log(`                끝소리 규칙→ㄴ 첨가 ${pat.finalBeforeNAdd.length}건: ${pat.finalBeforeNAdd.join(', ') || '없음'}`);
