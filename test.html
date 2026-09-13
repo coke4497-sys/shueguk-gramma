@@ -36,6 +36,19 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .ex-line { display: block; margin-top: 4px; }
 .ex-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .ex-chip { background: white; border-radius: 8px; padding: 4px 10px; font-size: 12px; color: #3A544E; font-weight: 700; }
+/* 지문(조항 원문·해설) — 한글 맞춤법 레벨2처럼 지문을 읽고 푸는 회차 (테두리 없이 흰 상자) */
+.psg { background: white; border-radius: 16px; padding: 16px 18px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(45,128,104,0.04); }
+.psg-lbl { font-size: 11px; font-weight: 800; color: #635A7D; background: #EDE4F4; display: inline-block; padding: 3px 9px; border-radius: 999px; margin-bottom: 8px; }
+.psg-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.psg-art { font-family: 'Gowun Batang', serif; font-size: 18px; font-weight: 800; color: #2C2F2D; }
+.psg-chap { font-size: 12px; color: #6A716C; }
+.psg-text { font-family: 'Gowun Batang', serif; font-size: 14.5px; line-height: 1.75; color: #2C2F2D; background: #E9F0EF; padding: 11px 13px; border-radius: 10px; }
+.psg-body { margin-top: 10px; }
+.psg-body p { font-size: 13px; line-height: 1.8; color: #3A3F3C; margin: 0 0 9px; padding: 0 2px; word-break: keep-all; }
+.psg-body p:last-child { margin-bottom: 0; }
+.psg-toggle { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font: inherit; font-size: 12px; font-weight: 800; color: #635A7D; background: #EDE4F4; border: none; border-radius: 9px; padding: 7px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.psg-toggle svg { width: 13px; height: 13px; transition: transform .15s; }
+.psg-toggle.open svg { transform: rotate(180deg); }
 .note-box { background: #FBEECF; color: #8F630F; font-size: 12px; line-height: 1.6; padding: 11px 13px; border-radius: 10px; margin-bottom: 10px; }
 
 .progress-bar { display: flex; align-items: center; gap: 10px; background: white; padding: 11px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 12px; font-weight: 700; box-shadow: 0 2px 10px rgba(45,128,104,0.05); }
@@ -368,7 +381,10 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     function buildStudy(study) {
         var tabsData = study.tabs || [];
         var tabs = $('cat-tabs'), body = $('study-body');
-        if (!tabsData.length) { $('study-section').classList.add('hidden'); return; }
+        if (!tabsData.length) {
+            if (DATA.passage) { body.appendChild(passageEl(true)); return; }   // 지문형 회차 — 개념 정리 = 지문 전문
+            $('study-section').classList.add('hidden'); return;
+        }
 
         tabsData.forEach(function(d, idx) {
             var t = document.createElement('div');
@@ -415,8 +431,38 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         return h;
     }
 
+    /* ===== 지문(조항 원문 + 해설) =====
+       data.passage = { article:'제5항', chapter:'제3장 …', section:'된소리', text:'조항 원문', paras:['해설 문단', …] }
+       테스트 모드에서는 문항 위에 원문만 펼치고 해설은 [해설 펼치기]로, 개념 정리 탭에서는 전부 펼친다. */
+    function passageEl(open) {
+        var ps = DATA.passage || {};
+        var el = document.createElement('div');
+        el.className = 'psg';
+        var chap = [ps.chapter, ps.section].filter(Boolean).join(' · ');
+        var h = (open ? '' : '<div class="psg-lbl">지문 — 조항과 해설을 읽고 O/X를 고르세요</div>') +
+            '<div class="psg-head"><span class="psg-art">' + esc(ps.article || '') + '</span>' +
+            (chap ? '<span class="psg-chap">' + esc(chap) + '</span>' : '') + '</div>' +
+            (ps.text ? '<div class="psg-text">' + esc(ps.text) + '</div>' : '');
+        var paras = ps.paras || [];
+        if (paras.length) {
+            h += '<div class="psg-body"' + (open ? '' : ' hidden') + '>' + paras.map(function(t) { return '<p>' + esc(t) + '</p>'; }).join('') + '</div>';
+            if (!open) h += '<button type="button" class="psg-toggle">해설 펼치기' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>';
+        }
+        el.innerHTML = h;
+        var tg = el.querySelector('.psg-toggle');
+        if (tg) tg.addEventListener('click', function() {
+            var body = el.querySelector('.psg-body');
+            body.hidden = !body.hidden;
+            tg.classList.toggle('open', !body.hidden);
+            tg.firstChild.textContent = body.hidden ? '해설 펼치기' : '해설 접기';
+        });
+        return el;
+    }
+
     function buildQuestions() {
         var box = $('questions');
+        if (DATA.passage) box.appendChild(passageEl(false));
         if (DATA.instruction) {
             var il = document.createElement('div');
             il.className = 'section-label';
