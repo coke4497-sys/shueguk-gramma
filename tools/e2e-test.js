@@ -213,14 +213,24 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
     const card = document.getElementById('assign-card');
     return !!(el.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING);
   }), '학생 배정 카드가 카테고리 아래(2단계) 위치');
-  // [전체 회차 담기] → 32개 담김 + 이동 바 표시 → 다시 눌러 비움
+  // 하단 고정 바 — 비어 있을 때
+  ok((await p7.textContent('#sb-list')).includes('아직 없습니다') && await p7.$('#go-assign.off'), '하단 바: 담긴 회차 없음 + 버튼 비활성 색');
+  ok((await p7.textContent('#sec-title')).includes('전체 32회 · 담김 0'), "제목 옆 '전체 32회 · 담김 0'");
+  // [전체 회차 담기] → 32개 담김 + 하단 바 'N개 회차' → [비우기]
   await p7.click('#sec-all');
   await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 32);
   ok(true, "'전체 회차 담기'로 32회 전부 담김");
-  ok(!(await p7.$eval('#go-assign', el => el.hidden)) && (await p7.textContent('#go-assign')).includes('32개'), "'담은 테스트 n개' 이동 바 표시");
-  await p7.click('#sec-all');
+  ok((await p7.textContent('#sb-list')).includes('32개 회차') && !(await p7.$('#go-assign.off')), "하단 바 '32개 회차' + 버튼 활성");
+  ok((await p7.textContent('#sec-title')).includes('담김 32') && (await p7.$$('#rounds .row.on')).length === 32, "'담김 32' + 담긴 행 표시");
+  ok(await p7.$eval('#sec-all', el => el.disabled), '전부 담기면 [전체 회차 담기] 비활성');
+  await p7.click('#sec-clear');
   await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 0);
-  ok(await p7.$eval('#go-assign', el => el.hidden), "'전체 회차 빼기'로 비우면 이동 바 숨김");
+  ok((await p7.textContent('#sb-list')).includes('아직 없습니다') && await p7.$('#go-assign.off'), "[비우기]로 비우면 하단 바 '아직 없습니다'");
+  ok((await p7.$$('#rounds .row.on')).length === 0, '비우면 담긴 행 표시 해제');
+  // 회차 목록이 2열 그리드
+  ok(await p7.$eval('#rounds', el => getComputedStyle(el).gridTemplateColumns.split(' ').length === 2), '회차 목록 2열 그리드');
+  ok(await p7.$eval('#selbar', el => getComputedStyle(el).position === 'sticky'), '하단 담긴 회차 바 고정(sticky)');
+  ok((await p7.textContent('#steps')).replace(/\s/g,'') === '배정하기›학생선택›완료' && (await p7.textContent('#steps .cur')) === '배정하기', '진행 표시: 배정하기 › 학생 선택 › 완료');
   // ① 여러 회차 담기 — 한글 맞춤법 1회 + (다른 카테고리) 음운 1회
   await p7.click('#rounds .row .abtn.assign');   // ort 1회 담기
   await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 1);
@@ -233,6 +243,9 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 2);
   const chipTxt = await p7.textContent('#sel-box');
   ok(chipTxt.includes('한글 맞춤법 1회') && chipTxt.includes('음운 1회'), '담은 테스트 칩 2개 (카테고리 섞어 담기)');
+  ok((await p7.textContent('#sb-list')).replace(/\s/g,'') === '한글맞춤법1회·음운1회', "하단 바 목록 '한글 맞춤법 1회 · 음운 1회'");
+  await p7.click('#go-assign');
+  ok((await p7.textContent('#steps .cur')) === '학생 선택', "[학생 배정으로 →] 누르면 진행 표시 '학생 선택'");
   ok((await p7.textContent('#f-add')).includes('테스트 2개'), '배정 버튼에 담은 개수 표시');
   // 전 학년 + 마감일로 한 번에 배정 → assignAdd 2건
   await p7.waitForFunction(() => document.querySelector('.sp-summary').textContent.includes('전 학년'));
@@ -246,6 +259,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await p7.textContent('#a-tbody')).includes('전 학년') && (await p7.textContent('#a-tbody')).includes('2026-09-05'), "현황에 '전 학년'·마감일 표시");
   await p7.waitForFunction(() => document.querySelectorAll('#sel-box .sel-chip').length === 0);
   ok(true, '배정 후 담긴 목록 비움');
+  ok((await p7.textContent('#steps .cur')) === '완료', "배정 성공 뒤 진행 표시 '완료'");
   // ② 일부 — 재원 명단에서 두 명 선택해 음운 1회 배정
   await p7.click('#rounds .row .abtn.assign');   // pho 1회 다시 담기
   await p7.click('.sp-tab[data-mode="일부"]');
