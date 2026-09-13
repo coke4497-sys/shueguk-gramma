@@ -74,6 +74,20 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
     return route.fulfill({ status: 200, contentType: q.callback ? 'text/javascript' : 'application/json', body });
   });
 
+  // 슈퍼스타 별 적립 — 수파베이스 함수 호출 가로채기(gramma_submit / gramma_status)
+  const sbCalls = [];
+  let starStatusItems = [];
+  await ctx.route(/bangdbhqpphqqdwcledg\.supabase\.co\/rest\/v1\/rpc\/(gramma_submit|gramma_status)/, route => {
+    const fn = route.request().url().split('/rpc/')[1];
+    const body = JSON.parse(route.request().postData() || '{}').p || {};
+    sbCalls.push({ fn, body });
+    if (fn === 'gramma_submit') {
+      const pct = Math.round(body.got * 100 / body.total);
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, pct, star: pct >= 90, first: pct >= 90 && body.round !== '5' }) });
+    }
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, items: starStatusItems }) });
+  });
+
   /* ========== 1) test.html — 렌더·개념·게이트 차단 ========== */
   const page = await ctx.newPage();
   const dialogs = [];
@@ -93,13 +107,9 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await page.textContent('#si-sum-text')).replace(/\s/g,'') === '박검증·고1·12345678', "요약 줄 '이름 · 학년 · 전화번호'");
   ok(await page.$eval('#topbar', el => getComputedStyle(el).position === 'sticky'), '상단 영역 고정(sticky)');
   ok(await page.$eval('#tb-row2', el => !el.classList.contains('hidden')), '테스트 모드에서 완료·진행바·제출 줄 표시');
-  ok((await page.$$('#card-0 .step-row')).length === 1 && await page.$('#card-0 .step-add'), '과정형 문항은 한 줄로 시작 + [+] 단계 추가 버튼');
-  // [+]로 단계 추가 → 2줄, 마지막 줄만 '최종 발음', [×]로 다시 1줄
-  await page.click('#card-1 .step-add');
-  ok((await page.$$('#card-1 .step-row')).length === 2, '[+]로 단계 줄 추가');
-  ok(await page.getAttribute('#frm-1-0', 'placeholder') === '바뀐 형태' && await page.getAttribute('#frm-1-1', 'placeholder') === '최종 발음', '마지막 줄만 최종 발음 placeholder');
-  await page.click('#card-1 .step-row:last-child .step-del');
-  ok((await page.$$('#card-1 .step-row')).length === 1, '[×]로 단계 줄 빼기');
+  ok((await page.$$('#card-0 .step-row')).length === 1 && !(await page.$('#card-0 .step-add')), '과정형 문항은 정답 단계 수만큼 줄(1단계 = 1줄), [+] 없음');
+  ok((await page.$$('#card-3 .step-row')).length === 2 && !(await page.$('#card-3 .step-del')), '2단계 문항은 2줄이 미리 있음(단계 수 힌트)');
+  ok(await page.getAttribute('#frm-3-0', 'placeholder') === '바뀐 형태' && await page.getAttribute('#frm-3-1', 'placeholder') === '최종 발음', '마지막 줄만 최종 발음 placeholder');
 
   // 1번 문항 정답 입력 → 진행 카운트
   await page.selectOption('#sel-0-0', '비음화');
@@ -136,6 +146,10 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await page.waitForFunction(() => true);
   ok(lastPost && lastPost.unit === '음운' && '' + lastPost.round === '1' && lastPost.score === '1 / 21' && lastPost.name === '박검증' && lastPost.phone8 === '12345678', '제출 payload (unit·round·score·phone8)');
   ok(lastPost.details.split('\n')[0] === '1. ✓', '상세 첫 줄 1. ✓');
+  // 별 적립 — 1/21(5%)은 별 없음 안내, 수파베이스 기록은 시트 전송과 함께
+  ok((await page.textContent('#star-box')).includes('5%') && (await page.textContent('#star-box')).includes('90% 이상이면'), '정답률 5% → 별 없음 안내');
+  const sub1 = sbCalls.find(c => c.fn === 'gramma_submit');
+  ok(sub1 && sub1.body.name === '박검증' && sub1.body.phone8 === '12345678' && sub1.body.unit === '음운' && sub1.body.round === '1' && sub1.body.got === 1 && sub1.body.total === 21, 'gramma_submit 호출(이름·8자리·카테고리·회차·점수)');
 
   /* ========== 3) test.html — preview는 게이트 생략 ========== */
   const prevReqs = reqLog.length;
@@ -152,7 +166,22 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p2.click('#submit-btn');
   await p2.waitForSelector('.final.show');
   ok(!reqLog.slice(prevReqs).some(q => q.action === 'myAssign'), 'preview=1 은 배정 확인 생략');
+  ok(!(await p2.$('#star-box')) && !sbCalls.some(c => c.fn === 'gramma_submit' && c.body.name === '미리보기'), 'preview 는 별 기록·안내 없음');
   await p2.close();
+  /* ========== 3b) 90% 이상 → 별 +1 안내 + 수파베이스 기록 ========== */
+  const p2b = await ctx.newPage(); p2b.on('dialog', d => d.accept());
+  assignItems = [{ cat: 'pho', round: '1' }];
+  await p2b.goto(`http://localhost:${PORT}/test.html?c=pho&r=1&name=박검증&school=화정고&grade=고1&p8=12345678`);
+  await p2b.waitForSelector('#app:not(.hidden)'); await p2b.click('#tab-test');
+  // 21문항 전부 정답으로 채움(데이터의 정답을 그대로 넣는다)
+  const answers = await p2b.evaluate(() => fetch('data/pho-1.json').then(r => r.json()).then(d => d.questions.map(q => q.steps.map(st => [st.accept[0], st.form.split('/')[0]]))));
+  for (let i = 0; i < answers.length; i++) for (let k = 0; k < answers[i].length; k++) { await p2b.selectOption(`#sel-${i}-${k}`, answers[i][k][0]); await p2b.fill(`#frm-${i}-${k}`, answers[i][k][1]); }
+  await p2b.click('#submit-btn'); await p2b.waitForSelector('.final.show');
+  ok((await p2b.textContent('#final .score-big')) === '21', '전부 정답 21점');
+  ok((await p2b.textContent('#star-box')).includes('100%') && (await p2b.textContent('#star-box')).includes('별 +1'), "100% → '슈퍼스타 별 +1 적립' 안내");
+  await p2b.waitForFunction(() => document.getElementById('star-sub').textContent.includes('더해졌어요'));
+  ok(true, '수파베이스 응답(first) → 내 별에 더해졌어요');
+  await p2b.close();
 
   /* ========== 4) 미등록 테스트 안내 ========== */
   const p3 = await ctx.newPage();
@@ -163,6 +192,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
 
   /* ========== 5) index.html — 배정 목록 ========== */
   assignItems = [{ cat: 'pho', round: '3', catLabel: '음운', memo: '숙제', due: '2026-09-05' }, { cat: 'mor', round: '1', catLabel: '형태소' }];
+  starStatusItems = [{ unit: '음운', round: '3', best: 95, tries: 1, star: true }, { unit: '형태소', round: '1', best: 60, tries: 2, star: false }];
   const p4 = await ctx.newPage();
   p4.on('dialog', d => d.accept());
   await p4.goto(`http://localhost:${PORT}/index.html`);
@@ -175,6 +205,10 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   const href = await p4.getAttribute('.assign-card .assign-go', 'href');
   ok(href.includes('test.html?c=pho&r=3') && href.includes('name=') && decodeURIComponent(href).includes('박검증') && href.includes('p8=12345678'), '응시 링크에 학생 정보·전화 8자리 전달');
   ok((await p4.textContent('.assign-card .assign-sub')).includes('마감 9월 5일 (토)까지'), '카드에 마감일 표시');
+  await p4.waitForSelector('.assign-star');
+  ok((await p4.textContent('.assign-card:nth-child(1) .assign-star')).includes('별 획득 95%') && (await p4.textContent('.assign-card:nth-child(2) .assign-star')).includes('최고 60%'), "카드에 '별 획득 95%' / '최고 60%' 표시");
+  ok((await p4.textContent('#status')).includes('별을 받은 테스트 1개'), "상태 줄에 '별을 받은 테스트 1개'");
+  ok((await p4.textContent('.header')).includes('90% 이상') && (await p4.textContent('.header')).includes('별'), "입구 페이지에 '90% 이상이면 별 +1' 안내");
   // 배정 없음 안내
   assignItems = [];
   await p4.click('#check-btn');
