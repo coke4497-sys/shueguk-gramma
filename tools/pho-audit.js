@@ -209,18 +209,23 @@ function passes(rule, A, B) {
 
 // 사용자 결정 대기 — 검사에서는 '보류'로만 표시(종료 코드에 넣지 않음). 결정되면 데이터를 고치고 여기서 지운다.
 const KNOWN = {
+  'pho-12:246': '꽃잎: 끝소리 규칙이 꽃의 ㅊ(앞말 끝)과 잎의 ㅍ(뒷말 끝)에 한 단계로 — 나눌지 결정 대기',
+  'pho-15:310': '나뭇잎: 끝소리 규칙이 뭇의 ㅅ(앞말 끝)과 잎의 ㅍ(뒷말 끝)에 한 단계로 — 나눌지 결정 대기'
+};
+// 사용자가 '그대로 둔다'고 결정한 문항(2026-09-13) — 한 단계에 두 규칙이 들어 있지만 손대지 않는다. 검사에서는 '유지'로 표시.
+const KEEP = {
   'pho-5:95': '밤낮없이: 연음 두 번 + 된소리되기를 한 단계에',
   'pho-5:96': '받히었다: 거센소리되기 + 끝소리 규칙(ㅆ→ㄷ)을 한 단계에',
   'pho-6:119': '값있다: 자음군 단순화 + 연음 + 끝소리 규칙을 한 단계에',
   'pho-6:124': '뚫네: ㅎ 탈락 + 유음화를 유음화 한 단계에',
   'pho-10:201': '맞혀: 거센소리되기와 ㅕ→ㅓ(표준 발음법 5항 다만1)를 한 단계에',
-  'pho-17:341': '낳습니다: ㅎ+ㅅ→[ㅆ] — 교체+탈락/축약 논쟁(교재 485), 출제 회피 권고',
-  'pho-19:379': '닦달하다: 3단계 초성 ㅎ 탈락[닥딸아다]은 표준 발음이 아님(표준 [닥딸하다])'
+  'pho-17:341': '낳습니다: ㅎ+ㅅ→[ㅆ] — 교체+탈락/축약 논쟁(교재 485)',
+  'pho-19:379': '닦달하다: 3단계 초성 ㅎ 탈락[닥딸아다]은 표준 발음([닥딸하다])이 아니나 사용자 결정으로 유지'
 };
 
 const ALLOW = new Set([ /* '파일:번호:단계' — 사용자 결정으로 허용한 예외를 적는다 */ ]);
 
-let files = 0, qs = 0, bad = 0, checked = 0; const held = [];
+let files = 0, qs = 0, bad = 0, checked = 0; const held = [], kept = [];
 const starts = new Map();
 const pat = { tenseThenCluster: [], clusterThenTense: [], nAddBeforeFinal: [], finalBeforeNAdd: [], yeonEum: 0, folded: [] };
 function warn(f, q, msg) { bad++; console.log(`  ✗ ${f} ${q.num}번 ${q.start}: ${msg}`); }
@@ -247,6 +252,7 @@ for (const f of fs.readdirSync(DIR).sort((a, b) => a.localeCompare(b, 'en', { nu
       const kk = `${f.replace('.json', '')}:${q.num}`;
       if (!ok && !ALLOW.has(`${f}:${q.num}:${si + 1}`)) {
         if (KNOWN[kk]) { held.push(`${kk} ${q.start} — ${KNOWN[kk]}`); }
+        else if (KEEP[kk]) { kept.push(`${kk} ${q.start} — ${KEEP[kk]}`); }
         else warn(f, q, `${si + 1}단계 [${s.accept.join('/')}] ${prev}→${s.form} — ${[...new Set(why)].join(' / ')}`);
       }
       prev = s.form;
@@ -271,8 +277,23 @@ for (const f of fs.readdirSync(DIR).sort((a, b) => a.localeCompare(b, 'en', { nu
       }
       cur = '' + q.steps[i].form;
     }
+    // ㄴ 첨가 ↔ 끝소리 규칙 순서(2026-09-13 사용자 결정): 끝소리 규칙이 앞말 끝(ㄴ이 붙는 음절 바로 앞)에 걸리면 ㄴ 첨가보다 먼저,
+    // 뒷말 끝(ㄴ이 붙는 음절 이후)에 걸리면 ㄴ 첨가 뒤. 한 단계가 두 자리를 다 바꾸면 '사용자 결정 대기'.
     const iN = rules.indexOf('ㄴ 첨가'), iF = rules.indexOf('음절의 끝소리 규칙');
-    if (iN >= 0 && iF >= 0) (iN < iF ? pat.nAddBeforeFinal : pat.finalBeforeNAdd).push(`${f.replace('.json', '')}#${q.num} ${q.start}`);
+    if (iN >= 0 && iF >= 0) {
+      (iN < iF ? pat.nAddBeforeFinal : pat.finalBeforeNAdd).push(`${f.replace('.json', '')}#${q.num} ${q.start}`);
+      const formAt = k => k < 0 ? normStart(q.start) : '' + q.steps[k].form;
+      const nIdx = diffIdx(dec(formAt(iN - 1)), dec(formAt(iN)))[0];
+      q.steps.forEach((st, k) => {
+        if (st.accept[0] !== '음절의 끝소리 규칙') return;
+        const ch = diffIdx(dec(formAt(k - 1)), dec(formAt(k)));
+        const before = ch.some(i => i === nIdx - 1), after = ch.some(i => i >= nIdx);
+        const kk = `${f.replace('.json', '')}:${q.num}`;
+        if (before && after) { if (KNOWN[kk]) held.push(`${kk} ${q.start} — ${KNOWN[kk]}`); else warn(f, q, `끝소리 규칙이 앞말 끝과 뒷말 끝을 한 단계에 — 어느 쪽을 먼저 둘지 결정 필요`); }
+        else if (before && k > iN) warn(f, q, `앞말 끝의 끝소리 규칙은 ㄴ 첨가보다 먼저 둘 것`);
+        else if (after && k < iN) warn(f, q, `뒷말 끝의 끝소리 규칙은 ㄴ 첨가 뒤에 둘 것`);
+      });
+    }
     if (rules.indexOf('연음') >= 0) pat.yeonEum++;
   }
 }
@@ -283,6 +304,7 @@ console.log(`                ㄴ 첨가→끝소리 규칙 ${pat.nAddBeforeFinal
 console.log(`                끝소리 규칙→ㄴ 첨가 ${pat.finalBeforeNAdd.length}건: ${pat.finalBeforeNAdd.join(', ') || '없음'}`);
 console.log(`                연음을 단계로 둔 문항 ${pat.yeonEum}건`);
 console.log(`[사용자 결정 대기] ${held.length}건`); [...new Set(held)].forEach(h => console.log('  · ' + h));
+console.log(`[그대로 두기로 한 문항] ${new Set(kept).size}건`); [...new Set(kept)].forEach(h => console.log('  · ' + h));
 console.log(`[start 중복] ${dups.length}건${dups.length ? ':' : ''}`); dups.forEach(([k, v]) => console.log(`  ${k}: ${v.join(', ')}`));
 console.log(bad ? `\n불일치 ${bad}건 (파일 ${files} · 문항 ${qs} · 단계 ${checked})` : `\n전체 통과 — 파일 ${files}개 · 문항 ${qs}개 · 단계 ${checked}개`);
 process.exit(bad ? 1 : 0);
