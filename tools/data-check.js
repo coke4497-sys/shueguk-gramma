@@ -39,6 +39,8 @@ for (const f of fs.readdirSync(DIR).sort()) {
         if (d.ruleOptions && s.accept) s.accept.forEach(a => {
           if (!d.ruleOptions.includes(a)) err(f, tag + ` accept '${a}'가 ruleOptions에 없음`);
         });
+        if (s.accept2) { if (!Array.isArray(s.accept2) || !s.accept2.length || !d.ruleOptions2) err(f, tag + ' step' + (si + 1) + ' accept2/ruleOptions2 형식');
+          else s.accept2.forEach(a => { if (!d.ruleOptions2.includes(a)) err(f, tag + ` accept2 '${a}'가 ruleOptions2에 없음`); }); }
       });
     } else if (q.type === 'ox') {
       if (q.answer !== 'O' && q.answer !== 'X') err(f, tag + ' ox 정답이 O/X가 아님: ' + q.answer);

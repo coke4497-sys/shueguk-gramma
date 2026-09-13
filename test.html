@@ -342,8 +342,11 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         QUESTIONS = data.questions || [];
         TOTAL = data.total || QUESTIONS.length;
         RULES = data.ruleOptions || [];
+        RULES2 = data.ruleOptions2 || [];   // 둘째 드롭다운(형태소: 자립/의존) — 있으면 줄마다 두 가지를 고른다
         // 과정형 문구 — 기본은 음운 변동, 형태소 분석처럼 다른 용도면 data.processUI로 바꾼다
-        PUI = Object.assign({ select: '— 변동 종류 —', mid: '바뀐 형태', last: '최종 발음', arrow: '→', sep: '→', chainTitle: '정답 과정', startLabel: '처음', brackets: true }, data.processUI || {});
+        PUI = Object.assign({ select: '— 변동 종류 —', select2: '— 구분 —', formFirst: false, mid: '바뀐 형태', last: '최종 발음', arrow: '→', sep: '→', chainTitle: '정답 과정', startLabel: '처음', brackets: true }, data.processUI || {});
+        // 형태소 나누기처럼 학생이 몇 조각으로 나눌지 스스로 정해야 하는 파일은 processUI.freeSteps=true — 한 줄로 시작해 [+]로 늘리고 줄 수까지 채점한다
+        FREE_STEPS = !!PUI.freeSteps; MAX_STEPS = PUI.maxSteps || 6;
         if (!CAT_LABEL) CAT_LABEL = data.category || catCode;
 
         $('h-title').textContent = data.title || '문법, 개념이 힘이다.';
@@ -476,9 +479,10 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 
     /* ===== 문항 렌더링 ===== */
     function blankify(text) { return esc(text).replace(/___+/g, '<span class="blank">　　　</span>'); }
-    function ruleOptionsHTML() {
-        var h = '<option value="">' + esc(PUI.select) + '</option>';
-        RULES.forEach(function(r) { h += '<option value="' + esc(r) + '">' + esc(r) + '</option>'; });
+    function ruleOptionsHTML(list, ph) {
+        list = list || RULES; ph = ph || PUI.select;
+        var h = '<option value="">' + esc(ph) + '</option>';
+        list.forEach(function(r) { h += '<option value="' + esc(r) + '">' + esc(r) + '</option>'; });
         return h;
     }
 
@@ -517,13 +521,15 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     /* 과정형 문항 — 정답 단계 수만큼 줄을 미리 만든다(몇 단계인지가 힌트 — 2026-09-13 사용자 "원래대로").
      * FREE_STEPS=true 로 두면 한 줄로 시작해 학생이 [+]로 늘린다(디자인 지시서의 + 버튼 방식). */
     var FREE_STEPS = false, MAX_STEPS = 6;
-    var PUI = {};
+    var PUI = {}, RULES2 = [];
     function stepRowHTML(i, si) {
+        var sel = '<select class="rule-select" id="sel-' + i + '-' + si + '">' + ruleOptionsHTML() + '</select>' +
+            (RULES2.length ? '<select class="rule-select sel2" id="sel2-' + i + '-' + si + '">' + ruleOptionsHTML(RULES2, PUI.select2) + '</select>' : '');
+        var inp = '<input type="text" class="form-input" id="frm-' + i + '-' + si + '" autocomplete="off" autocorrect="off" autocapitalize="off">';
+        var sep = '<span class="step-arrow">' + esc(PUI.sep) + '</span>';
         return '<div class="step-row" data-i="' + i + '">' +
             '<span class="step-arrow">' + esc(PUI.arrow) + '</span>' +
-            '<select class="rule-select" id="sel-' + i + '-' + si + '">' + ruleOptionsHTML() + '</select>' +
-            '<span class="step-arrow">' + esc(PUI.sep) + '</span>' +
-            '<input type="text" class="form-input" id="frm-' + i + '-' + si + '" autocomplete="off" autocorrect="off" autocapitalize="off">' +
+            (PUI.formFirst ? inp + sep + sel : sel + sep + inp) +
             (FREE_STEPS ? '<button type="button" class="step-del" aria-label="단계 빼기" hidden>×</button>' : '') +
             '</div>';
     }
@@ -532,6 +538,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         var rows = $('card-' + i).querySelectorAll('.step-row');
         rows.forEach(function(r, si) {
             r.querySelector('.rule-select').id = 'sel-' + i + '-' + si;
+            var s2 = r.querySelector('.sel2'); if (s2) s2.id = 'sel2-' + i + '-' + si;
             var inp = r.querySelector('.form-input');
             inp.id = 'frm-' + i + '-' + si;
             inp.placeholder = (si === rows.length - 1) ? PUI.last : PUI.mid;
@@ -638,6 +645,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             if (!rows.length) return false;
             for (var si = 0; si < rows.length; si++) {
                 if (!$('sel-' + i + '-' + si).value) return false;
+                if (RULES2.length && !$('sel2-' + i + '-' + si).value) return false;
                 if (!$('frm-' + i + '-' + si).value.trim()) return false;
             }
             return true;
@@ -717,9 +725,9 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     function correctChain(q) {
         var s = q.start;
         (q.steps || []).forEach(function(st, si) {
-            var label = st.accept.join('/');
+            var label = st.accept.join('/') + (st.accept2 ? '·' + st.accept2.join('/') : '');
             var f = (si === q.steps.length - 1 && PUI.brackets) ? '[' + st.form + ']' : st.form;
-            s += ' ' + PUI.arrow + ' (' + label + ') ' + PUI.sep + ' ' + f;
+            s += ' ' + PUI.arrow + ' ' + (PUI.formFirst ? f + ' (' + label + ')' : '(' + label + ') ' + PUI.sep + ' ' + f);
         });
         return s;
     }
@@ -769,10 +777,12 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
                 '<div class="fb-srow"><span class="fb-sn">' + esc(PUI.startLabel) + '</span><span class="ch-f">' + esc(q.start) + '</span></div>';
         (q.steps || []).forEach(function(st, si) {
             var fin = (si === q.steps.length - 1);
+            var rule = '<span class="ch-r">' + esc(st.accept.join(' 또는 ')) + '</span>' +
+                 (st.accept2 ? '<span class="ch-r">' + esc(st.accept2.join(' 또는 ')) + '</span>' : '');
+            var formEl = '<span class="ch-f' + (fin ? ' fin' : '') + '">' + esc((fin && PUI.brackets) ? '[' + st.form + ']' : st.form) + '</span>';
+            var arEl = '<span class="ch-ar">' + esc(PUI.sep) + '</span>';
             h += '<div class="fb-srow"><span class="fb-sn">' + (si + 1) + '</span>' +
-                 '<span class="ch-r">' + esc(st.accept.join(' 또는 ')) + '</span>' +
-                 '<span class="ch-ar">' + esc(PUI.sep) + '</span>' +
-                 '<span class="ch-f' + (fin ? ' fin' : '') + '">' + esc((fin && PUI.brackets) ? '[' + st.form + ']' : st.form) + '</span></div>';
+                 (PUI.formFirst ? formEl + arEl + rule : rule + arEl + formEl) + '</div>';
         });
         return h + '</div>';
     }
@@ -828,13 +838,15 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
                 // 학생이 만든 줄 수와 정답 단계 수가 같고 줄마다 규칙·형태가 맞아야 정답. 남는 줄은 오답, 모자란 단계는 정답 과정에서 보인다.
                 var rows = stepRows(i), itemOK = rows.length === q.steps.length;
                 rows.forEach(function(r, si) {
-                    var sel = $('sel-' + i + '-' + si), frm = $('frm-' + i + '-' + si), st = q.steps[si];
+                    var sel = $('sel-' + i + '-' + si), frm = $('frm-' + i + '-' + si), st = q.steps[si], sel2 = $('sel2-' + i + '-' + si);
                     var ruleOK = !!st && st.accept.indexOf(sel.value) >= 0;
+                    var rule2OK = !sel2 || (!!st && (st.accept2 || []).indexOf(sel2.value) >= 0);
                     var fOK = !!st && formOK(frm.value, st.form);
                     sel.className = 'rule-select ' + (ruleOK ? 'ok' : 'ng');
+                    if (sel2) { sel2.className = 'rule-select sel2 ' + (rule2OK ? 'ok' : 'ng'); sel2.disabled = true; }
                     frm.className = 'form-input ' + (fOK ? 'ok' : 'ng');
                     sel.disabled = true; frm.disabled = true;
-                    if (!(ruleOK && fOK)) itemOK = false;
+                    if (!(ruleOK && rule2OK && fOK)) itemOK = false;
                 });
                 card.querySelectorAll('.step-add, .step-del').forEach(function(b) { b.remove(); });
                 isCorrect = itemOK;
