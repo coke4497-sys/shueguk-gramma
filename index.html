@@ -44,6 +44,10 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .assign-go { flex: none; display: inline-flex; align-items: center; gap: 4px; background: #EDE4F4; color: #635A7D; border: 1.5px solid #D9CCE8; text-decoration: none; font-size: 12px; font-weight: 800; padding: 9px 14px; border-radius: 9px; -webkit-tap-highlight-color: transparent; }
 .assign-go svg { width: 13px; height: 13px; }
 
+.star-rule { display: inline-block; margin-top: 10px; padding: 7px 13px; border-radius: 999px; background: #EDE4F4; color: #6B5B7B; font-size: 12px; line-height: 1.5; }
+.star-rule b { font-weight: 800; }
+.assign-star { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: #EDE4F4; color: #6B5B7B; font-size: 10.5px; font-weight: 800; vertical-align: 1px; }
+.assign-star.no { background: #F4F7F5; color: #9BA8A1; font-weight: 700; }
 .hidden { display: none !important; }
 footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; line-height: 1.9; }
 </style>
@@ -54,6 +58,7 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
         <div class="logo">SHUEGUK</div>
         <h1>내 문법 테스트</h1>
         <p class="intro">이름·학교·학년을 입력하면<br>나에게 배정된 문법 테스트가 보여요.</p>
+        <div class="star-rule">정답률 <b>90% 이상</b>으로 테스트를 마치면 슈퍼스타 별 <b>+1</b> (테스트마다 한 번)</div>
     </div>
 
     <div class="student-info">
@@ -85,6 +90,10 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
     // 문법 결과·배정을 담당하는 Apps Script 배포 주소 (apps-script/Code.gs)
     var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzikteq7gR2ezi_NXc2of8PTvUj5XouJ5ZcZOEWv0YWgjQjs8dZqogQjSr0-LSqneXF/exec';
     var LS_KEY = 'gramma_student';
+    // 별 획득 여부 표시 — 수파베이스 gramma_status(이름+8자리로 내 결과만). 실패해도 목록은 그대로.
+    var SB_URL = 'https://bangdbhqpphqqdwcledg.supabase.co';
+    var SB_KEY = 'sb_publishable_dE9d1KIbpgYaQkaS2MSrlg_-7SiRJuT';
+    var STAR_PCT = 90;
 
     function $(id) { return document.getElementById(id); }
     function esc(s) { return ('' + (s == null ? '' : s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -142,11 +151,34 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
                     return;
                 }
                 render(res.items || [], { name: name, school: school, grade: grade, phone8: phone8 });
+                loadStars({ name: name, phone8: phone8 });
             })
             .catch(function() {
                 btn.disabled = false;
                 showStatus('fail', IC_ALERT + '확인에 실패했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.');
             });
+    }
+
+    // 테스트별 최고 정답률 → 카드에 '별 획득' / '최고 n%' 표시
+    function loadStars(who) {
+        fetch(SB_URL + '/rest/v1/rpc/gramma_status', {
+            method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ p: { name: who.name, phone8: who.phone8 } })
+        }).then(function(r) { return r.json(); }).then(function(res) {
+            if (!res || res.ok !== true) return;
+            var by = {};
+            (res.items || []).forEach(function(it) { by[it.unit + '|' + it.round] = it; });
+            var n = 0;
+            document.querySelectorAll('.assign-card[data-key]').forEach(function(card) {
+                var it = by[card.getAttribute('data-key')];
+                var slot = card.querySelector('.assign-title');
+                if (!it || !slot) return;
+                if (it.star) { n++; slot.insertAdjacentHTML('beforeend', '<span class="assign-star">별 획득 ' + it.best + '%</span>'); }
+                else slot.insertAdjacentHTML('beforeend', '<span class="assign-star no">최고 ' + it.best + '% · ' + STAR_PCT + '% 이상이면 별</span>');
+            });
+            var st = $('status');
+            if (n && st) st.insertAdjacentHTML('beforeend', '<br>이 중 별을 받은 테스트 <b>' + n + '개</b>');
+        }).catch(function() {});
     }
 
     function render(items, who) {
@@ -167,7 +199,7 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
             var subs = [];
             if (a.due) subs.push('마감 ' + fmtDue(a.due) + '까지');
             if (a.memo) subs.push(a.memo);
-            html += '<div class="assign-card">' +
+            html += '<div class="assign-card" data-key="' + esc(label) + '|' + esc(a.round) + '">' +
                 '<span class="assign-cat">' + esc(label) + '</span>' +
                 '<div class="assign-body">' +
                     '<div class="assign-title">' + esc(label) + ' ' + esc(a.round) + '회 · ' + esc(title) + '</div>' +
