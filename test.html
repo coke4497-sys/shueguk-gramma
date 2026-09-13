@@ -444,6 +444,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             card.id = 'card-' + i;
             if (q.type === 'process') {
                 var h = '<div class="q-head"><span class="q-num">' + esc(pad2(q.num)) + '</span><span class="q-start">' + esc(q.start) + '<span class="arrow">→ ?</span></span></div>';
+                if (q.hint) h += '<div class="q-hint"><b>힌트</b>' + esc(q.hint) + '</div>';
                 (q.steps || []).forEach(function(st, si) {
                     var isFinal = (si === q.steps.length - 1);
                     h += '<div class="step-row' + (isFinal ? ' step-final' : '') + '">' +
@@ -454,7 +455,6 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
                         (isFinal ? '<span class="final-tag">[발음]</span>' : '') +
                         '</div>';
                 });
-                if (q.hint) h += '<div class="q-hint"><b>힌트</b>' + esc(q.hint) + '</div>';
                 card.innerHTML = h + '<div class="feedback" id="feedback-' + i + '"></div>';
             } else {
                 var head = '<div><span class="q-num">' + esc(pad2(q.num)) + '</span>' +
