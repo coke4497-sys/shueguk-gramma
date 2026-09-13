@@ -185,9 +185,9 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
 
   /* ========== 4) 미등록 테스트 안내 ========== */
   const p3 = await ctx.newPage();
-  await p3.goto(`http://localhost:${PORT}/test.html?c=mor&r=1`);
+  await p3.goto(`http://localhost:${PORT}/test.html?c=pos&r=1`);
   await p3.waitForSelector('.loading-msg.fail');
-  ok((await p3.textContent('.loading-msg.fail')).includes('아직 등록되지 않은'), '미등록 테스트(형태소 1회) 안내');
+  ok((await p3.textContent('.loading-msg.fail')).includes('아직 등록되지 않은'), '미등록 테스트(품사 1회) 안내');
   await p3.close();
 
   /* ========== 5) index.html — 배정 목록 ========== */
@@ -233,7 +233,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p7.waitForSelector('#a-tbody tr');
   ok((await p7.textContent('#a-tbody')).includes('학년') && (await p7.textContent('#a-tbody')).includes('음운 1회'), '배정 현황 표시');
   ok((await p7.$$('.cat-card')).length === 10, '카테고리 카드 10개 (레벨2는 한글 맞춤법 카드 안)');
-  ok((await p7.$$('.cat-card[disabled]')).length === 8, '문항 없는 카테고리 8개는 비활성(준비 중)');
+  ok((await p7.$$('.cat-card[disabled]')).length === 7, '문항 없는 카테고리 7개는 비활성(준비 중)');
   ok(!(await p7.$('#round-view:not(.hidden)')), '첫 화면에는 회차 목록 없음');
   // 음운 → 회차 20개 → 뒤로 → 한글 맞춤법 → 32개
   await p7.click('.cat-card[data-code="pho"]');
