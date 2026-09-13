@@ -165,7 +165,7 @@ details.grp .row.on { background: #FBF8FD; }
 .status.loading { background: #F4F5F3; color: #6A716C; border: 1.5px solid #E8EAE7; }
 .status.fail { background: #FADED9; color: #992F20; border: 1.5px solid #EFA9A5; }
 .table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 620px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 660px; }
 th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #F1F6F4; white-space: nowrap; }
 th { background: #E9F0EF; color: #3A544E; font-weight: 800; font-size: 12px; }
 .pct { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; }
@@ -173,6 +173,20 @@ th { background: #E9F0EF; color: #3A544E; font-weight: 800; font-size: 12px; }
 .pct.lo { background: #FADED9; color: #992F20; }
 .detail-btn { padding: 5px 10px; font-size: 11px; font-weight: 800; border: 1.5px solid #A6C1BB; background: white; color: #3A544E; border-radius: 7px; cursor: pointer; font-family: inherit; }
 .detail-btn.danger { color: #DB4C39; border-color: #EFA9A5; }
+/* 배정 현황 — 줄 선택(클릭 · Shift 범위 · Ctrl/⌘ 개별) + 선택 마감/삭제 (2026-09-13 사용자 요청) */
+#a-tbody tr { cursor: pointer; user-select: none; -webkit-user-select: none; }
+#a-tbody tr.sel td { background: #FAF7FC; }
+#a-tbody tr.sel td:first-child { box-shadow: inset 3px 0 0 #D6C9E4; }
+td.a-chk, th.a-chk { width: 34px; padding-right: 0; text-align: center; }
+.a-chk input { width: 15px; height: 15px; accent-color: #8D83A8; cursor: pointer; vertical-align: middle; }
+.a-selbar { display: none; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 8px; padding: 9px 12px; border-radius: 10px; background: #EDE4F4; color: #6B5B7B; font-size: 12.5px; font-weight: 700; }
+.a-selbar.on { display: flex; }
+.a-selbar .n { font-weight: 800; }
+.a-selbar .sp { flex: 1; }
+.a-selbar button { font: inherit; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; background: #fff; border: 1px solid #D6C9E4; color: #6B5B7B; }
+.a-selbar button.danger { color: #DB4C39; border-color: #EFA9A5; }
+.a-selbar button:disabled { opacity: .5; cursor: default; }
+.a-hint { font-size: 11.5px; color: #9BA8A1; margin: 0 0 8px; }
 
 footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; line-height: 1.9; }
 @media (prefers-reduced-motion: reduce){ * { transition: none !important; } }
@@ -245,9 +259,12 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
   <div class="card">
     <div class="c-head"><b>배정 현황</b><span class="muted">마감하면 학생 목록에서 사라져요 · 제출 결과는 '결과 확인'에서</span></div>
     <div id="a-status" class="status loading">배정 목록을 불러오는 중…</div>
+    <div class="a-selbar" id="a-selbar"><span><span class="n" id="a-seln">0</span>개 선택됨</span><span class="sp"></span>
+      <button type="button" id="a-sel-close">선택 마감</button><button type="button" class="danger" id="a-sel-del">선택 삭제</button><button type="button" id="a-sel-clear">선택 해제</button></div>
     <div class="table-wrap" id="a-table-wrap" style="display:none;">
+      <div class="a-hint">줄을 누르면 선택 · Shift를 누른 채 다른 줄을 누르면 범위 선택 · Ctrl(⌘)로 하나씩 더하기</div>
       <table>
-        <thead><tr><th>배정일시</th><th>대상</th><th>테스트</th><th>마감</th><th>메모</th><th>상태</th><th>동작</th></tr></thead>
+        <thead><tr><th class="a-chk"><input type="checkbox" id="a-all" aria-label="전체 선택"></th><th>배정일시</th><th>대상</th><th>테스트</th><th>마감</th><th>메모</th><th>상태</th><th>동작</th></tr></thead>
         <tbody id="a-tbody"></tbody>
       </table>
     </div>
@@ -575,6 +592,7 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
         return;
       }
       A_ROWS = resp.rows || [];
+      A_SEL = {}; A_ANCHOR = null;
       aRender();
     }, function(msg){ aStatus('fail', '배정 목록: ' + msg); });
   }
@@ -590,11 +608,13 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     var html = '';
     rows.forEach(function(r){
       var closed = r.status === '마감';
+      var k = aKey(r), on = !!A_SEL[k];
       var testLabel = catLabelOf(r.cat) + ' ' + r.round + '회';
       var reg = TESTS[r.cat + '-' + r.round];
       var ttShow = r.ttype === '일부' ? '일부 학생' : (r.ttype === '전체' ? '전 학년' : r.ttype);
       var tgtShow = r.ttype === '전체' ? '모든 재원 학생' : prettyTarget(r.target);
-      html += '<tr' + (closed ? ' style="opacity:.55;"' : '') + '>' +
+      html += '<tr class="' + (on ? 'sel' : '') + '" data-key="' + escAttr(k) + '" data-row="' + r._row + '" data-time="' + escAttr(r.time) + '" data-status="' + escAttr(r.status || '') + '"' + (closed ? ' style="opacity:.55;"' : '') + '>' +
+        '<td class="a-chk"><input type="checkbox" aria-label="선택"' + (on ? ' checked' : '') + '></td>' +
         '<td>' + esc(r.time) + '</td>' +
         '<td><b>' + esc(ttShow) + '</b> · ' + esc(tgtShow) + '</td>' +
         '<td>' + esc(testLabel) + (reg && reg.title ? ' <span class="muted">' + esc(reg.title) + '</span>' : '') + '</td>' +
@@ -608,7 +628,81 @@ footer { text-align: center; margin-top: 32px; color: #8B928C; font-size: 12px; 
     });
     tb.innerHTML = html;
     $('a-table-wrap').style.display = 'block';
+    aSelSync();
   }
+
+  /* ── 줄 선택 ──────────────────────────────────────────────
+   * 클릭 = 그 줄 토글, Shift+클릭 = 마지막으로 누른 줄부터 범위 선택, Ctrl/⌘+클릭 = 토글(클릭과 같음).
+   * 선택은 행번호+기록일시 키로 들고, 목록을 다시 받으면 지운다(행이 밀릴 수 있어서). */
+  var A_SEL = {}, A_ANCHOR = null;
+  function aKey(r){ return r._row + '|' + r.time; }
+  function aRowsEl(){ return Array.prototype.slice.call($('a-tbody').querySelectorAll('tr[data-key]')); }
+  function aSelSync(){
+    var trs = aRowsEl(), n = 0;
+    trs.forEach(function(tr){
+      var on = !!A_SEL[tr.getAttribute('data-key')];
+      tr.classList.toggle('sel', on);
+      var cb = tr.querySelector('.a-chk input'); if (cb) cb.checked = on;
+      if (on) n++;
+    });
+    $('a-seln').textContent = n;
+    $('a-selbar').classList.toggle('on', n > 0);
+    var all = $('a-all'); all.checked = trs.length > 0 && n === trs.length; all.indeterminate = n > 0 && n < trs.length;
+    var anyOpen = trs.some(function(tr){ return A_SEL[tr.getAttribute('data-key')] && tr.getAttribute('data-status') !== '마감'; });
+    $('a-sel-close').disabled = !anyOpen;
+  }
+  function aSelSet(keys, on){ keys.forEach(function(k){ if (on) A_SEL[k] = true; else delete A_SEL[k]; }); aSelSync(); }
+  function aSelClear(){ A_SEL = {}; A_ANCHOR = null; aSelSync(); }
+  $('a-tbody').addEventListener('click', function(ev){
+    if (ev.target.closest('button, a')) return;
+    var tr = ev.target.closest('tr[data-key]'); if (!tr) return;
+    var key = tr.getAttribute('data-key'), trs = aRowsEl(), idx = trs.indexOf(tr);
+    if (ev.shiftKey && A_ANCHOR !== null){
+      var ai = trs.findIndex(function(t){ return t.getAttribute('data-key') === A_ANCHOR; });
+      if (ai < 0) ai = idx;
+      var from = Math.min(ai, idx), to = Math.max(ai, idx);
+      aSelSet(trs.slice(from, to + 1).map(function(t){ return t.getAttribute('data-key'); }), true);
+      if (window.getSelection) window.getSelection().removeAllRanges();
+      return;
+    }
+    A_ANCHOR = key;
+    aSelSet([key], !A_SEL[key]);
+  });
+  $('a-all').addEventListener('change', function(){
+    aSelSet(aRowsEl().map(function(t){ return t.getAttribute('data-key'); }), this.checked);
+  });
+  $('a-sel-clear').addEventListener('click', aSelClear);
+  function aSelected(){
+    return aRowsEl().filter(function(tr){ return A_SEL[tr.getAttribute('data-key')]; })
+      .map(function(tr){ return { row: parseInt(tr.getAttribute('data-row'), 10), time: tr.getAttribute('data-time'), status: tr.getAttribute('data-status') }; });
+  }
+  /* 선택 삭제 — 아래 줄(행번호 큰 것)부터 차례로 지워 행이 밀려도 나머지가 어긋나지 않게 한다 */
+  $('a-sel-del').addEventListener('click', function(){
+    var items = aSelected(); if (!items.length) return;
+    if (!confirm(items.length + '개 배정을 삭제할까요?')) return;
+    items.sort(function(a, b){ return b.row - a.row; });
+    var done = 0, fail = 0;
+    aStatus('loading', '삭제 중… (0 / ' + items.length + ')');
+    (function next(i){
+      if (i >= items.length){ aSelClear(); aLoad(); if (fail) setTimeout(function(){ aStatus('fail', fail + '개는 삭제하지 못했어요 — 새로고침 후 다시 시도하세요.'); }, 400); return; }
+      jsonp({ action: 'assignDel', row: items[i].row, time: items[i].time }, function(resp){
+        if (resp && resp.ok === true) done++; else fail++;
+        aStatus('loading', '삭제 중… (' + (done + fail) + ' / ' + items.length + ')');
+        next(i + 1);
+      }, function(){ fail++; next(i + 1); });
+    })(0);
+  });
+  /* 선택 마감 — 진행 중인 것만 */
+  $('a-sel-close').addEventListener('click', function(){
+    var items = aSelected().filter(function(x){ return x.status !== '마감'; }); if (!items.length) return;
+    if (!confirm(items.length + '개 배정을 마감할까요?')) return;
+    var fail = 0;
+    aStatus('loading', '마감 중…');
+    (function next(i){
+      if (i >= items.length){ aSelClear(); aLoad(); if (fail) setTimeout(function(){ aStatus('fail', fail + '개는 마감하지 못했어요 — 새로고침 후 다시 시도하세요.'); }, 400); return; }
+      jsonp({ action: 'assignSet', row: items[i].row, time: items[i].time, status: '마감' }, function(resp){ if (!(resp && resp.ok === true)) fail++; next(i + 1); }, function(){ fail++; next(i + 1); });
+    })(0);
+  });
   $('a-tbody').addEventListener('click', function(ev){
     var b = ev.target.closest('button');
     if (!b) return;
