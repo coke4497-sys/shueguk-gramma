@@ -342,6 +342,8 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         QUESTIONS = data.questions || [];
         TOTAL = data.total || QUESTIONS.length;
         RULES = data.ruleOptions || [];
+        // 과정형 문구 — 기본은 음운 변동, 형태소 분석처럼 다른 용도면 data.processUI로 바꾼다
+        PUI = Object.assign({ select: '— 변동 종류 —', mid: '바뀐 형태', last: '최종 발음', arrow: '→', sep: '→', chainTitle: '정답 과정', startLabel: '처음', brackets: true }, data.processUI || {});
         if (!CAT_LABEL) CAT_LABEL = data.category || catCode;
 
         $('h-title').textContent = data.title || '문법, 개념이 힘이다.';
@@ -475,7 +477,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     /* ===== 문항 렌더링 ===== */
     function blankify(text) { return esc(text).replace(/___+/g, '<span class="blank">　　　</span>'); }
     function ruleOptionsHTML() {
-        var h = '<option value="">— 변동 종류 —</option>';
+        var h = '<option value="">' + esc(PUI.select) + '</option>';
         RULES.forEach(function(r) { h += '<option value="' + esc(r) + '">' + esc(r) + '</option>'; });
         return h;
     }
@@ -515,11 +517,12 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     /* 과정형 문항 — 정답 단계 수만큼 줄을 미리 만든다(몇 단계인지가 힌트 — 2026-09-13 사용자 "원래대로").
      * FREE_STEPS=true 로 두면 한 줄로 시작해 학생이 [+]로 늘린다(디자인 지시서의 + 버튼 방식). */
     var FREE_STEPS = false, MAX_STEPS = 6;
+    var PUI = {};
     function stepRowHTML(i, si) {
         return '<div class="step-row" data-i="' + i + '">' +
-            '<span class="step-arrow">→</span>' +
+            '<span class="step-arrow">' + esc(PUI.arrow) + '</span>' +
             '<select class="rule-select" id="sel-' + i + '-' + si + '">' + ruleOptionsHTML() + '</select>' +
-            '<span class="step-arrow">→</span>' +
+            '<span class="step-arrow">' + esc(PUI.sep) + '</span>' +
             '<input type="text" class="form-input" id="frm-' + i + '-' + si + '" autocomplete="off" autocorrect="off" autocapitalize="off">' +
             (FREE_STEPS ? '<button type="button" class="step-del" aria-label="단계 빼기" hidden>×</button>' : '') +
             '</div>';
@@ -531,7 +534,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             r.querySelector('.rule-select').id = 'sel-' + i + '-' + si;
             var inp = r.querySelector('.form-input');
             inp.id = 'frm-' + i + '-' + si;
-            inp.placeholder = (si === rows.length - 1) ? '최종 발음' : '바뀐 형태';
+            inp.placeholder = (si === rows.length - 1) ? PUI.last : PUI.mid;
             var del = r.querySelector('.step-del');
             if (del) del.hidden = !(FREE_STEPS && rows.length > 1 && si === rows.length - 1);
         });
@@ -715,8 +718,8 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         var s = q.start;
         (q.steps || []).forEach(function(st, si) {
             var label = st.accept.join('/');
-            var f = (si === q.steps.length - 1) ? '[' + st.form + ']' : st.form;
-            s += ' → (' + label + ') → ' + f;
+            var f = (si === q.steps.length - 1 && PUI.brackets) ? '[' + st.form + ']' : st.form;
+            s += ' ' + PUI.arrow + ' (' + label + ') ' + PUI.sep + ' ' + f;
         });
         return s;
     }
@@ -762,14 +765,14 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     }
     // 음운 변동 과정 — 문항의 입력 줄과 같은 순서로, 단계마다 한 줄씩 보여 준다
     function chainHTML(q) {
-        var h = '<b class="fb-lab">정답 과정</b><div class="fb-chain">' +
-                '<div class="fb-srow"><span class="fb-sn">처음</span><span class="ch-f">' + esc(q.start) + '</span></div>';
+        var h = '<b class="fb-lab">' + esc(PUI.chainTitle) + '</b><div class="fb-chain">' +
+                '<div class="fb-srow"><span class="fb-sn">' + esc(PUI.startLabel) + '</span><span class="ch-f">' + esc(q.start) + '</span></div>';
         (q.steps || []).forEach(function(st, si) {
             var fin = (si === q.steps.length - 1);
             h += '<div class="fb-srow"><span class="fb-sn">' + (si + 1) + '</span>' +
                  '<span class="ch-r">' + esc(st.accept.join(' 또는 ')) + '</span>' +
-                 '<span class="ch-ar">→</span>' +
-                 '<span class="ch-f' + (fin ? ' fin' : '') + '">' + esc(fin ? '[' + st.form + ']' : st.form) + '</span></div>';
+                 '<span class="ch-ar">' + esc(PUI.sep) + '</span>' +
+                 '<span class="ch-f' + (fin ? ' fin' : '') + '">' + esc((fin && PUI.brackets) ? '[' + st.form + ']' : st.form) + '</span></div>';
         });
         return h + '</div>';
     }

@@ -8,7 +8,8 @@ window.GRAMMA = {
   baseUrl: "https://coke4497-sys.github.io/shueguk-gramma/test.html",
   categories: [
     { code: "pho", label: "음운" },
-    { code: "mor", label: "형태소" },
+    { code: "mor", label: "형태소", level: "레벨1" },
+    { code: "mor2", label: "형태소 레벨2", level: "레벨2", menu: "mor" },   // 배정 페이지에서 형태소 카드 안의 레벨 탭
     { code: "pos", label: "품사" },
     { code: "wfm", label: "단어 형성법" },
     { code: "sen", label: "문장" },
@@ -40,6 +41,29 @@ window.GRAMMA = {
     "pho-18": { title: "음운 변동 실습 (358~378)" },
     "pho-19": { title: "음운 변동 실습 (379~400)" },
     "pho-20": { title: "음운 변동 실습 (401~422)" },
+
+    /* 형태소 — 레벨1 = 단어 나누기·개념(mor), 레벨2 = 문장 나누기·이형태(mor2). tools/mor-gen.py가 data/mor*.json을 만든다 */
+    "mor-1":  { title: "단어의 형태소 분석 (1)" },
+    "mor-2":  { title: "단어의 형태소 분석 (2)" },
+    "mor-3":  { title: "단어의 형태소 분석 (3)" },
+    "mor-4":  { title: "단어의 형태소 분석 (4)" },
+    "mor-5":  { title: "단어의 형태소 분석 (5)" },
+    "mor-6":  { title: "단어의 형태소 분석 (6)" },
+    "mor-7":  { title: "단어의 형태소 분석 (7)" },
+    "mor-8":  { title: "단어의 형태소 분석 (8)" },
+    "mor-9":  { title: "단어의 형태소 분석 (9)" },
+    "mor-10":  { title: "단어의 형태소 분석 (10)" },
+
+    "mor2-1": { title: "문장의 형태소 분석과 이형태 (1)" },
+    "mor2-2": { title: "문장의 형태소 분석과 이형태 (2)" },
+    "mor2-3": { title: "문장의 형태소 분석과 이형태 (3)" },
+    "mor2-4": { title: "문장의 형태소 분석과 이형태 (4)" },
+    "mor2-5": { title: "문장의 형태소 분석과 이형태 (5)" },
+    "mor2-6": { title: "문장의 형태소 분석과 이형태 (6)" },
+    "mor2-7": { title: "문장의 형태소 분석과 이형태 (7)" },
+    "mor2-8": { title: "문장의 형태소 분석과 이형태 (8)" },
+    "mor2-9": { title: "문장의 형태소 분석과 이형태 (9)" },
+    "mor2-10": { title: "문장의 형태소 분석과 이형태 (10)" },
 
     "ort-1":  { title: "총칙과 자모 (제1·2장)" },
     "ort-2":  { title: "된소리 (1)" },
