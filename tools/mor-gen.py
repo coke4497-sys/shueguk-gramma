@@ -23,7 +23,8 @@ KIND = {  # 코드: (품사/역할 이름, 종류)
     'J': ('조사', '형식·의존'), 'E': ('어미', '형식·의존'), 'P': ('접두사', '형식·의존'),
     'S': ('접미사', '형식·의존'), 'C': ('서술격 조사의 어간', '형식·의존'),
 }
-RULES = ['실질·자립', '실질·의존', '형식·의존']
+RULES = ['실질', '형식']      # 첫째 드롭다운(의미의 유형)
+RULES2 = ['자립', '의존']     # 둘째 드롭다운(자립성의 유무)
 
 def parse(spec):
     """'귀엽-:A -어:E연결 어미' → [(표기, 코드, 이름)]"""
@@ -58,7 +59,7 @@ def explain(ms, note=''):
 def proc(start, spec, note='', hint=''):
     ms = parse(spec)
     q = {'type': 'process', 'start': start,
-         'steps': [{'accept': [KIND[c][1]], 'form': variants(f)} for f, c, n in ms],
+         'steps': [{'accept': [KIND[c][1].split('·')[0]], 'accept2': [KIND[c][1].split('·')[1]], 'form': variants(f)} for f, c, n in ms],
          'explanation': explain(ms, note)}
     if hint: q['hint'] = hint
     return q
@@ -462,16 +463,17 @@ def make_level1():
         w = cand[2]; ms = parse(w[1])
         qs.append(short(f"'{w[0]}'은/는 몇 개의 형태소로 이루어졌는가? (숫자만)", str(len(ms)), [str(len(ms)), f'{len(ms)}개'], explain(ms)))
         for i, q in enumerate(qs): q['num'] = i + 1
-        qs[0]['section'] = '단어를 형태소로 나누기 — 형태소마다 종류를 고르고 형태를 쓰세요. 붙임표(-)는 써도 되고 안 써도 됩니다.'
+        qs[0]['section'] = '단어를 형태소로 나누기 — 빈칸 수가 형태소 수입니다. 빈칸마다 형태소를 쓰고 실질/형식, 자립/의존을 각각 고르세요. 붙임표(-)는 써도 되고 안 써도 됩니다.'
         qs[10]['section'] = '개념과 판정 — 단답'
         rounds.append({
             'category': '형태소', 'round': r + 1, 'title': f'단어의 형태소 분석 ({r + 1})', 'subtitle': '레벨1',
-            'instruction': '단어를 형태소로 나누어 종류(실질·자립 / 실질·의존 / 형식·의존)를 고르고 형태를 씁니다. 어간·어미·접사는 기본형 그대로 씁니다(귀여워 → 귀엽, 어). 붙임표(-)는 있어도 없어도 됩니다.',
-            'ruleOptions': RULES, 'processUI': PUI, 'total': len(qs), 'questions': qs,
+            'instruction': '단어를 형태소 개수만큼의 빈칸에 나누어 쓰고, 빈칸마다 실질/형식과 자립/의존을 고릅니다. 어간·어미·접사는 기본형 그대로 씁니다(귀여워 → 귀엽, 어). 붙임표(-)는 있어도 없어도 됩니다.',
+            'ruleOptions': RULES, 'ruleOptions2': RULES2, 'processUI': PUI, 'total': len(qs), 'questions': qs,
         })
     return rounds
 
-PUI = {'select': '— 종류 —', 'mid': '형태소', 'last': '형태소', 'arrow': '/', 'sep': '', 'chainTitle': '정답 분석', 'startLabel': '전체', 'brackets': False}
+PUI = {'select': '실질/형식', 'select2': '자립/의존', 'mid': '형태소', 'last': '형태소', 'arrow': '/', 'sep': '', 'chainTitle': '정답 분석', 'startLabel': '전체',
+       'brackets': False, 'formFirst': True, 'freeSteps': False}   # 형태소 개수만큼 빈칸을 미리 주고, 빈칸마다 실질/형식·자립/의존을 각각 고른다(2026-09-13 사용자 지정)
 
 def make_level2():
     sents = list(S2); phrases = list(P2)
@@ -504,13 +506,13 @@ def make_level2():
             if ans in ('였', '너라'): alts += ['-' + ans + '-', '-' + ans, ans + '-']
             qs.append(short(stem, ans, alts, ex))
         for i, q in enumerate(qs): q['num'] = i + 1
-        qs[0]['section'] = '문장을 형태소로 나누기 — 형태소마다 종류를 고르고 형태를 쓰세요. 붙임표(-)는 써도 되고 안 써도 됩니다.'
+        qs[0]['section'] = '문장을 형태소로 나누기 — 빈칸 수가 형태소 수입니다. 빈칸마다 형태소를 순서대로 쓰고 실질/형식, 자립/의존을 각각 고르세요. 붙임표(-)는 써도 되고 안 써도 됩니다.'
         qs[6]['section'] = '어절·긴 단어 나누기'
         qs[9]['section'] = '개수 세기와 이형태 — 단답'
         rounds.append({
             'category': '형태소 레벨2', 'round': r + 1, 'title': f'문장의 형태소 분석과 이형태 ({r + 1})', 'subtitle': '레벨2',
-            'instruction': '문장을 형태소로 나누어 종류(실질·자립 / 실질·의존 / 형식·의존)를 고르고 형태를 씁니다. 활용형은 기본형 어간으로 되돌려 쓰고(따라 → 따르, 아), 선어말 어미도 따로 셉니다. 붙임표(-)는 있어도 없어도 됩니다.',
-            'ruleOptions': RULES, 'processUI': PUI, 'total': len(qs), 'questions': qs,
+            'instruction': '문장을 형태소 개수만큼의 빈칸에 순서대로 나누어 쓰고, 빈칸마다 실질/형식과 자립/의존을 고릅니다. 활용형은 기본형 어간으로 되돌려 쓰고(따라 → 따르, 아), 선어말 어미도 따로 셉니다. 붙임표(-)는 있어도 없어도 됩니다.',
+            'ruleOptions': RULES, 'ruleOptions2': RULES2, 'processUI': PUI, 'total': len(qs), 'questions': qs,
         })
     return rounds
 
