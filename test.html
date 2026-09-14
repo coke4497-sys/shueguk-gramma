@@ -326,6 +326,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     var catCode = params.get('c') || '';
     var round = params.get('r') || '';
     var preview = params.get('preview') === '1';   // 티쳐스 미리보기 — 배정 확인 생략
+    var free = params.get('free') === '1';         // 자유 응시(index.html 전체 문법 테스트에서 옴) — 배정 확인 없이 제출, 결과·별은 그대로 기록
 
     var CAT_LABEL = '';
     if (window.GRAMMA && GRAMMA.categories) {
@@ -821,8 +822,8 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             $('si-name').scrollIntoView({ block: 'center' });
             return;
         }
-        if (preview) { doSubmit(sName, sSchool, sGrade); return; }
-        /* 제출 시점에 배정 확인 — 선생님이 학년·학교·개인에게 배정한 테스트만 제출을 받는다.
+        if (preview || free) { doSubmit(sName, sSchool, sGrade); return; }
+        /* 제출 시점에 배정 확인(선생님이 보낸 링크·배정 목록에서 온 경우) — 선생님이 학년·학교·개인에게 배정한 테스트만 제출을 받는다.
          * 확인 자체가 실패하면(순간 장애·배정 기능 미배포) 시험은 받아준다(어휘의 열린 주차 확인과 같은 방침). */
         var btn = $('submit-btn');
         btn.disabled = true; btn.textContent = '확인 중…';
