@@ -183,6 +183,37 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(true, '수파베이스 응답(first) → 내 별에 더해졌어요');
   await p2b.close();
 
+  /* ========== 3c) 형태소 — 실질/형식·자립/의존은 드롭다운 대신 연보라 알약 (2026-09-14) ========== */
+  const p2c = await ctx.newPage(); p2c.on('dialog', d => d.accept());
+  await p2c.goto(`http://localhost:${PORT}/test.html?c=mor&r=1&preview=1`);
+  await p2c.waitForSelector('.q-card');
+  ok(await p2c.$eval('#sel-0-0', e => e.classList.contains('hid') && getComputedStyle(e).display === 'none'), '형태소 줄의 드롭다운은 숨김(값 저장용)');
+  ok((await p2c.$$('#card-0 .step-row:nth-child(1) .pills')).length === 2 && (await p2c.$$eval('#card-0 .pills[data-for="sel-0-0"] .pill', bs => bs.map(b => b.textContent))).join('/') === '실질/형식' && (await p2c.$$eval('#card-0 .pills[data-for="sel2-0-0"] .pill', bs => bs.map(b => b.textContent))).join('/') === '자립/의존', '줄마다 알약 두 묶음(실질/형식 · 자립/의존)');
+  ok(await p2c.$eval('#card-0 .pills[data-for="sel-0-0"] .pill', e => { const s = getComputedStyle(e); return s.borderTopWidth === '0px' && s.backgroundColor === 'rgb(237, 228, 244)' && parseFloat(s.borderTopLeftRadius) >= 20; }), '알약 = 테두리 없음 + 연보라 #EDE4F4 + 둥근 모서리');
+  ok((await p2c.textContent('#card-0 .pills[data-for="sel-0-0"] .pl-lab')) === '실질/형식', "묶음 앞 작은 안내 글 '실질/형식'");
+  await p2c.click('#card-0 .pills[data-for="sel-0-0"] .pill[data-v="실질"]');
+  await p2c.waitForFunction(() => { const e = document.querySelector('#card-0 .pills[data-for="sel-0-0"] .pill[data-v="실질"]'); return e.classList.contains('on') && getComputedStyle(e).backgroundColor === 'rgb(107, 91, 123)'; });   // 색 전환(.12s) 뒤
+  ok(await p2c.inputValue('#sel-0-0') === '실질', '알약을 누르면 값이 담기고 진한 연보라로 선택 표시(마우스를 올린 채로도)');
+  await p2c.click('#card-0 .pills[data-for="sel-0-0"] .pill[data-v="실질"]');
+  ok(await p2c.inputValue('#sel-0-0') === '', '같은 알약을 다시 누르면 해제');
+  await p2c.fill('#frm-0-0', '나무'); await p2c.click('#card-0 .pills[data-for="sel-0-0"] .pill[data-v="실질"]'); await p2c.click('#card-0 .pills[data-for="sel2-0-0"] .pill[data-v="자립"]');
+  await p2c.fill('#frm-0-1', '꾼'); await p2c.click('#card-0 .pills[data-for="sel-0-1"] .pill[data-v="형식"]'); await p2c.click('#card-0 .pills[data-for="sel2-0-1"] .pill[data-v="의존"]');
+  await p2c.waitForFunction(() => document.getElementById('filled-count').textContent === '1');
+  ok(true, '알약·빈칸을 다 채우면 완료 1 (진행 카운트가 알약 클릭을 센다)');
+  await p2c.click('#card-1 .pills[data-for="sel-1-0"] .pill[data-v="형식"]');
+  await p2c.click('#student-info'); await p2c.fill('#si-name', '박검증'); await p2c.fill('#si-school', '화정고'); await p2c.selectOption('#si-grade', '고1'); await p2c.fill('#si-phone8', '12345678');
+  await p2c.click('#submit-btn'); await p2c.waitForSelector('.final.show');
+  ok(await p2c.$eval('#card-0', e => e.classList.contains('correct')) && await p2c.$eval('#card-0 .pills[data-for="sel-0-0"]', e => e.classList.contains('ok')), '1번 정답 — 알약 묶음 초록 표시');
+  ok(await p2c.$eval('#card-1 .pills[data-for="sel-1-0"]', e => e.classList.contains('ng') && e.classList.contains('done')) && await p2c.$eval('#card-1 .pills[data-for="sel-1-0"] .pill', e => e.disabled), '2번 오답 — 붉은 표시 + 알약 잠금');
+  ok(await p2c.$eval('#card-1 .pills[data-for="sel2-1-0"]', e => e.classList.contains('none')), '안 고른 묶음은 안내 글이 붉게');
+  await p2c.close();
+  // 음운(선택지 15개)은 종전 드롭다운 그대로
+  const p2d = await ctx.newPage();
+  await p2d.goto(`http://localhost:${PORT}/test.html?c=pho&r=1&preview=1`);
+  await p2d.waitForSelector('#app:not(.hidden)'); await p2d.click('#tab-test'); await p2d.waitForSelector('.q-card');
+  ok(!(await p2d.$('#card-0 .pills')) && !(await p2d.$eval('#sel-0-0', e => e.classList.contains('hid'))), '음운 변동 종류(선택지 많음)는 드롭다운 유지');
+  await p2d.close();
+
   /* ========== 4) 미등록 테스트 안내 ========== */
   const p3 = await ctx.newPage();
   await p3.goto(`http://localhost:${PORT}/test.html?c=pos&r=1`);
