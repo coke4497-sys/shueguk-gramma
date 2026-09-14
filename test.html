@@ -121,6 +121,20 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .step-add { flex: none; width: 28px; height: 28px; border: none; border-radius: 9px; background: #F4F7F5; color: #65726B; font: inherit; font-size: 18px; line-height: 1; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .step-add:hover { background: #EDE4F4; color: #6B5B7B; }
 .step-add:disabled { opacity: .35; cursor: default; }
+/* 선택지가 2~3개인 구분(형태소: 실질/형식 · 자립/의존)은 드롭다운 대신 알약 버튼 — 2026-09-14 사용자 "선택해야 하는 옵션에는 테두리 없는 연보라 알약".
+   드롭다운은 안내 글('실질/형식')과 선택지가 같은 줄 모양이라 셋 중 하나를 고르는 것처럼 보였다. 값은 숨긴 select에 그대로 담아 채점 코드는 종전대로. */
+.rule-select.hid { display: none; }
+.pillset { display: flex; flex-wrap: wrap; gap: 6px 14px; flex: 1 1 200px; min-width: 0; align-items: center; }
+.pills { display: inline-flex; align-items: center; gap: 5px; flex: none; }
+.pills .pl-lab { font-size: 11px; color: #9BA8A1; margin-right: 3px; white-space: nowrap; }
+.pill { font: inherit; font-size: 12.5px; font-weight: 700; line-height: 1; padding: 8px 13px; border-radius: 999px; border: none; background: #EDE4F4; color: #6B5B7B; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background .12s, color .12s; }
+.pill:hover { background: #E3D6EF; }
+.pill.on, .pill.on:hover { background: #6B5B7B; color: #fff; }
+.pills.done .pill { cursor: default; }
+.pills.done .pill:not(.on) { background: #F0F3F1; color: #B7BFB9; }
+.pills.ok .pill.on { background: #3E9B74; color: #fff; }
+.pills.ng .pill.on { background: #C64F63; color: #fff; }
+.pills.ng.none .pl-lab { color: #C64F63; }
 .rule-select.ok, .form-input.ok { border-color: #3E9B74; background: #E4F1EA; }
 .rule-select.ng, .form-input.ng { border-color: #EFA9A5; background: #FADED9; }
 .q-hint { font-size: 12.5px; color: #6B5B7B; background: #EDE4F4; padding: 7px 11px; border-radius: 8px; margin: 10px 0 0; line-height: 1.5; }
@@ -135,6 +149,9 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
   .step-row.two .rule-select { padding: 9px 20px 9px 8px; font-size: 12px; background-position: right 6px center; }
   .step-row.two .rule-select.sel2 { flex: 1; }
   .step-row.two .hy { width: 9px; }
+  .step-row.two { flex-wrap: wrap; }
+  .step-row.two .pillset { flex-basis: 100%; padding-left: 22px; }
+  .pill { padding: 8px 12px; font-size: 12px; }
 }
 
 /* 단답/OX/선택 문항 (배치는 그대로, 강조색만 통일) */
@@ -497,6 +514,27 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         list.forEach(function(r) { h += '<option value="' + esc(r) + '">' + esc(r) + '</option>'; });
         return h;
     }
+    // 선택지가 2~3개(실질/형식·자립/의존)면 드롭다운을 숨기고 알약 버튼으로 고른다 — 값은 select에 담긴다(채점·진행 카운트는 종전 그대로)
+    var PILL_MAX = 3;
+    function usePills(list) { return list.length > 0 && list.length <= PILL_MAX; }
+    function selHTML(list, ph, id, cls) {
+        var pills = usePills(list);
+        var sel = '<select class="' + cls + (pills ? ' hid' : '') + '" id="' + id + '">' + ruleOptionsHTML(list, ph) + '</select>';
+        if (!pills) return { sel: sel, pills: '' };
+        var h = '<span class="pills" data-for="' + id + '"><span class="pl-lab">' + esc(ph) + '</span>';
+        list.forEach(function(r) { h += '<button type="button" class="pill" data-v="' + esc(r).replace(/"/g, '&quot;') + '">' + esc(r) + '</button>'; });
+        return { sel: sel, pills: h + '</span>' };
+    }
+    // 채점 뒤 알약에 정오 표시(select의 ok/ng·disabled를 따라간다)
+    function pillSync(sel) {
+        var g = sel && sel.closest('.step-row') ? sel.closest('.step-row').querySelector('.pills[data-for="' + sel.id + '"]') : null;
+        if (!g) return;
+        g.classList.toggle('ok', sel.classList.contains('ok'));
+        g.classList.toggle('ng', sel.classList.contains('ng'));
+        g.classList.toggle('none', !sel.value);
+        g.classList.toggle('done', !!sel.disabled);
+        g.querySelectorAll('.pill').forEach(function(b) { b.disabled = !!sel.disabled; b.classList.toggle('on', b.getAttribute('data-v') === sel.value); });
+    }
 
     /* ===== 지문(조항 원문 + 해설) =====
        data.passage = { article:'제5항', chapter:'제3장 …', section:'된소리', text:'조항 원문', paras:['해설 문단', …] }
@@ -538,8 +576,9 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         var f0 = st ? ('' + st.form).split('/')[0] : '';
         var hyL = (PUI.hyphenMarks && /^-/.test(f0)) ? '<span class="hy">-</span>' : (PUI.hyphenMarks ? '<span class="hy off"></span>' : '');
         var hyR = (PUI.hyphenMarks && /-$/.test(f0)) ? '<span class="hy">-</span>' : (PUI.hyphenMarks ? '<span class="hy off"></span>' : '');
-        var sel = '<select class="rule-select" id="sel-' + i + '-' + si + '">' + ruleOptionsHTML() + '</select>' +
-            (RULES2.length ? '<select class="rule-select sel2" id="sel2-' + i + '-' + si + '">' + ruleOptionsHTML(RULES2, PUI.select2) + '</select>' : '');
+        var s1 = selHTML(RULES, PUI.select, 'sel-' + i + '-' + si, 'rule-select');
+        var s2 = RULES2.length ? selHTML(RULES2, PUI.select2, 'sel2-' + i + '-' + si, 'rule-select sel2') : { sel: '', pills: '' };
+        var sel = s1.sel + s2.sel + ((s1.pills || s2.pills) ? '<span class="pillset">' + s1.pills + s2.pills + '</span>' : '');
         var inp = hyL + '<input type="text" class="form-input" id="frm-' + i + '-' + si + '" autocomplete="off" autocorrect="off" autocapitalize="off">' + hyR;
         var sep = '<span class="step-arrow">' + esc(PUI.sep) + '</span>';
         return '<div class="step-row' + (RULES2.length ? ' two' : '') + '" data-i="' + i + '">' +
@@ -554,6 +593,8 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         rows.forEach(function(r, si) {
             r.querySelector('.rule-select').id = 'sel-' + i + '-' + si;
             var s2 = r.querySelector('.sel2'); if (s2) s2.id = 'sel2-' + i + '-' + si;
+            var hidSels = r.querySelectorAll('.rule-select.hid'), gs = r.querySelectorAll('.pills');   // 알약은 숨긴 select와 같은 순서
+            gs.forEach(function(g, k) { if (hidSels[k]) g.setAttribute('data-for', hidSels[k].id); });
             var inp = r.querySelector('.form-input');
             inp.id = 'frm-' + i + '-' + si;
             inp.placeholder = (si === rows.length - 1) ? PUI.last : PUI.mid;
@@ -711,6 +752,15 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         qbox.addEventListener('input', updateProgress);
         qbox.addEventListener('change', updateProgress);
         qbox.addEventListener('click', function(ev) {
+            var b = ev.target.closest('.pill');
+            if (!b || submitted) return;
+            var g = b.closest('.pills'), sel = $(g.getAttribute('data-for'));
+            if (!sel || sel.disabled) return;
+            sel.value = (sel.value === b.getAttribute('data-v')) ? '' : b.getAttribute('data-v');   // 같은 것을 다시 누르면 해제
+            g.querySelectorAll('.pill').forEach(function(x) { x.classList.toggle('on', x.getAttribute('data-v') === sel.value); });
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        qbox.addEventListener('click', function(ev) {
             if (submitted) return;
             var add = ev.target.closest('.step-add');
             if (add) { addStep(parseInt(add.getAttribute('data-i'), 10)); return; }
@@ -859,10 +909,12 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
                     var ruleOK = !!st && st.accept.indexOf(sel.value) >= 0;
                     var rule2OK = !sel2 || (!!st && (st.accept2 || []).indexOf(sel2.value) >= 0);
                     var fOK = !!st && formOK(frm.value, st.form);
-                    sel.className = 'rule-select ' + (ruleOK ? 'ok' : 'ng');
-                    if (sel2) { sel2.className = 'rule-select sel2 ' + (rule2OK ? 'ok' : 'ng'); sel2.disabled = true; }
+                    var hid1 = sel.classList.contains('hid'), hid2 = sel2 && sel2.classList.contains('hid');
+                    sel.className = 'rule-select ' + (hid1 ? 'hid ' : '') + (ruleOK ? 'ok' : 'ng');
+                    if (sel2) { sel2.className = 'rule-select sel2 ' + (hid2 ? 'hid ' : '') + (rule2OK ? 'ok' : 'ng'); sel2.disabled = true; }
                     frm.className = 'form-input ' + (fOK ? 'ok' : 'ng');
                     sel.disabled = true; frm.disabled = true;
+                    pillSync(sel); if (sel2) pillSync(sel2);
                     if (!(ruleOK && rule2OK && fOK)) itemOK = false;
                 });
                 card.querySelectorAll('.step-add, .step-del').forEach(function(b) { b.remove(); });
