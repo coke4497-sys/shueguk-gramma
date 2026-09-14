@@ -212,8 +212,49 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   // 배정 없음 안내
   assignItems = [];
   await p4.click('#check-btn');
-  await p4.waitForFunction(() => document.getElementById('status').textContent.includes('배정된 문법 테스트가 없어요'));
+  await p4.waitForFunction(() => document.getElementById('status').textContent.includes('배정한 문법 테스트는 없어요'));
   ok(true, '배정 없음 안내');
+
+  /* ========== 5b) index.html — 자유 응시: 단원 카드 → 레벨 탭 → 회차 → 응시 (2026-09-14) ========== */
+  const catCards = await p4.$$('#cats .cat-card');
+  const catCodes = await p4.$$eval('#cats .cat-card', els => els.map(e => e.getAttribute('data-code')));
+  ok(catCards.length === 12 - 2 && !catCodes.includes('ort2') && !catCodes.includes('mor2'), '단원 카드 = 메뉴 단위(레벨2는 카드 안으로) 10장');
+  ok(await p4.$eval('#cats .cat-card[data-code="pos"]', e => e.disabled && e.textContent.includes('준비 중')), '문항 없는 단원은 준비 중(비활성)');
+  ok((await p4.textContent('#cats .cat-card[data-code="ort"]')).includes('레벨1 32회') && (await p4.textContent('#cats .cat-card[data-code="ort"]')).includes('레벨2 222회'), '한글 맞춤법 카드에 레벨1 32회 · 레벨2 222회');
+  await p4.click('#cats .cat-card[data-code="ort"]');
+  await p4.waitForSelector('#round-view:not(.hidden)');
+  ok(await p4.$eval('#cat-view', e => e.classList.contains('hidden')), '단원을 누르면 회차 화면');
+  ok((await p4.$$('#lvl-tabs .lvl-tab')).length === 2 && await p4.$eval('#lvl-tabs .lvl-tab[data-code="ort"]', e => e.classList.contains('on')), '레벨 탭 2개, 레벨1 기본 선택');
+  ok((await p4.textContent('#sec-title')).includes('한글 맞춤법 · 레벨1') && (await p4.$$('#rounds .row')).length === 32, '레벨1 회차 32줄');
+  ok((await p4.textContent('#rounds .row:nth-child(2) .ttl')).includes('된소리 (1)') && (await p4.textContent('#rounds .row:nth-child(2) .rd')) === '2', '회차 줄에 번호·제목');
+  await p4.click('#lvl-tabs .lvl-tab[data-code="ort2"]');
+  await p4.waitForFunction(() => document.getElementById('sec-title').textContent.includes('레벨2'));
+  const grps = await p4.$$('#rounds details.grp');
+  ok(grps.length >= 5 && (await p4.textContent('#rounds details.grp:nth-child(1) summary')).includes('제1장 총칙') && (await p4.$$('#rounds .row')).length === 222, '레벨2는 장별 접이식 + 222줄');
+  // 학생 정보를 지우고 응시하기 → 안내만, 이동 없음
+  await p4.fill('#si-name', '');
+  const dlg5 = [];
+  p4.removeAllListeners('dialog'); p4.on('dialog', d => { dlg5.push(d.message()); d.accept(); });
+  await p4.click('#lvl-tabs .lvl-tab[data-code="ort"]');
+  await p4.click('#rounds .row:nth-child(2) button.go');
+  await p4.waitForTimeout(300);
+  ok(dlg5.some(m => m.includes('학생 정보')) && p4.url().includes('index.html'), '정보가 비면 응시하기가 안내만 하고 이동하지 않음');
+  // 정보를 채우면 test.html로 (free=1 + 이름·학교·학년·8자리)
+  await p4.fill('#si-name', '박검증');
+  await Promise.all([p4.waitForNavigation(), p4.click('#rounds .row:nth-child(2) button.go')]);
+  const u5 = decodeURIComponent(p4.url());
+  ok(u5.includes('test.html?c=ort&r=2&free=1') && u5.includes('name=박검증') && u5.includes('school=화정고') && u5.includes('grade=고1') && u5.includes('p8=12345678'), '응시하기 → test.html?free=1 + 학생 정보 전달');
+  await p4.waitForSelector('#app:not(.hidden)');
+  ok(await p4.inputValue('#si-name') === '박검증' && await p4.inputValue('#si-school') === '화정고' && await p4.inputValue('#si-phone8') === '12345678', '테스트 페이지에 이름·학교·전화 8자리 채워짐');
+  // free=1 제출 — 배정 확인 없이 채점, 결과 시트·별은 그대로 기록
+  assignItems = [];
+  const prevReqs5 = reqLog.length, prevSb5 = sbCalls.length;
+  await p4.click('#tab-test');
+  await p4.click('#submit-btn');
+  await p4.waitForSelector('.final.show');
+  ok(!reqLog.slice(prevReqs5).some(q => q.action === 'myAssign'), 'free=1 은 배정 확인 생략(배정 없어도 제출)');
+  ok(lastPost && lastPost.unit === '한글 맞춤법' && '' + lastPost.round === '2' && lastPost.name === '박검증', '자유 응시 결과도 시트로 전송');
+  ok(sbCalls.slice(prevSb5).some(c => c.fn === 'gramma_submit' && c.body.unit === '한글 맞춤법' && c.body.round === '2'), '자유 응시도 gramma_submit(별 판정) 호출');
   await p4.close();
 
   /* ========== 6) 결과 확인(대시보드) — 결과 전용 ========== */

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SHUEGUK 문법 · 내 테스트</title>
-<meta name="description" content="이수경국어 문법 테스트 — 나에게 배정된 테스트 확인·응시" />
+<title>SHUEGUK 문법 테스트</title>
+<meta name="description" content="이수경국어 문법 테스트 — 단원·레벨·회차를 골라 응시, 배정된 테스트 확인" />
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <style>
@@ -48,6 +48,48 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .star-rule b { font-weight: 800; }
 .assign-star { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: #EDE4F4; color: #6B5B7B; font-size: 10.5px; font-weight: 800; vertical-align: 1px; }
 .assign-star.no { background: #F4F7F5; color: #9BA8A1; font-weight: 700; }
+/* ===== 자유 응시 — 단원 카드 → 레벨 탭 → 회차 (배정하기 페이지와 같은 구성) ===== */
+.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 22px 2px 10px; flex-wrap: wrap; }
+.sec-head h2 { font-family: 'Gowun Batang', serif; font-size: 16px; font-weight: 800; color: #3A544E; letter-spacing: -.3px; }
+.sec-head .sec-note { font-size: 11.5px; color: #8B928C; }
+.cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.cat-card { display: flex; align-items: center; gap: 12px; background: white; border: 2px solid #F1F6F4; border-radius: 14px; padding: 13px 14px; text-align: left; cursor: pointer; font: inherit; box-shadow: 0 2px 10px rgba(45,128,104,0.04); transition: transform .14s ease, border-color .14s ease; -webkit-tap-highlight-color: transparent; }
+.cat-card:hover { transform: translateY(-2px); border-color: #C6D5D2; }
+.cat-card .cico { flex: none; width: 40px; height: 40px; border-radius: 12px; background: #F4F5F3; display: flex; align-items: center; justify-content: center; color: #6A716C; }
+.cat-card .cico svg { width: 20px; height: 20px; }
+.cat-card .cbody { min-width: 0; }
+.cat-card .cname { display: block; font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 800; color: #3A544E; letter-spacing: -.3px; }
+.cat-card .ccnt { display: block; margin-top: 4px; font-size: 11.5px; font-weight: 700; color: #8D83A8; }
+.cat-card:disabled { cursor: not-allowed; box-shadow: none; }
+.cat-card:disabled:hover { transform: none; border-color: #F1F6F4; }
+.cat-card:disabled .cico { color: #C0C6C1; background: #F8F9F7; }
+.cat-card:disabled .cname { color: #A9B1AB; }
+.cat-card:disabled .ccnt { color: #B7BFB9; }
+.cat-back { display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 10px; font: inherit; font-size: 13px; font-weight: 700; color: #6A716C; background: none; border: none; cursor: pointer; padding: 4px 2px; -webkit-tap-highlight-color: transparent; }
+.cat-back svg { width: 15px; height: 15px; }
+.lvl-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 2px 12px; }
+.lvl-tab { font: inherit; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 999px; background: #fff; border: 1px solid #E5EDE8; color: #65726B; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.lvl-tab .n { font-weight: 400; color: #9BA8A1; margin-left: 5px; font-size: 12px; }
+.lvl-tab.on { background: #EDE4F4; border-color: #D6C9E4; color: #6B5B7B; }
+.lvl-tab.on .n { color: #8D83A8; }
+.sec-title { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 800; color: #3A544E; margin: 6px 2px 10px; }
+.sec-title .sec-meta { font-family: 'Gowun Dodum', sans-serif; font-weight: 400; color: #9BA8A1; font-size: 12px; margin-left: 6px; }
+.rlist { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.row { display: flex; align-items: center; gap: 12px; background: white; border: 1px solid #E5EDE8; border-radius: 14px; padding: 11px 12px; min-width: 0; }
+.row .rd { flex: none; width: 34px; height: 34px; border-radius: 10px; background: #EBF0ED; color: #65726B; font-family: 'Gowun Batang', serif; font-weight: 800; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; }
+.row.star .rd { background: #EDE4F4; color: #6B5B7B; }
+.row .ttl { flex: 1; min-width: 0; font-size: 13px; color: #2C2F2D; line-height: 1.45; }
+.row .go { flex: none; display: inline-flex; align-items: center; gap: 4px; font: inherit; font-size: 12px; font-weight: 800; background: #EDE4F4; color: #635A7D; border: 1.5px solid #D9CCE8; border-radius: 9px; padding: 8px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.row .go svg { width: 13px; height: 13px; }
+details.grp { background: white; border: 1px solid #E5EDE8; border-radius: 14px; padding: 2px 10px 4px; }
+details.grp > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 10px 2px; cursor: pointer; font-family: 'Gowun Batang', serif; font-size: 14px; font-weight: 800; color: #3A544E; -webkit-tap-highlight-color: transparent; }
+details.grp > summary::-webkit-details-marker { display: none; }
+details.grp > summary .gn { flex: 1; }
+details.grp > summary .gc { font-family: 'Gowun Dodum', sans-serif; font-size: 12px; font-weight: 700; color: #6A716C; }
+details.grp > summary .gi { width: 16px; height: 16px; flex: none; color: #8B928C; transition: transform .15s; }
+details.grp[open] > summary .gi { transform: rotate(180deg); }
+details.grp .rlist { margin: 0 0 8px; }
+details.grp .row { background: #F8FAF9; }
 .hidden { display: none !important; }
 footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; line-height: 1.9; }
 </style>
@@ -56,8 +98,8 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
 <div class="container">
     <div class="header">
         <div class="logo">SHUEGUK</div>
-        <h1>내 문법 테스트</h1>
-        <p class="intro">이름·학교·학년을 입력하면<br>나에게 배정된 문법 테스트가 보여요.</p>
+        <h1>문법 테스트</h1>
+        <p class="intro">이름·학교·학년·전화번호를 입력하고<br>원하는 단원과 회차를 골라 응시해요. 선생님이 배정한 테스트도 함께 보여요.</p>
         <div class="star-rule">정답률 <b>90% 이상</b>으로 테스트를 마치면 슈퍼스타 별 <b>+1</b> (테스트마다 한 번)</div>
     </div>
 
@@ -81,6 +123,22 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
     <div id="status" class="status empty hidden"></div>
     <div id="list"></div>
 
+    <!-- 자유 응시 — 배정과 무관하게 활성화된 단원·레벨·회차를 골라 응시 (2026-09-14 사용자 요청) -->
+    <div id="free">
+        <div class="sec-head"><h2>전체 문법 테스트</h2><span class="sec-note">단원 → 레벨·회차를 골라 응시해요</span></div>
+        <div id="cat-view">
+            <div class="cats" id="cats"></div>
+        </div>
+        <div id="round-view" class="hidden">
+            <button type="button" class="cat-back" id="cat-back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+                단원 목록으로</button>
+            <div class="lvl-tabs" id="lvl-tabs" hidden></div>
+            <div class="sec-title" id="sec-title"></div>
+            <div class="rlist" id="rounds"></div>
+        </div>
+    </div>
+
     <footer>이수경국어 Shueguk</footer>
 </div>
 
@@ -101,7 +159,10 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
     var IC_ALERT = ic('<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>');
 
     var CATS = {};
-    if (window.GRAMMA) GRAMMA.categories.forEach(function(c) { CATS[c.code] = c.label; });
+    var CAT_LIST = (window.GRAMMA && GRAMMA.categories) || [];
+    var TESTS = (window.GRAMMA && GRAMMA.tests) || {};
+    CAT_LIST.forEach(function(c) { CATS[c.code] = c.label; });
+    var STARS = {};   // 'unit|round' → gramma_status 항목 (배정 카드·회차 줄 공용)
 
     // 마감일 '2026-09-05' → '9월 5일 (토)'
     function fmtDue(s) {
@@ -159,43 +220,173 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
             });
     }
 
-    // 테스트별 최고 정답률 → 카드에 '별 획득' / '최고 n%' 표시
+    // 테스트별 최고 정답률 → 배정 카드·회차 줄에 '별 획득' / '최고 n%' 표시
     function loadStars(who) {
         fetch(SB_URL + '/rest/v1/rpc/gramma_status', {
             method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
             body: JSON.stringify({ p: { name: who.name, phone8: who.phone8 } })
         }).then(function(r) { return r.json(); }).then(function(res) {
             if (!res || res.ok !== true) return;
-            var by = {};
-            (res.items || []).forEach(function(it) { by[it.unit + '|' + it.round] = it; });
-            var n = 0;
-            document.querySelectorAll('.assign-card[data-key]').forEach(function(card) {
-                var it = by[card.getAttribute('data-key')];
-                var slot = card.querySelector('.assign-title');
-                if (!it || !slot) return;
-                if (it.star) { n++; slot.insertAdjacentHTML('beforeend', '<span class="assign-star">별 획득 ' + it.best + '%</span>'); }
-                else slot.insertAdjacentHTML('beforeend', '<span class="assign-star no">최고 ' + it.best + '% · ' + STAR_PCT + '% 이상이면 별</span>');
-            });
+            STARS = {};
+            (res.items || []).forEach(function(it) { STARS[it.unit + '|' + it.round] = it; });
+            var n = markStars('.assign-card[data-key]', '.assign-title');
             var st = $('status');
             if (n && st) st.insertAdjacentHTML('beforeend', '<br>이 중 별을 받은 테스트 <b>' + n + '개</b>');
+            markStars('#rounds .row[data-key]', '.ttl');
         }).catch(function() {});
     }
+    function starBadge(it) {
+        return it.star ? '<span class="assign-star">별 획득 ' + it.best + '%</span>'
+                       : '<span class="assign-star no">최고 ' + it.best + '% · ' + STAR_PCT + '% 이상이면 별</span>';
+    }
+    function markStars(sel, slotSel) {
+        var n = 0;
+        document.querySelectorAll(sel).forEach(function(el) {
+            var it = STARS[el.getAttribute('data-key')];
+            var slot = el.querySelector(slotSel);
+            if (!it || !slot || slot.querySelector('.assign-star')) return;
+            if (it.star) { n++; el.classList.add('star'); }
+            slot.insertAdjacentHTML('beforeend', starBadge(it));
+        });
+        return n;
+    }
+
+    /* ===== 자유 응시 — 단원 카드 → 레벨 탭 → 회차 (assign.html과 같은 규칙: menu/level/group) ===== */
+    function escAttr(s) { return esc(s).replace(/"/g, '&quot;'); }
+    function roundsOf(code) {
+        var out = [];
+        Object.keys(TESTS).forEach(function(k) { var m = k.match(/^(.+)-(\d+)$/); if (m && m[1] === code) out.push(parseInt(m[2], 10)); });
+        return out.sort(function(a, b) { return a - b; });
+    }
+    function catOf(code) { return CAT_LIST.filter(function(x) { return x.code === code; })[0] || {}; }
+    function menuOf(c) { return c.menu || c.code; }
+    function levelsOf(menu) { return CAT_LIST.filter(function(c) { return menuOf(c) === menu; }); }
+    function groupOf(cat, n) { var t = TESTS[cat + '-' + n]; return (t && t.group) || ''; }
+    function menuTitle(code) {   // '한글 맞춤법 · 레벨2'
+        var c = catOf(code);
+        if (!c.level) return CATS[code] || code;
+        var top = catOf(menuOf(c));
+        return (top.label || c.label) + ' · ' + c.level;
+    }
+    var CAT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
+        '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
+    var current = '';
+    (function buildCats() {
+        var wrap = $('cats');
+        if (!wrap) return;
+        CAT_LIST.forEach(function(c) {
+            if (c.menu) return;                              // 다른 카드 안의 레벨
+            var levels = levelsOf(c.code), total = 0, parts = [];
+            levels.forEach(function(l) { var n = roundsOf(l.code).length; total += n; if (n && levels.length > 1) parts.push(esc(l.level || l.label) + ' ' + n + '회'); });
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'cat-card';
+            b.setAttribute('data-code', c.code);
+            b.disabled = !total;
+            b.innerHTML = '<span class="cico">' + CAT_ICON + '</span><span class="cbody"><span class="cname">' + esc(c.label) + '</span>' +
+                '<span class="ccnt">' + (total ? (parts.length ? parts.join(' · ') : '전체 ' + total + '회') : '준비 중') + '</span></span>';
+            b.addEventListener('click', function() { openMenu(c.code); });
+            wrap.appendChild(b);
+        });
+    })();
+    function openMenu(menu) {
+        var levels = levelsOf(menu).filter(function(l) { return roundsOf(l.code).length; });
+        openCat(levels.length ? levels[0].code : menu);
+        $('cat-view').classList.add('hidden');
+        $('round-view').classList.remove('hidden');
+        $('free').scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+    function openCat(code) {
+        current = code;
+        var levels = levelsOf(menuOf(catOf(code))).filter(function(l) { return roundsOf(l.code).length; });
+        var box = $('lvl-tabs');
+        box.hidden = levels.length < 2;
+        box.innerHTML = levels.map(function(l) {
+            return '<button type="button" class="lvl-tab' + (l.code === current ? ' on' : '') + '" data-code="' + escAttr(l.code) + '">' +
+                esc(l.level || l.label) + '<span class="n">' + roundsOf(l.code).length + '회</span></button>';
+        }).join('');
+        renderRounds();
+    }
+    $('lvl-tabs').addEventListener('click', function(ev) {
+        var b = ev.target.closest('.lvl-tab');
+        if (b && b.getAttribute('data-code') !== current) openCat(b.getAttribute('data-code'));
+    });
+    $('cat-back').addEventListener('click', function() {
+        $('round-view').classList.add('hidden');
+        $('cat-view').classList.remove('hidden');
+    });
+    function rowHtml(n) {
+        var t = TESTS[current + '-' + n];
+        var label = CATS[current] || current;
+        return '<div class="row" data-key="' + escAttr(label) + '|' + n + '">' +
+            '<span class="rd">' + n + '</span>' +
+            '<span class="ttl">' + esc(t && t.title ? t.title : label + ' ' + n + '회') + '</span>' +
+            '<button type="button" class="go" data-cat="' + escAttr(current) + '" data-round="' + n + '">응시하기' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>' +
+            '</div>';
+    }
+    function renderRounds() {
+        var rounds = roundsOf(current);
+        $('sec-title').innerHTML = esc(menuTitle(current)) + '<span class="sec-meta">전체 ' + rounds.length + '회</span>';
+        var html = '';
+        if (!rounds.some(function(n) { return !!groupOf(current, n); })) {
+            rounds.forEach(function(n) { html += rowHtml(n); });
+        } else {
+            // 장(章)별 접이식 — 한글 맞춤법 레벨2처럼 회차가 많은 카테고리
+            var groups = [], byG = {};
+            rounds.forEach(function(n) {
+                var g = groupOf(current, n) || '기타';
+                if (!byG[g]) { byG[g] = []; groups.push(g); }
+                byG[g].push(n);
+            });
+            groups.forEach(function(g) {
+                html += '<details class="grp" data-group="' + escAttr(g) + '">' +
+                    '<summary><span class="gn">' + esc(g) + '</span><span class="gc">' + byG[g].length + '회</span>' +
+                    '<svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>' +
+                    '<div class="rlist">' + byG[g].map(rowHtml).join('') + '</div></details>';
+            });
+        }
+        $('rounds').innerHTML = html;
+        markStars('#rounds .row[data-key]', '.ttl');
+    }
+    // 학생 정보 읽기 — 넷 다 있어야 응시 링크를 만든다(테스트 페이지에 이름·학교·학년·전화 8자리가 채워져 열리게)
+    function readInfo() {
+        return { name: ($('si-name').value || '').trim(), school: ($('si-school').value || '').trim(), grade: $('si-grade').value || '', phone8: ($('si-phone8').value || '').trim() };
+    }
+    function infoOk(w) { return !!(w.name && w.school && w.grade && /^[0-9]{8}$/.test(w.phone8)); }
+    function testUrl(cat, round, who, free) {
+        return 'test.html?c=' + encodeURIComponent(cat) + '&r=' + encodeURIComponent(round) + (free ? '&free=1' : '') +
+            '&name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) +
+            '&p8=' + encodeURIComponent(who.phone8 || '');
+    }
+    $('rounds').addEventListener('click', function(ev) {
+        var b = ev.target.closest('button.go');
+        if (!b) return;
+        var who = readInfo();
+        if (!infoOk(who)) {
+            alert('응시 전에 위 학생 정보(이름·학교·학년·학부모님 휴대전화번호 8자리)를 먼저 입력해 주세요!');
+            document.querySelector('.student-info').scrollIntoView({ block: 'center', behavior: 'smooth' });
+            var miss = !who.name ? 'si-name' : !who.school ? 'si-school' : !who.grade ? 'si-grade' : 'si-phone8';
+            try { $(miss).focus(); } catch (e) {}
+            return;
+        }
+        try { localStorage.setItem(LS_KEY, JSON.stringify(who)); } catch (e) {}
+        location.href = testUrl(b.getAttribute('data-cat'), b.getAttribute('data-round'), who, true);
+    });
 
     function render(items, who) {
         if (!items.length) {
-            showStatus('empty', '지금 나에게 배정된 문법 테스트가 없어요.<br>선생님 안내를 기다려 주세요.');
+            showStatus('empty', '지금 선생님이 배정한 문법 테스트는 없어요.<br>아래 <b>전체 문법 테스트</b>에서 원하는 회차를 골라 응시할 수 있어요.');
             return;
         }
-        showStatus('empty', '배정된 테스트 <b>' + items.length + '개</b> — 아래에서 응시해 주세요.');
+        showStatus('empty', '선생님이 배정한 테스트 <b>' + items.length + '개</b> — 아래에서 응시해 주세요.');
         var html = '';
         items.forEach(function(a) {
             var label = CATS[a.cat] || a.catLabel || a.cat;
             var key = a.cat + '-' + a.round;
             var reg = window.GRAMMA && GRAMMA.tests && GRAMMA.tests[key];
             var title = (reg && reg.title) ? reg.title : (label + ' ' + a.round + '회');
-            var url = 'test.html?c=' + encodeURIComponent(a.cat) + '&r=' + encodeURIComponent(a.round) +
-                '&name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) +
-                '&p8=' + encodeURIComponent(who.phone8 || '');
+            var url = testUrl(a.cat, a.round, who, false);
             var subs = [];
             if (a.due) subs.push('마감 ' + fmtDue(a.due) + '까지');
             if (a.memo) subs.push(a.memo);
@@ -214,7 +405,8 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
 
     $('check-btn').addEventListener('click', check);
     $('status').classList.remove('hidden');
-    showStatus('empty', '학생 정보를 입력하고 [내 테스트 확인하기]를 눌러 주세요.');
+    showStatus('empty', '학생 정보를 입력하고 [내 테스트 확인하기]를 누르면 선생님이 배정한 테스트가 보여요.<br>아래 <b>전체 문법 테스트</b>는 언제든 골라서 응시할 수 있어요.');
+    (function() { var w = readInfo(); if (infoOk(w)) loadStars({ name: w.name, phone8: w.phone8 }); })();
 })();
 </script>
 </body>
