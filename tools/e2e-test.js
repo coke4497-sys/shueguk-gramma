@@ -242,7 +242,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await p4.getAttribute('#si-img', 'src')) === 'assets/sk-school.png', '요약 줄에 등교 슈콩');
   ok((await p4.textContent('.header')).includes('70%') && (await p4.textContent('.header')).includes('별 +1') && (await p4.textContent('#mystars')).includes('문법 별 0개') && !(await p4.$eval('#bigstar', e => e.classList.contains('on'))), "히어로에 통과 70% · 별 +1 · '문법 별 0개' · 별 아이콘 회색");
   ok((await p4.textContent('.sec-head')).includes('단원 고르기') && (await p4.textContent('.sec-note')) === '단원 → 레벨 → 스테이지', "섹션 제목 '단원 고르기' + 짧은 안내");
-  ok((await p4.$$('#cats .cat-card')).length === 3 && (await p4.textContent('#cats-soon')).includes('품사 · 단어 형성법') && (await p4.textContent('#cats-soon')).includes('준비 중이에요') && !(await p4.$('#cats .cat-card[data-code="pos"]')), '열린 단원 카드 3장 + 준비 중 단원은 한 줄로');
+  ok((await p4.$$('#cats .cat-card')).length === 10 && (await p4.$$('#cats .cat-card.soon')).length === 7 && await p4.$eval('#cats .cat-card[data-code="pos"]', e => e.disabled && e.classList.contains('soon') && !!e.querySelector('.clock svg') && e.textContent.includes('준비 중이에요') && !e.querySelector('.cstars')), '단원 카드 10장 — 준비 중 7장은 같은 카드에 자물쇠(별 없음)·비활성');
   ok((await p4.$$('#cats .cat-card[data-code="pho"] .cstars i')).length === 4 && (await p4.textContent('#cats .cat-card[data-code="pho"] .cstat')) === '1 / 20 통과' && (await p4.$eval('#cats .cat-card[data-code="pho"] .cbar i', e => e.style.width)) === '5%', '음운 카드: 별 4개 자리 · 1 / 20 통과 · 진행 막대 5%');
   ok((await p4.textContent('#cats .cat-card[data-code="mor"] .cstat')) === '아직 시작하지 않았어요' && (await p4.textContent('#cats .cat-card[data-code="mor"] .ccnt')) === '레벨1 10회 · 레벨2 10회', '형태소 카드: 아직 시작 안 함 · 레벨 회차 정보');
   ok(!(await p4.$('#cats .cico')), '체크박스처럼 보이는 아이콘 없음');
@@ -265,7 +265,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p4r.close();
 
   /* ========== 5b) index.html — 스테이지 맵: 단원 카드 → 레벨 탭 → 세트·스테이지 → play.html (2026-09-16) ========== */
-  const catCodes = await p4.$$eval('#cats .cat-card', els => els.map(e => e.getAttribute('data-code')));
+  const catCodes = await p4.$$eval('#cats .cat-card:not(.soon)', els => els.map(e => e.getAttribute('data-code')));
   ok(catCodes.join(',') === 'pho,mor,ort' && !catCodes.includes('ort2') && !catCodes.includes('mor2'), '단원 카드 = 메뉴 단위(레벨2는 카드 안으로), 문항 있는 3장');
   // 진행 상태: 한글 맞춤법 1~8 통과, 9는 60%, 세트 1 클리어(별 1)
   starStatusItems = [1,2,3,4,5,6,7,8].map(r => ({ unit: '한글 맞춤법', round: '' + r, best: 70 + r, tries: 1, pass: true })).concat([{ unit: '한글 맞춤법', round: '9', best: 60, tries: 2, pass: false }]);

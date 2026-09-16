@@ -70,10 +70,12 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .cat-card .cbar { height: 6px; border-radius: 99px; background: #EEF2EF; overflow: hidden; }
 .cat-card .cbar i { display: block; height: 100%; border-radius: 99px; background: #B9A5CC; width: 0; }
 .cat-card .cstat { font-size: 11px; color: #5C6A64; }
-.cats-soon { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.6); border-radius: 16px; padding: 13px 16px; margin-top: 10px; }
-.cats-soon svg { width: 14px; height: 14px; flex: none; color: #5C6A64; }
-.cats-soon .names { font-size: 12.5px; line-height: 1.45; color: #3F4A44; }
-.cats-soon .sub { font-size: 12px; color: #4F5C56; margin-top: 2px; }
+.cat-card.soon { background: rgba(255,255,255,.6); cursor: default; }
+.cat-card.soon:hover { transform: none; }
+.cat-card.soon .cname { color: #3F4A44; }
+.cat-card.soon .clock { width: 16px; height: 16px; flex: none; color: #5C6A64; }
+.cat-card.soon .ccnt, .cat-card.soon .cstat { color: #4F5C56; }
+.cat-card.soon .cbar { background: rgba(238,242,239,.7); }
 .cat-back { display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 10px; font: inherit; font-size: 13px; font-weight: 700; color: #4F5C56; background: none; border: none; cursor: pointer; padding: 4px 2px; -webkit-tap-highlight-color: transparent; }
 .cat-back svg { width: 15px; height: 15px; }
 .lvl-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 2px 12px; }
@@ -169,7 +171,6 @@ footer { text-align: center; margin-top: 28px; color: #5C6A64; font-size: 12px; 
         <div class="sec-head"><h2>단원 고르기</h2><span class="sec-note">단원 → 레벨 → 스테이지</span></div>
         <div id="cat-view">
             <div class="cats" id="cats"></div>
-            <div class="cats-soon hidden" id="cats-soon"></div>
         </div>
         <div id="round-view" class="hidden">
             <button type="button" class="cat-back" id="cat-back">
@@ -290,7 +291,7 @@ footer { text-align: center; margin-top: 28px; color: #5C6A64; font-size: 12px; 
     var current = '';
     // 단원 카드 — 이름 + 별 4개(클리어한 세트 수) + 회차 정보 + 진행 막대(통과 스테이지 비율) + 상태 한 줄. 준비 중 단원은 아래 한 줄로.
     function renderCats() {
-        var wrap = $('cats'), soon = [];
+        var wrap = $('cats');
         if (!wrap) return;
         var html = '';
         CAT_LIST.forEach(function(c) {
@@ -301,7 +302,12 @@ footer { text-align: center; margin-top: 28px; color: #5C6A64; font-size: 12px; 
                 if (n && levels.length > 1) parts.push(esc(l.level || l.label) + ' ' + n + '회');
                 if (n && STATUS) { var pg = STAGE.progress(l.code, CATS[l.code] || l.label, STATUS); roundsOf(l.code).forEach(function(r) { if (pg.pass[r]) passed++; }); stars += Object.keys(pg.cleared).length; }
             });
-            if (!total) { soon.push(c.label); return; }
+            if (!total) {   // 준비 중 단원도 같은 카드로, 별 자리에 자물쇠(2026-09-16 사용자 "준비중인 단원의 카드도 만들어주세요. 자물쇠 아이콘을 달아서요")
+                html += '<button type="button" class="cat-card soon" data-code="' + escAttr(c.code) + '" disabled aria-disabled="true">' +
+                    '<span class="ctop"><span class="cname">' + esc(c.label) + '</span><span class="clock" aria-label="준비 중">' + IC_LOCK_S + '</span></span>' +
+                    '<span class="ccnt">준비 중이에요</span><span class="cbar"><i style="width:0"></i></span><span class="cstat">문항이 준비되면 열려요</span></button>';
+                return;
+            }
             var pct = total ? Math.round(passed / total * 100) : 0;
             var starsHtml = ''; for (var i = 0; i < 4; i++) starsHtml += '<i class="' + (i < stars ? 'on' : '') + '"></i>';
             html += '<button type="button" class="cat-card" data-code="' + escAttr(c.code) + '">' +
@@ -311,9 +317,7 @@ footer { text-align: center; margin-top: 28px; color: #5C6A64; font-size: 12px; 
                 '<span class="cstat">' + (passed ? passed + ' / ' + total + ' 통과' : '아직 시작하지 않았어요') + '</span></button>';
         });
         wrap.innerHTML = html;
-        var box = $('cats-soon');
-        if (soon.length) { box.innerHTML = IC_LOCK_S + '<div><div class="names">' + esc(soon.join(' · ')) + '</div><div class="sub">준비 중이에요</div></div>'; box.classList.remove('hidden'); }
-        else box.classList.add('hidden');
+
     }
     $('cats').addEventListener('click', function(ev) { var b = ev.target.closest('.cat-card'); if (b) openMenu(b.getAttribute('data-code')); });
     renderCats();
