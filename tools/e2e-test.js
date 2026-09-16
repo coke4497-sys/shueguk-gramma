@@ -226,40 +226,52 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await p3.textContent('.loading-msg.fail')).includes('아직 등록되지 않은'), '미등록 테스트(품사 1회) 안내');
   await p3.close();
 
-  /* ========== 5) index.html — 배정 목록 ========== */
-  assignItems = [{ cat: 'pho', round: '3', catLabel: '음운', memo: '숙제', due: '2026-09-05' }, { cat: 'mor', round: '1', catLabel: '형태소' }];
+  /* ========== 5) index.html — 히어로·학생 정보 요약·단원 카드 (2026-09-16 디자인 지시서, 배정 목록은 없음) ========== */
   starStatusItems = [{ unit: '음운', round: '3', best: 95, tries: 1, pass: true }, { unit: '형태소', round: '1', best: 60, tries: 2, pass: false }]; starSets = []; starStars = 0;
   const p4 = await ctx.newPage();
   p4.on('dialog', d => d.accept());
   await p4.goto(`http://localhost:${PORT}/index.html`);
+  ok(!(await p4.$eval('#student-info', e => e.classList.contains('collapsed'))) && !(await p4.$('#back-top:not(.hidden)')), '정보가 없으면 입력란이 펼쳐져 있고, 개인 페이지에서 온 게 아니면 돌아가기 링크 없음');
+  ok(await p4.$eval('.header', e => getComputedStyle(e.querySelector('.h-left')).textAlign === 'left' && !!e.querySelector('#bigstar') && e.querySelector('#top30-link').textContent.trim() === '탑30 보기'), '히어로: 왼쪽 정렬 글 + 오른쪽 별 아이콘·탑30 알약');
+  ok(!(await p4.$('.tiles')) && !(await p4.$('#status')) && !(await p4.$('#list')), '옛 칩 3개·안내 카드·배정 목록 없음');
+  ok(await p4.$eval('#check-btn', e => getComputedStyle(e).backgroundColor === 'rgb(237, 228, 244)' && getComputedStyle(e).boxShadow === 'none'), '확인 버튼은 연보라(#EDE4F4)·그림자 없음');
   await p4.fill('#si-name', '박검증'); await p4.fill('#si-school', '화정고'); await p4.selectOption('#si-grade', '고1'); await p4.fill('#si-phone8', '12345678');
   await p4.click('#check-btn');
-  await p4.waitForSelector('.assign-card');
-  const cards = await p4.$$('.assign-card');
-  ok(cards.length === 2, '배정 카드 2장');
-  ok((await p4.textContent('.assign-card .assign-title')).includes('음운 3회'), '카드에 카테고리·회차·제목');
-  const href = await p4.getAttribute('.assign-card .assign-go', 'href');
-  ok(href.includes('test.html?c=pho&r=3') && href.includes('name=') && decodeURIComponent(href).includes('박검증') && href.includes('p8=12345678'), '응시 링크에 학생 정보·전화 8자리 전달');
-  ok((await p4.textContent('.assign-card .assign-sub')).includes('마감 9월 5일 (토)까지'), '카드에 마감일 표시');
-  await p4.waitForSelector('.assign-star');
-  ok((await p4.textContent('.assign-card:nth-child(1) .assign-star')).includes('통과 95%') && (await p4.textContent('.assign-card:nth-child(2) .assign-star')).includes('최고 60%'), "카드에 '통과 95%' / '최고 60%' 표시");
-  ok((await p4.textContent('#status')).includes('통과한 테스트 1개'), "상태 줄에 '통과한 테스트 1개'");
-  ok((await p4.textContent('.header')).includes('70%') && (await p4.textContent('.header')).includes('별 +1') && (await p4.textContent('#mystars')).includes('문법 별 0개'), "입구 페이지에 통과 70% · 세트 클리어 별 +1 · 내 별 수");
-  // 배정 없음 안내
-  assignItems = [];
-  await p4.click('#check-btn');
-  await p4.waitForFunction(() => document.getElementById('status').textContent.includes('배정한 문법 테스트는 없어요'));
-  ok(true, '배정 없음 안내');
+  await p4.waitForFunction(() => document.getElementById('si-sum-sub').textContent.includes('통과한 스테이지 1개'));
+  ok(await p4.$eval('#student-info', e => e.classList.contains('collapsed')) && (await p4.textContent('#si-sum-text')) === '박검증 · 화정고 고1' && (await p4.textContent('#sum-btn')) === '내 진행 확인' && (await p4.textContent('#si-edit')) === '수정', '확인 뒤 학생 정보는 요약 한 줄(이름 · 학교 학년 + 내 진행 확인 + 수정)');
+  ok((await p4.getAttribute('#si-img', 'src')) === 'assets/sk-school.png', '요약 줄에 등교 슈콩');
+  ok((await p4.textContent('.header')).includes('70%') && (await p4.textContent('.header')).includes('별 +1') && (await p4.textContent('#mystars')).includes('문법 별 0개') && !(await p4.$eval('#bigstar', e => e.classList.contains('on'))), "히어로에 통과 70% · 별 +1 · '문법 별 0개' · 별 아이콘 회색");
+  ok((await p4.textContent('.sec-head')).includes('단원 고르기') && (await p4.textContent('.sec-note')) === '단원 → 레벨 → 스테이지', "섹션 제목 '단원 고르기' + 짧은 안내");
+  ok((await p4.$$('#cats .cat-card')).length === 3 && (await p4.textContent('#cats-soon')).includes('품사 · 단어 형성법') && (await p4.textContent('#cats-soon')).includes('준비 중이에요') && !(await p4.$('#cats .cat-card[data-code="pos"]')), '열린 단원 카드 3장 + 준비 중 단원은 한 줄로');
+  ok((await p4.$$('#cats .cat-card[data-code="pho"] .cstars i')).length === 4 && (await p4.textContent('#cats .cat-card[data-code="pho"] .cstat')) === '1 / 20 통과' && (await p4.$eval('#cats .cat-card[data-code="pho"] .cbar i', e => e.style.width)) === '5%', '음운 카드: 별 4개 자리 · 1 / 20 통과 · 진행 막대 5%');
+  ok((await p4.textContent('#cats .cat-card[data-code="mor"] .cstat')) === '아직 시작하지 않았어요' && (await p4.textContent('#cats .cat-card[data-code="mor"] .ccnt')) === '레벨1 10회 · 레벨2 10회', '형태소 카드: 아직 시작 안 함 · 레벨 회차 정보');
+  ok(!(await p4.$('#cats .cico')), '체크박스처럼 보이는 아이콘 없음');
+  // [수정] → 입력란 펼침 → [접기]
+  await p4.click('#si-edit');
+  ok(!(await p4.$eval('#student-info', e => e.classList.contains('collapsed'))) && !(await p4.$eval('#si-fold', e => e.classList.contains('hidden'))), "[수정]을 누르면 입력란이 펼쳐지고 '접기'가 보임");
+  await p4.click('#si-fold');
+  ok(await p4.$eval('#student-info', e => e.classList.contains('collapsed')), '[접기]로 다시 요약 한 줄');
+  // 개인 페이지에서 넘어온 경우 — 돌아가기 링크(같은 사이트 referrer)
+  const p4r = await ctx.newPage();
+  await p4r.setContent(`<a id="go" href="http://localhost:${PORT}/index.html?name=박검증&school=화정고&grade=고1&p8=12345678">go</a>`, { waitUntil: 'load' });
+  await p4r.route('**/s.html*', r => r.fulfill({ status: 200, contentType: 'text/html', body: '<a id="go" href="http://localhost:' + PORT + '/index.html?name=박검증&school=화정고&grade=고1&p8=12345678">go</a>' }));
+  await p4r.goto(`http://localhost:${PORT}/s.html?key=abc123`);
+  await Promise.all([p4r.waitForNavigation(), p4r.click('#go')]);
+  await p4r.waitForSelector('#back-top:not(.hidden)');
+  ok((await p4r.getAttribute('#back-top', 'href')).includes('/s.html?key=abc123') && (await p4r.textContent('#back-top')).includes('내 페이지로'), "개인 페이지에서 오면 맨 위에 '내 페이지로'(접근 코드 포함 주소)");
+  await p4r.goto(`http://localhost:${PORT}/index.html#c=pho`);
+  await p4r.waitForSelector('#back-top:not(.hidden)');
+  ok((await p4r.getAttribute('#back-top', 'href')).includes('/s.html?key=abc123'), 'play.html에서 돌아와도(주소에 back 없음) 돌아가기 링크 유지(sessionStorage)');
+  await p4r.close();
 
   /* ========== 5b) index.html — 스테이지 맵: 단원 카드 → 레벨 탭 → 세트·스테이지 → play.html (2026-09-16) ========== */
-  const catCards = await p4.$$('#cats .cat-card');
   const catCodes = await p4.$$eval('#cats .cat-card', els => els.map(e => e.getAttribute('data-code')));
-  ok(catCards.length === 12 - 2 && !catCodes.includes('ort2') && !catCodes.includes('mor2'), '단원 카드 = 메뉴 단위(레벨2는 카드 안으로) 10장');
-  ok(await p4.$eval('#cats .cat-card[data-code="pos"]', e => e.disabled && e.textContent.includes('준비 중')), '문항 없는 단원은 준비 중(비활성)');
+  ok(catCodes.join(',') === 'pho,mor,ort' && !catCodes.includes('ort2') && !catCodes.includes('mor2'), '단원 카드 = 메뉴 단위(레벨2는 카드 안으로), 문항 있는 3장');
   // 진행 상태: 한글 맞춤법 1~8 통과, 9는 60%, 세트 1 클리어(별 1)
   starStatusItems = [1,2,3,4,5,6,7,8].map(r => ({ unit: '한글 맞춤법', round: '' + r, best: 70 + r, tries: 1, pass: true })).concat([{ unit: '한글 맞춤법', round: '9', best: 60, tries: 2, pass: false }]);
   starSets = [{ unit: '한글 맞춤법', set_no: 1 }]; starStars = 1;
-  await p4.click('#check-btn'); await p4.waitForFunction(() => document.getElementById('mystars').textContent.includes('문법 별 1개'));
+  await p4.click('#sum-btn'); await p4.waitForFunction(() => document.getElementById('mystars').textContent.includes('문법 별 1개'));
+  ok(await p4.$eval('#bigstar', e => e.classList.contains('on')) && (await p4.textContent('#cats .cat-card[data-code="ort"] .cstat')) === '8 / 254 통과' && (await p4.$$('#cats .cat-card[data-code="ort"] .cstars i.on')).length === 1, '별이 생기면 히어로 별 노랑 · 맞춤법 카드 8 / 254 통과 · 별 1개 채움');
   await p4.click('#cats .cat-card[data-code="ort"]');
   await p4.waitForSelector('#round-view:not(.hidden)');
   ok((await p4.$$('#lvl-tabs .lvl-tab')).length === 2 && await p4.$eval('#lvl-tabs .lvl-tab[data-code="ort"]', e => e.classList.contains('on')), '레벨 탭 2개, 레벨1 기본 선택');
@@ -280,7 +292,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await p4.$$('#stages .setcard')).length === 45 && (await p4.textContent('#stages .setcard[data-set="1"] .set-head')).includes('제1장 총칙') && (await p4.$$('#stages .node.lock')).length === 221, '레벨2 = 세트 45 · 장 이름 표시 · 첫 스테이지만 열림');
   // 학생 정보를 지우고 도전 → 안내만
   await p4.click('#lvl-tabs .lvl-tab[data-code="ort"]');
-  await p4.fill('#si-name', '');
+  await p4.click('#si-edit'); await p4.fill('#si-name', '');
   await p4.click('#stages .now .go');
   await p4.waitForTimeout(200);
   ok(dlg5.some(m => m.includes('학생 정보')) && p4.url().includes('index.html'), '정보가 비면 도전하기가 안내만 하고 이동하지 않음');
@@ -663,6 +675,70 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(exRows.length === 3 && exRows[0].startsWith('소쩍새 · 어깨') && exRows[2].startsWith('거꾸로'), '표 줄이 줄 단위로(소쩍새 · 어깨 … / 거꾸로 …)');
   ok(await p12.$$eval('#study-body .psg-body p, #study-body .psg-ex span', els => els.every(e => !e.textContent.includes('된소리소쩍새') && !e.textContent.includes('아끼다기쁘다'))), '헤딩·표 칸이 낱말끼리 붙지 않음');
   await p12.close();
+
+  /* ========== 12) stats.html — 교사용 문법 참여 현황 (2026-09-16 사용자 요청 "학년 학교 내신반 개인을 선택해 수행률, 점수 등을 확인" + 탑30) ========== */
+  const stStudents = [{ student_id: '12345678', name: '강구현', school: '백양고', grade: '2026 고등 1학년', enrolled: '재원' }, { student_id: '22222222', name: '김시은', school: '능곡고', grade: '2026 고등 2학년', enrolled: '재원' }, { student_id: '33333333', name: '문경민', school: '고양중', grade: '2026 중등 3학년', enrolled: '재원' }, { student_id: '44444444', name: '박지우', school: '화수고', grade: '2026 고등 1학년', enrolled: '재원' }, { student_id: '55555555', name: '이윤채B', school: '서정중', grade: '2026 중등 2학년', enrolled: '재원' }, { student_id: '66666666', name: '퇴원생', school: '화정고', grade: '2026 고등 1학년', enrolled: '퇴원' }];
+  const stClasses = [{ class_id: 'n007', name: '고1 화수A(창비 공통국어2)', day: '수', start_time: '5:30', teacher: '현지', roster: '박지우 강구현 없는이름' }, { class_id: 'n013', name: '중2 서정A(비상(영))', day: '목', start_time: '5:00', teacher: '은지', roster: '이윤채B' }];
+  const R = (id, name, p8, school, grade, unit, round, pct, mode, points, ts) => ({ id, ts, name, school, grade, phone8: p8, unit, round: '' + round, pct, got: 0, total: 0, mode, points, created_at: ts });
+  const today = new Date(), ymdT = d => d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+  const old = new Date(today); old.setDate(old.getDate() - 40);
+  const stResults = [R(1, '강구현', '12345678', '백양고', '고1', '한글 맞춤법', 1, 80, 'play', 1500, ymdT(old) + ' 10:00'), R(2, '강구현', '12345678', '백양고', '고1', '한글 맞춤법', 2, 60, 'play', 800, ymdT(old) + ' 11:00'), R(3, '강구현', '12345678', '백양고', '고1', '한글 맞춤법', 2, 75, 'play', 1200, ymdT(old) + ' 12:00'),
+    R(4, '김시은', '22222222', '능곡고', '고2', '음운', 1, 93, 'play', 2000, ymdT(today) + ' 10:00'), R(5, '김시은', '22222222', '능곡고', '고2', '음운', 2, 100, 'test', 0, ymdT(today) + ' 10:30'), R(6, '문경민', '33333333', '고양중', '중3', '형태소', 1, 71, 'play', 900, ymdT(old) + ' 10:00'), R(7, '명단밖', '99999999', '다른고', '고1', '음운', 1, 50, 'play', 300, ymdT(today) + ' 09:00')];
+  const stSets = [{ id: 1, name: '김시은', school: '능곡고', grade: '고2', phone8: '22222222', unit: '음운', set_no: 1, cleared_at: ymdT(today) + 'T01:00:00Z' }];
+  const authCalls = [];
+  await ctx.route(/supabase\.co\/auth\/v1\/token/, r => { authCalls.push(1); r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ access_token: 'TEACHER', expires_in: 3600 }) }); });
+  const tblAuth = [];
+  await ctx.route(/supabase\.co\/rest\/v1\/(students|tt_classes|gramma_results|gramma_sets)\b/, r => {
+    const u = r.request().url(), off = +(u.match(/offset=(\d+)/) || [0, 0])[1];
+    tblAuth.push(r.request().headers()['authorization']);
+    const d = u.includes('/students') ? stStudents : u.includes('tt_classes') ? stClasses : u.includes('gramma_results') ? stResults : stSets;
+    r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(off ? [] : d) });
+  });
+  topRows = [{ rank: 1, name: '김시은', school: '능곡고', grade: '고2', stages: 2, points: 2000, stars: 1 }, { rank: 2, name: '강구현', school: '백양고', grade: '고1', stages: 2, points: 3500, stars: 0 }]; topMe = null;
+  const p13 = await ctx.newPage();
+  const errs13 = []; p13.on('pageerror', e => errs13.push(e.message));
+  await p13.goto(`http://localhost:${PORT}/stats.html`);
+  await p13.waitForSelector('#body:not(.hidden)');
+  ok(authCalls.length >= 1 && tblAuth.every(h => h === 'Bearer TEACHER'), '표 조회는 교사 인증 토큰으로');
+  const tile = i => p13.textContent('#tiles .tile:nth-child(' + i + ')');
+  ok((await tile(1)).includes('5명') && (await tile(1)).includes('명단 밖 1명') && (await tile(2)).includes('4명') && (await tile(2)).includes('참여율 60%'), '전체: 대상 5명(퇴원 제외) · 명단 밖 1명 · 참여 4명 60%');
+  ok((await tile(4)).includes('5') && (await tile(5)).includes('1') && (await tile(6)).includes('74%'), '클리어 5 · 별 1 · 평균 정답률 74%');
+  ok((await p13.textContent('#allstars')) === '전체 별 1개' && await p13.$eval('#bigstar', e => e.classList.contains('on')), '히어로 오른쪽: 전체 별 1개 · 별 노랑');
+  const rows13 = await p13.$$eval('#stu-tbl tr.stu', els => els.map(e => e.getAttribute('data-key')));
+  ok(rows13[0] === '김시은|22222222' && rows13[1] === '강구현|12345678' && rows13.length === 6, '학생별 표: 클리어 많은 순, 명단 밖·미참여까지 6줄');
+  ok((await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('3회') && (await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('2 / 294') && (await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('78%') && (await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('3,500'), '강구현: 응시 3회 · 클리어 2 · 평균 78%(스테이지별 최고) · 플레이 3,500점');
+  ok((await p13.textContent('#stu-tbl tr.stu[data-key="44444444"], #stu-tbl tr.stu[data-key="박지우|44444444"]')).includes('미참여'), '미참여 학생도 줄에(미참여 표시)');
+  await p13.click('#stu-tbl tr.stu[data-key="강구현|12345678"]');
+  ok((await p13.$$('#stu-tbl tr.det .node')).length === 32 && (await p13.$$('#stu-tbl tr.det .node.pass')).length === 2 && (await p13.textContent('#stu-tbl tr.det .det-unit .u')).includes('한글 맞춤법'), '줄을 누르면 스테이지 32칸(통과 2)');
+  ok((await p13.textContent('#unit-tbl')).includes('음운') && (await p13.$$('#unit-tbl tbody tr')).length === 5, '단원별 표 5줄');
+  // 내신반
+  await p13.click('#scope-pills .pill[data-scope="cls"]');
+  ok((await p13.$$('#cls-sel option')).length === 3 && (await p13.textContent('#cls-sel option[value="n007"]')).includes('수 5:30 · 고1 화수A(창비 공통국어2) · 현지T (3명)'), '내신반 드롭다운(요일·시간·반이름·담당T·인원)');
+  await p13.selectOption('#cls-sel', 'n007');
+  ok((await tile(1)).includes('2명') && (await tile(2)).includes('1명') && (await p13.textContent('#cls-hint')).includes('없는이름'), '내신반 고1 화수A: 대상 2명(명단 대조) · 참여 1명 · 못 찾은 이름 안내');
+  // 학년·학교·개인
+  await p13.click('#scope-pills .pill[data-scope="grade"]'); await p13.click('#grade-pills .pill[data-grade="고1"]');
+  ok((await p13.$$('#stu-tbl tr.stu')).length === 3 && (await tile(1)).includes('2명'), '학년 고1: 재원 2명 + 명단 밖 1명');
+  await p13.click('#scope-pills .pill[data-scope="school"]'); await p13.selectOption('#school-sel', '능곡고');
+  ok((await p13.$$('#stu-tbl tr.stu')).length === 1 && (await tile(2)).includes('100%'), '학교 능곡고: 1명 · 참여율 100%');
+  await p13.click('#scope-pills .pill[data-scope="person"]'); await p13.fill('#person-q', '문경');
+  await p13.click('#person-cands .cand'); 
+  ok((await p13.$$('#person-chips .chip')).length === 1 && (await p13.$$('#stu-tbl tr.stu')).length === 1 && (await tile(6)).includes('71%'), '개인: 이름 검색 → 담기 → 그 학생만(정답률 71%)');
+  // 단원·기간
+  await p13.click('#scope-pills .pill[data-scope="all"]'); await p13.click('#unit-pills .pill[data-unit="음운"]');
+  ok((await tile(3)).includes('20개') && (await p13.$$('#unit-tbl tbody tr')).length === 1, '단원 음운만: 수행률 분모 20 · 단원 표 1줄');
+  await p13.click('#unit-pills .pill[data-unit=""]'); await p13.click('#period-pills .pill[data-period="7d"]');
+  ok((await tile(2)).includes('2명') && (await p13.$$('#stu-tbl tr.stu:not(.none)')).length === 2, '최근 7일: 참여 2명(40일 전 기록 제외)');
+  // 정렬·검색·탑30
+  await p13.click('#period-pills .pill[data-period="all"]'); await p13.selectOption('#stu-sort', 'name');
+  ok((await p13.$$eval('#stu-tbl tr.stu', els => els.map(e => e.querySelector('.nm').textContent)))[0] === '강구현', '이름순 정렬');
+  await p13.fill('#stu-q', '김시');
+  ok((await p13.$$('#stu-tbl tr.stu')).length === 1, '이름 찾기');
+  await p13.click('#top30-btn'); await p13.waitForSelector('#top-list:not(.hidden)');
+  ok(await p13.$eval('#v-stats', e => e.classList.contains('hidden')) && await p13.$eval('#vt-top', e => e.classList.contains('on')) && (await p13.$$('#top-list .row')).length === 2 && (await p13.textContent('#top-list .row:nth-child(1) .nm')).includes('김시은'), '[탑30 보기] → 탑30 탭(순위 2줄)');
+  ok(await p13.$eval('#top30-btn', e => getComputedStyle(e).backgroundColor === 'rgb(237, 228, 244)' && getComputedStyle(e).boxShadow === 'none') && await p13.$eval('.header .h-left', e => /^(left|start)$/.test(getComputedStyle(e).textAlign)), '디자인 규칙: 연보라 알약·그림자 없음·히어로 왼쪽 정렬');
+  ok(errs13.length === 0, '페이지 오류 없음');
+  await p13.close();
 
   await browser.close();
   server.close();
