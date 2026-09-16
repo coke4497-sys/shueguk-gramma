@@ -308,7 +308,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await p4.$$('#segs .seg')).length === 15 && await p4.$eval('#segs .seg:nth-child(1)', e => e.classList.contains('now')) && (await p4.textContent('#tb-n')) === '1 / 15', '상단 진행 바 15칸, 1번 = 지금');
   ok(await p4.$eval('#topbar', e => getComputedStyle(e).position === 'sticky'), '진행 바는 위에 고정');
   ok((await p4.textContent('#tb-sec')).includes('30초'), '30초 시작');
-  ok(await p4.$eval('.q-stem', e => parseFloat(getComputedStyle(e).fontSize) >= 21), '문항 글자 21px 이상(큰 글자)');
+  ok(await p4.$eval('.q-stem', e => parseFloat(getComputedStyle(e).fontSize) >= 28), '문항 글자 28px 이상(큰 글자)');
   ok((await p4.$$('#abox .big')).length === 2 && await p4.$eval('#abox .big', e => e.getBoundingClientRect().height >= 100), 'O/X 큰 버튼 두 개');
   await p4.waitForFunction(() => document.getElementById('tb-sec').textContent === '28초', null, { timeout: 5000 });
   ok(true, '초가 줄어든다');
@@ -320,12 +320,13 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(await p4.$eval('#segs .seg:nth-child(1)', e => e.classList.contains('ng')) && (await p4.textContent('#tb-pts')) === '0점', '진행 바 1칸 붉게 · 0점');
   // 슈콩 피드백 연출(2026-09-16 지시서): 오답 = 응원 슈콩(흔들림) + 꽃 6개, 파티클은 캐릭터 칸에만
   const fxNg = await p4.evaluate(() => { const a = document.querySelector('#fb .fb-avatar'), img = document.querySelector('#fb .fb-img'); return { panel: !!document.querySelector('#fb .fb-panel.ng'), n: a.querySelectorAll('.fx-layer span').length, ring: !!a.querySelector('.fx-layer span[style*="border-radius"]'), src: img.getAttribute('src'), wobble: img.style.animation.includes('fxWobble'), outside: !!document.querySelector('#fb > .fx-layer, .fb-text .fx-layer') }; });
-  ok(fxNg.panel && fxNg.n === 7 && fxNg.ring && fxNg.src === 'assets/sk-cheer.png' && fxNg.wobble && !fxNg.outside, '오답: 응원 슈콩 + 꽃 파티클 6개·링, 캐릭터 칸에만');
+  ok(fxNg.panel && fxNg.n === 9 && fxNg.ring && fxNg.src === 'assets/sk-cheer.png' && fxNg.wobble && !fxNg.outside, '오답: 응원 슈콩 + 꽃 파티클 8개·링, 캐릭터 칸에만');
   await p4.waitForFunction(() => !document.querySelector('#fb .fx-layer'), null, { timeout: 4000 });
   ok(true, '파티클은 1회 재생 뒤 DOM에서 제거');
   await p4.click('#next');
   await p4.waitForFunction(() => document.getElementById('tb-n').textContent === '2 / 15');
   ok(await p4.$eval('#fb', e => e.classList.contains('hidden')) && await p4.$eval('#segs .seg:nth-child(2)', e => e.classList.contains('now')), '다음 문항으로 넘어감(한 문항 = 한 페이지)');
+  ok(await p4.evaluate(() => !document.activeElement || document.activeElement.tagName !== 'SELECT'), '다음 문항으로 넘어가도 드롭다운에 포커스가 가지 않음(휴대폰 선택창 자동 열림 방지)');
   // 2번부터 정답으로 — 점수·콤보
   async function answer(q) {
     if (q.type === 'ox') await p4.click('#abox .big[data-v="' + q.answer + '"]');
@@ -336,7 +337,8 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await answer(q1[1]);
   ok((await p4.textContent('#fb .fb-top')).includes('정답') && (await p4.textContent('#fb .fb-top .pts')).match(/\+1[0-9][0-9]점/), '맞히면 정답 + 점수(100 + 남은 초×2)');
   const fxOk = await p4.evaluate(() => { const a = document.querySelector('#fb .fb-avatar'), img = document.querySelector('#fb .fb-img'); return { panel: !!document.querySelector('#fb .fb-panel.ok'), n: a.querySelectorAll('.fx-layer span').length, src: img.getAttribute('src'), still: !img.style.animation.includes('fxWobble') }; });
-  ok(fxOk.panel && fxOk.n === 10 && fxOk.src === 'assets/sk-heart.png' && fxOk.still, '정답: 하트 슈콩 + 하트 파티클 9개·링(오답보다 많게)');
+  ok(fxOk.panel && fxOk.n === 13 && fxOk.src === 'assets/sk-heart.png' && fxOk.still, '정답: 하트 슈콩 + 하트 파티클 12개·링(오답보다 많게)');
+  ok(await p4.$eval('#fb .fb-img', e => e.getBoundingClientRect().width >= 80) && await p4.$eval('#fb .fb-top', e => parseFloat(getComputedStyle(e).fontSize) >= 19), '피드백 패널: 슈콩 80px 이상 · 제목 19px 이상(존재감)');
   await p4.click('#next'); await answer(q1[2]); await p4.click('#next'); await answer(q1[3]);
   ok((await p4.textContent('#tb-combo-n')) === '콤보 3' && (await p4.textContent('#fb .fb-top')).includes('콤보 3'), '3연속 정답 → 콤보 3');
   for (let i = 4; i < 15; i++) { await p4.click('#next'); await answer(q1[i]); }
