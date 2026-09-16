@@ -114,6 +114,8 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .now .go:hover { background: #E3D7EE; } .now .go:active { background: #D9CAE7; }
 .now .go svg { width: 14px; height: 14px; }
 .stage-note { font-size: 11.5px; color: #4F5C56; text-align: center; line-height: 1.7; }
+.pv-band { background: #EDE4F4; color: #5A4A6A; border-radius: 14px; padding: 11px 14px; font-size: 12.5px; font-weight: 700; line-height: 1.5; margin-bottom: 12px; }
+.pv-band span { font-weight: 400; }
 .back-top { display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 10px; font-size: 13px; font-weight: 700; color: #4F5C56; text-decoration: none; -webkit-tap-highlight-color: transparent; }
 .back-top svg { width: 15px; height: 15px; }
 .hidden { display: none !important; }
@@ -123,6 +125,7 @@ footer { text-align: center; margin-top: 28px; color: #5C6A64; font-size: 12px; 
 <body>
 <div class="container">
     <a class="back-top hidden" id="back-top" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>내 페이지로</a>
+    <div class="pv-band hidden" id="pv-band">미리보기(선생님용) — <span>모든 스테이지가 열려 있고, 응시해도 기록되지 않아요.</span></div>
     <div class="header">
         <div class="h-left">
             <div class="logo">SHUEGUK</div>
@@ -204,6 +207,9 @@ footer { text-align: center; margin-top: 28px; color: #5C6A64; font-size: 12px; 
 
     // 지난 입력 기억 + 개인 페이지 등에서 주소로 넘어온 값 우선
     var params = new URLSearchParams(location.search);
+    // 미리보기(티쳐스 [참여하기] — 2026-09-16 사용자 "참여하기(이것은 미리보기 기능입니다)"): 학생 정보 없이 모든 스테이지가 열리고 play.html?preview=1로 가서 기록되지 않는다.
+    var PREVIEW = params.get('preview') === '1';
+    if (PREVIEW) { $('pv-band').classList.remove('hidden'); $('student-info').classList.add('hidden'); }
     // 상위 메뉴(학생 개인 페이지 s.html)로 돌아가기 — 개인 페이지 카드가 같은 탭에서 여니까 돌아갈 길이 필요하다(2026-09-16 사용자 "상위 메뉴로 가기 버튼이 없나요?").
     // 주소는 ?back= 이 있으면 그것, 없으면 넘어온 주소(referrer — 같은 사이트라 접근 코드까지 온다)를 sessionStorage에 기억해 play.html에 다녀와도 유지한다.
     (function() {
@@ -212,7 +218,7 @@ footer { text-align: center; margin-top: 28px; color: #5C6A64; font-size: 12px; 
         if (!back && /coke4497-sys\.github\.io\/shueguk-report\/s\.html/.test(ref)) back = ref;
         if (!back && /localhost|127\.0\.0\.1/.test(location.host) && /\/s\.html\?/.test(ref)) back = ref;   // 검사용
         try { if (back) sessionStorage.setItem(BACK_KEY, back); else back = sessionStorage.getItem(BACK_KEY) || ''; } catch (e) {}
-        if (back && /^https?:\/\//.test(back)) { $('back-top').href = back; $('back-top').classList.remove('hidden'); }
+        if (!PREVIEW && back && /^https?:\/\//.test(back)) { $('back-top').href = back; $('back-top').classList.remove('hidden'); }
     })();
     var saved = {};
     try { saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (e) {}
@@ -346,6 +352,7 @@ footer { text-align: center; margin-top: 28px; color: #5C6A64; font-size: 12px; 
     function renderStages() {
         var label = CATS[current] || current, sets = STAGE.setsOf(current), rounds = STAGE.roundsOf(current);
         var pg = STAGE.progress(current, label, STATUS || {});
+        if (PREVIEW) rounds.forEach(function(r) { pg.open[r] = true; });   // 미리보기는 전부 열림
         var passed = rounds.filter(function(r) { return pg.pass[r]; }).length;
         var hasInfo = infoOk(readInfo());
         $('sec-title').innerHTML = esc(menuTitle(current)) + '<span class="sec-meta">스테이지 ' + rounds.length + ' · 세트 ' + sets.length + (STATUS ? ' · 통과 ' + passed : '') + '</span>';
@@ -389,6 +396,7 @@ footer { text-align: center; margin-top: 28px; color: #5C6A64; font-size: 12px; 
         var b = ev.target.closest('button.go, button.node');
         if (!b) return;
         if (b.classList.contains('lock')) { alert('앞 스테이지를 ' + PASS + '% 이상으로 통과하면 열려요.'); return; }
+        if (PREVIEW) { location.href = 'play.html?c=' + encodeURIComponent(current) + '&r=' + encodeURIComponent(b.getAttribute('data-round')) + '&preview=1'; return; }
         var who = readInfo();
         if (!infoOk(who)) {
             alert('응시 전에 위 학생 정보(이름·학교·학년·학부모님 휴대전화번호 8자리)를 먼저 입력해 주세요!');
@@ -412,10 +420,10 @@ footer { text-align: center; margin-top: 28px; color: #5C6A64; font-size: 12px; 
     function syncTop30() { var w = readInfo(); $('top30-link').href = 'top30.html' + (infoOk(w) ? '?name=' + encodeURIComponent(w.name) + '&school=' + encodeURIComponent(w.school) + '&grade=' + encodeURIComponent(w.grade) + '&p8=' + encodeURIComponent(w.phone8) : ''); }
     // 정보 칸이 바뀌면 안내 글·탑30 링크만 갱신한다 — 여기서 스테이지 맵을 다시 그리면 안 된다(change는 칸을 떠날 때 나므로
     // [도전하기]를 누르는 순간 버튼이 새로 만들어져 클릭이 사라진다. E2E에서 실제로 잡힘)
-    function stageNote() { if (!current) return; var hasInfo = infoOk(readInfo()); $('stage-note').textContent = !hasInfo ? '학생 정보를 입력하면 내 진행 상황이 보여요. 지금은 첫 스테이지만 열려 있어요.' : (!STATUS ? '진행 상황을 불러오는 중…' : ''); }
+    function stageNote() { if (!current) return; if (PREVIEW) { $('stage-note').textContent = '미리보기 — 아무 스테이지나 눌러 학생 화면 그대로 풀어 볼 수 있어요(기록 없음).'; return; } var hasInfo = infoOk(readInfo()); $('stage-note').textContent = !hasInfo ? '학생 정보를 입력하면 내 진행 상황이 보여요. 지금은 첫 스테이지만 열려 있어요.' : (!STATUS ? '진행 상황을 불러오는 중…' : ''); }
     ['si-name', 'si-school', 'si-grade', 'si-phone8'].forEach(function(id) { $(id).addEventListener('input', function() { syncTop30(); stageNote(); siSummary(); }); $(id).addEventListener('change', function() { syncTop30(); stageNote(); siSummary(); }); });
     syncTop30();
-    (function() { var w = readInfo(); if (infoOk(w)) { siSummary(); siOpen(false); siImg(); loadStars({ name: w.name, phone8: w.phone8 }); } else { siSummary(); siOpen(true); } })();
+    (function() { if (PREVIEW) return; var w = readInfo(); if (infoOk(w)) { siSummary(); siOpen(false); siImg(); loadStars({ name: w.name, phone8: w.phone8 }); } else { siSummary(); siOpen(true); } })();
     (function() {   // play.html에서 돌아올 때 #c=코드 — 그 단원의 스테이지 맵을 바로 연다
         var m = (location.hash || '').match(/^#c=([^&]+)/);
         if (m) { var code = decodeURIComponent(m[1]), c = catOf(code); if (c.code && STAGE.roundsOf(code).length) { openMenu(menuOf(c)); if (code !== current) openCat(code); } }

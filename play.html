@@ -287,7 +287,7 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
     var who = { name: (params.get('name') || '').trim(), school: (params.get('school') || '').trim(), grade: (params.get('grade') || '').trim(), phone8: (params.get('p8') || '').replace(/[^0-9]/g, '').slice(0, 8) };
     var CAT_LABEL = '', DATA = null, QS = [], RULES = [], RULES2 = [], PUI = {};
     var idx = 0, results = [], combo = 0, comboMax = 0, points = 0, answered = false, timer = null, left = SEC, tStart = 0, secUsed = [];
-    var backUrl = 'index.html' + (who.name ? '?name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) + '&p8=' + encodeURIComponent(who.phone8) : '') + '#c=' + encodeURIComponent(catCode);
+    var backUrl = preview ? 'index.html?preview=1#c=' + encodeURIComponent(catCode) : 'index.html' + (who.name ? '?name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) + '&p8=' + encodeURIComponent(who.phone8) : '') + '#c=' + encodeURIComponent(catCode);
 
     function fail(msg) { var l = $('loading'); l.className = 'loading fail'; l.innerHTML = msg + '<br><a href="' + esc(backUrl) + '">스테이지 맵으로</a>'; }
     if (window.GRAMMA) GRAMMA.categories.forEach(function(c) { if (c.code === catCode) CAT_LABEL = c.label; });
@@ -594,7 +594,7 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
         sendResult(payload);
         sendStar(payload, got, total, set);
     }
-    function playUrl(r) { return 'play.html?c=' + encodeURIComponent(catCode) + '&r=' + encodeURIComponent(r) + '&name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) + '&p8=' + encodeURIComponent(who.phone8); }
+    function playUrl(r) { if (preview) return 'play.html?c=' + encodeURIComponent(catCode) + '&r=' + encodeURIComponent(r) + '&preview=1'; return 'play.html?c=' + encodeURIComponent(catCode) + '&r=' + encodeURIComponent(r) + '&name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) + '&p8=' + encodeURIComponent(who.phone8); }
 
     // 시트 사본(결과 확인 페이지) — no-cors, 실패해도 별 기록은 따로 간다
     function sendResult(payload) {
