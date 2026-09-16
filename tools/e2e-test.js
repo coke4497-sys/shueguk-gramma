@@ -676,6 +676,19 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(await p12.$$eval('#study-body .psg-body p, #study-body .psg-ex span', els => els.every(e => !e.textContent.includes('된소리소쩍새') && !e.textContent.includes('아끼다기쁘다'))), '헤딩·표 칸이 낱말끼리 붙지 않음');
   await p12.close();
 
+  /* ========== 11b) index.html?preview=1 — 티쳐스 [참여하기] 미리보기 (2026-09-16) ========== */
+  const p12b = await ctx.newPage();
+  await p12b.goto(`http://localhost:${PORT}/index.html?preview=1`);
+  await p12b.waitForSelector('#cats .cat-card');
+  ok(!(await p12b.$eval('#pv-band', e => e.classList.contains('hidden'))) && await p12b.$eval('#student-info', e => e.classList.contains('hidden')) && await p12b.$eval('#back-top', e => e.classList.contains('hidden')), '미리보기: 안내 띠 · 학생 정보 카드 숨김 · 돌아가기 없음');
+  await p12b.click('#cats .cat-card[data-code="ort"]'); await p12b.waitForSelector('#round-view:not(.hidden)');
+  ok((await p12b.$$('#stages .node.lock')).length === 0 && (await p12b.$$('#stages .setcard.locked')).length === 0 && (await p12b.textContent('#stage-note')).includes('기록 없음'), '미리보기: 모든 스테이지·세트 열림');
+  await Promise.all([p12b.waitForNavigation(), p12b.click('#stages .node[data-round="12"]')]);
+  ok(p12b.url().includes('play.html?c=ort&r=12&preview=1'), '아무 스테이지나 누르면 play.html?preview=1(기록 없음)');
+  await p12b.waitForSelector('#start:not(.hidden)');
+  ok((await p12b.getAttribute('#st-back', 'href')) === 'index.html?preview=1#c=ort', '플레이의 [스테이지 맵으로]도 미리보기 홈으로');
+  await p12b.close();
+
   /* ========== 12) stats.html — 교사용 문법 참여 현황 (2026-09-16 사용자 요청 "학년 학교 내신반 개인을 선택해 수행률, 점수 등을 확인" + 탑30) ========== */
   const stStudents = [{ student_id: '12345678', name: '강구현', school: '백양고', grade: '2026 고등 1학년', enrolled: '재원' }, { student_id: '22222222', name: '김시은', school: '능곡고', grade: '2026 고등 2학년', enrolled: '재원' }, { student_id: '33333333', name: '문경민', school: '고양중', grade: '2026 중등 3학년', enrolled: '재원' }, { student_id: '44444444', name: '박지우', school: '화수고', grade: '2026 고등 1학년', enrolled: '재원' }, { student_id: '55555555', name: '이윤채B', school: '서정중', grade: '2026 중등 2학년', enrolled: '재원' }, { student_id: '66666666', name: '퇴원생', school: '화정고', grade: '2026 고등 1학년', enrolled: '퇴원' }];
   const stClasses = [{ class_id: 'n007', name: '고1 화수A(창비 공통국어2)', day: '수', start_time: '5:30', teacher: '현지', roster: '박지우 강구현 없는이름' }, { class_id: 'n013', name: '중2 서정A(비상(영))', day: '목', start_time: '5:00', teacher: '은지', roster: '이윤채B' }];
