@@ -106,10 +106,32 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
 
 /* ===== 정답 표시 ===== */
 #fb { background: #fff; border-radius: 22px 22px 0 0; padding: 18px 18px 26px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 -6px 20px rgba(45,128,104,.08); }
-.fb-top { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; }
-.fb-top svg { width: 19px; height: 19px; }
-.fb-top.ok { color: #2E7D5B; } .fb-top.ng { color: #992F20; }
+/* 슈콩 피드백 패널 — 파티클은 캐릭터 칸(.fb-avatar)에만 붙는다(글 위로 쏟아지지 않게) */
+.fb-panel { position: relative; display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 18px; }
+.fb-panel.ok { background: #FFF0F1; } .fb-panel.ng { background: #FFEFEE; }
+.fb-avatar { position: relative; flex: none; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
+.fb-img { position: relative; z-index: 1; width: 64px; height: 64px; object-fit: contain; transform-origin: 50% 85%; }
+.fb-img.none { visibility: hidden; }
+.fb-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.fb-top { display: flex; align-items: center; gap: 8px; font: 700 15px/1.25 'Gowun Batang', serif; }
+.fb-top.ok { color: #A33A4A; } .fb-top.ng { color: #8C3B33; }
 .fb-top .pts { margin-left: auto; font-family: 'Do Hyeon', sans-serif; font-size: 18px; font-weight: 400; }
+.fb-body { font: 400 11.5px/1.5 'Gowun Dodum', 'Apple SD Gothic Neo', sans-serif; color: #3F4A44; }
+.fx-layer { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+@keyframes fxUp{
+  0%{transform:translate(-50%,-50%) scale(.3) rotate(0deg);opacity:0}
+  12%{opacity:1}
+  100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(var(--s)) rotate(var(--r));opacity:0}
+}
+@keyframes fxPulse{
+  0%{transform:translate(-50%,-50%) scale(.2);opacity:.55}
+  100%{transform:translate(-50%,-50%) scale(2.6);opacity:0}
+}
+@keyframes fxWobble{
+  0%,100%{transform:rotate(-7deg)}
+  50%{transform:rotate(7deg)}
+}
+@media (prefers-reduced-motion: reduce) { .fb-img { animation: none !important; } .fx-layer { display: none; } }
 .fb-ans { font-size: 15px; line-height: 1.6; color: #2C2F2D; }
 .fb-ans b { color: #6B5B7B; }
 .fb-why { font-size: 15px; line-height: 1.7; color: #2C2F2D; }
@@ -141,6 +163,13 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
 .pass-tag.ok { background: #E4F1EA; color: #2E7D5B; } .pass-tag.no { background: #FADED9; color: #992F20; }
 .pass-tag svg { width: 14px; height: 14px; }
 .star-card { background: #EDE4F4; border-radius: 16px; padding: 16px 16px 14px; display: flex; align-items: center; gap: 14px; }
+.star-done { background: #EDE4F4; border-radius: 16px; padding: 10px 16px 16px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.star-stage { position: relative; width: 100%; height: 118px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.star-stage .fx-anchor { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
+.star-stage img { position: relative; z-index: 1; width: 96px; height: 96px; object-fit: contain; }
+.star-stage img.none { visibility: hidden; }
+.star-done .t { font-family: 'Gowun Batang', serif; font-size: 17px; font-weight: 700; color: #6B5B7B; }
+.star-done .d { font-size: 12px; color: #6B5B7B; line-height: 1.6; }
 .star-card .ic { width: 52px; height: 52px; border-radius: 16px; background: #fff; color: #6B5B7B; display: flex; align-items: center; justify-content: center; flex: none; }
 .star-card .ic svg { width: 28px; height: 28px; }
 .star-card .t { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 700; color: #6B5B7B; }
@@ -404,6 +433,64 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
         return null;
     }
 
+    /* ----- 슈콩 피드백 연출(파티클) — 지시서 2026-09-16 ----- */
+    var FX_IMG = { heart: 'assets/sk-heart.png', cheer: 'assets/sk-cheer.png', best: 'assets/sk-best.png' };
+    var FX_CONF = {
+        heart: { n: 9,  spread: 46, size: 14, glyphs: [['♥', '#E4737F'], ['♥', '#F09AA4'], ['♥', '#D4606C']], ring: '#F2C3C8', lift: 26 },
+        cheer: { n: 6,  spread: 44, size: 14, glyphs: [['✿', '#E3A82E'], ['✦', '#EFC55C'], ['✿', '#D2971F']], ring: '#EBD79C', lift: 26 },
+        spark: { n: 12, spread: 96, size: 17, glyphs: [['✦', '#FFC21F'], ['✧', '#FFD84D'], ['✦', '#F0A500']], ring: '#FFE08A', lift: 0 }
+    };
+    // 정답(heart)은 많고 빠르게, 오답(cheer)은 적고 느리게 — 틀린 게 벌처럼 느껴지지 않게(비율 유지)
+    function fxBurst(host, kind) {
+        host.querySelectorAll('.fx-layer').forEach(function(n) { n.remove(); });
+        var conf = FX_CONF[kind]; if (!conf) return;
+        var layer = document.createElement('div');
+        layer.className = 'fx-layer';
+        for (var i = 0; i < conf.n; i++) {
+            var a = (i / conf.n) * Math.PI * 2 + 0.3;
+            var dist = conf.spread * (0.62 + ((i * 37) % 40) / 100);
+            var g = conf.glyphs[i % conf.glyphs.length];
+            var sp = document.createElement('span');
+            sp.textContent = g[0];
+            sp.style.cssText =
+                'position:absolute;left:50%;top:50%;color:' + g[1] + ';' +
+                'font:' + conf.size + 'px/1 "Gowun Dodum",sans-serif;' +
+                '--dx:' + (Math.cos(a) * dist).toFixed(1) + 'px;' +
+                '--dy:' + (Math.sin(a) * dist - conf.lift).toFixed(1) + 'px;' +
+                '--s:' + (0.9 + ((i * 23) % 60) / 100).toFixed(2) + ';' +
+                '--r:' + ((i % 2 ? 1 : -1) * (25 + (i * 17) % 50)) + 'deg;' +
+                'animation:fxUp 1.5s ease-out ' + (i * 0.07).toFixed(2) + 's 1 forwards;' +
+                'will-change:transform,opacity';
+            layer.appendChild(sp);
+        }
+        var ring = document.createElement('span');
+        ring.style.cssText =
+            'position:absolute;left:50%;top:50%;border-radius:999px;' +
+            'width:' + conf.spread + 'px;height:' + conf.spread + 'px;' +
+            'border:2px solid ' + conf.ring + ';' +
+            'animation:fxPulse 1.5s ease-out 1 forwards';
+        layer.appendChild(ring);
+        host.appendChild(layer);
+        setTimeout(function() { layer.remove(); }, 1800);   // 1회 재생 뒤 DOM에서 제거
+    }
+    // 캐릭터 그림 — src는 실제 값이 있을 때만 넣고, 파일이 없으면(아직 안 넣었으면) 자리만 비운다
+    function fxImg(img, key) {
+        img.classList.remove('none');
+        img.onerror = function() { img.classList.add('none'); };
+        img.src = FX_IMG[key];
+    }
+    function fbPanelHTML(ok, title, pts, body) {
+        return '<div class="fb-panel ' + (ok ? 'ok' : 'ng') + '"><span class="fb-avatar"><img class="fb-img" alt=""></span>' +
+            '<div class="fb-text"><span class="fb-top ' + (ok ? 'ok' : 'ng') + '">' + esc(title) + '<span class="pts">' + esc(pts) + '</span></span>' +
+            '<span class="fb-body">' + esc(body) + '</span></div></div>';
+    }
+    function fbPanelPlay(fb, ok) {
+        var panel = fb.querySelector('.fb-panel'); if (!panel) return;
+        var img = panel.querySelector('.fb-img'), avatar = panel.querySelector('.fb-avatar');
+        if (ok) { img.style.animation = 'none'; fxImg(img, 'heart'); fxBurst(avatar, 'heart'); }
+        else { img.style.animation = 'fxWobble 1.1s ease-in-out infinite'; fxImg(img, 'cheer'); fxBurst(avatar, 'cheer'); }
+    }
+
     /* ----- 채점 + 정답 표시 ----- */
     function grade(user, timeout) {
         if (answered) return;
@@ -442,12 +529,15 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
         updateBar();
         // 정답 표시
         var top = ok ? (combo >= 3 ? '정답! 콤보 ' + combo : '정답!') : (timeout ? '시간 초과 · 콤보가 끊겼어요' : (combo === 0 && results.length > 1 && results[results.length - 2].ok ? '아쉬워요 · 콤보가 끊겼어요' : '아쉬워요'));
-        var h = '<div class="fb-top ' + (ok ? 'ok' : 'ng') + '">' + (ok ? IC_OK : IC_NG) + esc(top) + '<span class="pts">' + (ok ? '+' + fmt(gained) + '점' : '') + '</span></div>';
+        var body = ok ? (combo >= 3 ? '콤보가 이어지고 있어요 — 남은 시간이 많을수록 점수가 커져요.' : '잘했어요! 남은 시간이 많을수록 점수가 커져요.')
+                      : (timeout ? '시간이 다 됐어요. 아래에서 정답을 확인하고 다음으로 가요.' : '괜찮아요. 아래에서 정답을 확인하고 다음으로 가요.');
+        var h = fbPanelHTML(ok, top, ok ? '+' + fmt(gained) + '점' : '', body);
         if (q.type === 'short') h += '<div class="fb-ans">정답: <b>' + esc(q.answer) + '</b>' + (q.answers && q.answers.length > 1 ? ' <span style="color:#8B928C;font-size:13px;">(' + q.answers.filter(function(a) { return a !== q.answer; }).map(esc).join(', ') + ' 도 정답)</span>' : '') + '</div>';
         if (q.type === 'process' && !ok) h += '<div class="fb-chain">' + (q.steps || []).map(function(st, si) { return '<div class="fb-srow"><span class="n">' + (si + 1) + '</span><span class="ch-r">' + esc(st.accept.join(' 또는 ')) + '</span>' + (st.accept2 ? '<span class="ch-r">' + esc(st.accept2.join(' 또는 ')) + '</span>' : '') + '<span class="step-arrow">' + esc(PUI.arrow) + '</span><span class="ch-f' + (si === (q.steps || []).length - 1 ? ' fin' : '') + '">' + esc(dispForm(st.form)) + '</span></div>'; }).join('') + '</div>';
         if (q.explanation) h += whyHTML(q.explanation);
         h += '<button type="button" class="btn pri" id="next">' + (idx + 1 < QS.length ? '다음 문항' : '결과 보기') + IC_ARROW + '</button>';
         var fb = $('fb'); fb.innerHTML = h; fb.classList.remove('hidden');
+        fbPanelPlay(fb, ok);
         $('next').addEventListener('click', function() { idx++; if (idx < QS.length) showQ(); else finish(); });
         $('next').focus();
         setTimeout(function() { fb.scrollIntoView({ block: 'end', behavior: 'smooth' }); }, 60);
@@ -524,10 +614,14 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
             .then(function(r) { return r.json(); })
             .then(function(res) {
                 if (!res || res.ok !== true) { slot.innerHTML = '<div class="sub" style="text-align:center;color:#992F20;">기록에 실패했어요 — 선생님께 말씀해 주세요.</div>'; return; }
-                if (res.set_cleared && set) {
-                    slot.innerHTML = '<div class="star-card"><div class="ic">' + IC_STAR + '</div><div><div class="t">세트 ' + set.no + ' 클리어' + (res.set_first ? ' · 슈퍼스타 별 +1' : '') + '</div><div class="d">' +
-                        (res.set_first ? '스테이지 ' + set.rounds[0] + '~' + set.rounds[set.rounds.length - 1] + '을 모두 ' + PASS + '% 이상으로 마쳤어요. 내 별에 더해졌어요(지금 문법 별 ' + res.stars + '개).'
-                                       : '이 세트의 별은 이미 받았어요(세트마다 한 번). 지금 문법 별 ' + res.stars + '개.') + '</div></div></div>';
+                if (res.set_cleared && set && res.set_first) {
+                    // 별 완성 — 노란 반짝이는 별 그림 영역(118px)에만, 아래 글 위로 넘어가지 않게
+                    slot.innerHTML = '<div class="star-done"><div class="star-stage"><span class="fx-anchor"></span><img class="star-img" alt=""></div>' +
+                        '<div class="t">별 하나 완성!</div><div class="d">세트 ' + set.no + ' 클리어 · 슈퍼스타 별 +1<br>스테이지 ' + set.rounds[0] + '~' + set.rounds[set.rounds.length - 1] + '을 모두 ' + PASS + '% 이상으로 마쳤어요. 내 별에 더해졌어요(지금 문법 별 ' + res.stars + '개).</div></div>';
+                    fxImg(slot.querySelector('.star-img'), 'best');
+                    fxBurst(slot.querySelector('.fx-anchor'), 'spark');
+                } else if (res.set_cleared && set) {
+                    slot.innerHTML = '<div class="star-card"><div class="ic">' + IC_STAR + '</div><div><div class="t">세트 ' + set.no + ' 클리어</div><div class="d">이 세트의 별은 이미 받았어요(세트마다 한 번). 지금 문법 별 ' + res.stars + '개.</div></div></div>';
                 } else if (set) {
                     var need = set.rounds.length;
                     slot.innerHTML = '<div class="card plain sub" style="text-align:center;">세트 ' + set.no + '(스테이지 ' + set.rounds[0] + '~' + set.rounds[need - 1] + ')을 모두 ' + PASS + '% 이상으로 마치면 슈퍼스타 별 +1 · 지금 문법 별 ' + (res.stars || 0) + '개</div>';
