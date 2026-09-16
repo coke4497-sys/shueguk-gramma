@@ -8,150 +8,165 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Do+Hyeon&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif; background: #C6D5D2; min-height: 100vh; padding: 14px; padding-bottom: 60px; color: #2C2F2D; -webkit-text-size-adjust: 100%; }
+body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif; background: #C6D5D2; min-height: 100vh; padding: 14px; padding-bottom: 60px; color: #2A332F; -webkit-text-size-adjust: 100%; }
 .container { max-width: 580px; margin: 0 auto; }
 
-.header { text-align: center; margin-bottom: 12px; padding: 18px 16px 14px; background: white; border-radius: 20px; box-shadow: 0 4px 16px rgba(45,128,104,0.08); border: 2px solid #C6D5D2; }
-.header .logo { font-family: 'Gowun Batang', serif; font-size: 11px; font-weight: 800; letter-spacing: 5px; color: #A6C1BB; margin-bottom: 6px; }
-.header h1 { font-family: 'Gowun Batang', serif; font-size: 21px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; line-height: 1.3; }
-.header .intro { font-size: 12px; color: #6A716C; margin-top: 8px; line-height: 1.7; }
+/* ===== 히어로 카드 (2026-09-16 디자인 지시서) ===== */
+.header { background: #fff; border-radius: 18px; padding: 20px 22px; display: flex; align-items: center; gap: 20px; margin-bottom: 12px; }
+.header .h-left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; text-align: left; }
+.header .logo { font-size: 10.5px; font-weight: 400; color: #8B978F; letter-spacing: .24em; }
+.header h1 { font-family: 'Gowun Batang', serif; font-size: 22px; font-weight: 700; color: #2A332F; letter-spacing: -0.5px; line-height: 1.3; }
+.header .intro { font-size: 12.5px; color: #4F5C56; line-height: 1.6; }
+.header .h-right { flex: none; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.header .bigstar { width: 76px; height: 76px; display: block; }
+.header .bigstar path { fill: #F2F5F3; stroke: #E2E8E4; stroke-width: 1; stroke-linejoin: round; }
+.header .bigstar.on path { fill: #FFC21F; stroke: #FFC21F; }
+.header .mystars { font-size: 11.5px; font-weight: 700; color: #5C6A64; }
+.pill-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 13px; border-radius: 999px; background: #EDE4F4; color: #5A4A6A; font: inherit; font-size: 11px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.pill-btn:hover { background: #E3D7EE; } .pill-btn:active { background: #D9CAE7; }
+@media (max-width: 400px) { .header { padding: 18px 16px; gap: 14px; } .header .bigstar { width: 60px; height: 60px; } }
 
-.student-info { background: white; border-radius: 14px; padding: 16px; margin-bottom: 10px; border: 2px solid #C6D5D2; }
-.student-info .si-title { font-size: 13px; font-weight: 800; color: #3A544E; margin-bottom: 10px; }
+/* ===== 학생 정보 — 이미 입력한 학생은 요약 한 줄 ===== */
+.student-info { background: #fff; border-radius: 18px; padding: 15px 18px; margin-bottom: 10px; }
+.si-sum { display: none; align-items: center; gap: 14px; }
+.student-info.collapsed .si-sum { display: flex; }
+.student-info.collapsed .si-body { display: none; }
+.si-sum img { width: 44px; height: 44px; object-fit: contain; flex: none; }
+.si-sum img.none { visibility: hidden; }
+.si-sum .si-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.si-sum .si-nm { font-size: 13px; font-weight: 700; color: #2A332F; }
+.si-sum .si-sub { font-size: 11.5px; line-height: 1.5; color: #4F5C56; }
+.si-sum .si-go { flex: none; padding: 10px 16px; border-radius: 999px; background: #EDE4F4; color: #5A4A6A; font: inherit; font-size: 12.5px; font-weight: 700; border: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.si-sum .si-go:hover { background: #E3D7EE; } .si-sum .si-go:active { background: #D9CAE7; }
+.si-edit { flex: none; font: inherit; font-size: 11.5px; color: #5C6A64; background: none; border: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.student-info .si-title { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 700; color: #2A332F; margin-bottom: 10px; }
 .si-row { display: flex; gap: 8px; margin-bottom: 8px; }
 .si-field { flex: 1; }
 .si-field.small { flex: 0 0 92px; }
-.si-field label { display: block; font-size: 11px; font-weight: 700; color: #6A716C; margin-bottom: 3px; }
-.si-field input, .si-field select { width: 100%; padding: 10px; font-size: 14px; font-family: inherit; font-weight: 700; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2C2F2D; background: white; -webkit-appearance: none; }
-.si-field input:focus, .si-field select:focus { border-color: #A6C1BB; }
-.si-field select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235fb8a8' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 8px center; background-size: 14px; padding-right: 26px; }
-.go-btn { width: 100%; background: #628C83; color: white; border: none; padding: 13px; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.si-field label { display: block; font-size: 11px; font-weight: 700; color: #5C6A64; margin-bottom: 3px; }
+.si-field input, .si-field select { width: 100%; padding: 10px; font-size: 14px; font-family: inherit; font-weight: 700; border: 2px solid #E8EAE7; border-radius: 9px; outline: none; color: #2A332F; background: white; -webkit-appearance: none; }
+.si-field input:focus, .si-field select:focus { border-color: #D6C9E4; }
+.si-field select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238D83A8' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 8px center; background-size: 14px; padding-right: 26px; }
+.go-btn { width: 100%; background: #EDE4F4; color: #5A4A6A; border: none; padding: 13px; border-radius: 999px; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.go-btn:hover { background: #E3D7EE; } .go-btn:active { background: #D9CAE7; }
 .go-btn:disabled { opacity: .55; cursor: not-allowed; }
+@media (max-width: 400px) { .si-sum { flex-wrap: wrap; } .si-sum .si-txt { flex-basis: calc(100% - 58px); } .si-sum .si-go { margin-left: 58px; } }
 
-.status { font-size: 13px; font-weight: 700; padding: 14px; border-radius: 12px; text-align: center; margin-bottom: 10px; line-height: 1.7; }
-.status.loading { background: #F4F5F3; color: #6A716C; border: 1.5px solid #E8EAE7; }
-.status.fail { background: #FADED9; color: #992F20; border: 1.5px solid #EFA9A5; }
-.status.empty { background: white; color: #6A716C; border: 1.5px solid #E8EAE7; }
-.status .s-ic { width: 15px; height: 15px; vertical-align: -3px; margin-right: 5px; }
-
-.assign-card { display: flex; align-items: center; gap: 12px; background: white; border: 2px solid #F1F6F4; border-radius: 14px; padding: 13px 15px; margin-bottom: 8px; box-shadow: 0 2px 10px rgba(45,128,104,0.04); }
-.assign-cat { flex: none; font-size: 11px; font-weight: 800; color: #635A7D; background: #EDE4F4; padding: 4px 10px; border-radius: 999px; }
-.assign-body { flex: 1; min-width: 0; }
-.assign-title { font-size: 14px; font-weight: 800; color: #2C2F2D; }
-.assign-sub { font-size: 11px; color: #8B928C; margin-top: 2px; }
-.assign-go { flex: none; display: inline-flex; align-items: center; gap: 4px; background: #EDE4F4; color: #635A7D; border: 1.5px solid #D9CCE8; text-decoration: none; font-size: 12px; font-weight: 800; padding: 9px 14px; border-radius: 9px; -webkit-tap-highlight-color: transparent; }
-.assign-go svg { width: 13px; height: 13px; }
-
-.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; text-align: left; }
-.tile { display: flex; flex-direction: column; gap: 3px; background: #F4F5F3; border-radius: 12px; padding: 9px 11px; text-decoration: none; }
-.tile.link { background: #EDE4F4; }
-.tile .k { font-size: 11px; color: #8B928C; } .tile.link .k { color: #8D83A8; }
-.tile .v { font-family: 'Do Hyeon', 'Gowun Dodum', sans-serif; font-size: 17px; color: #3A544E; } .tile .v.lav { color: #6B5B7B; }
-.mystars { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 6px 12px; border-radius: 999px; background: #EDE4F4; color: #6B5B7B; font-size: 12px; font-weight: 700; }
-.mystars svg { width: 13px; height: 13px; }
-.assign-star { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: #EDE4F4; color: #6B5B7B; font-size: 10.5px; font-weight: 800; vertical-align: 1px; }
-.assign-star.no { background: #F4F7F5; color: #9BA8A1; font-weight: 700; }
-/* ===== 자유 응시 — 단원 카드 → 레벨 탭 → 회차 (배정하기 페이지와 같은 구성) ===== */
+/* ===== 단원 고르기 ===== */
 .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 22px 2px 10px; flex-wrap: wrap; }
-.sec-head h2 { font-family: 'Gowun Batang', serif; font-size: 16px; font-weight: 800; color: #3A544E; letter-spacing: -.3px; }
-.sec-head .sec-note { font-size: 11.5px; color: #8B928C; }
+.sec-head h2 { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 700; color: #2A332F; letter-spacing: -.3px; }
+.sec-head .sec-note { font-size: 11.5px; color: #4F5C56; }
 .cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.cat-card { display: flex; align-items: center; gap: 12px; background: white; border: 2px solid #F1F6F4; border-radius: 14px; padding: 13px 14px; text-align: left; cursor: pointer; font: inherit; box-shadow: 0 2px 10px rgba(45,128,104,0.04); transition: transform .14s ease, border-color .14s ease; -webkit-tap-highlight-color: transparent; }
-.cat-card:hover { transform: translateY(-2px); border-color: #C6D5D2; }
-.cat-card .cico { flex: none; width: 40px; height: 40px; border-radius: 12px; background: #F4F5F3; display: flex; align-items: center; justify-content: center; color: #6A716C; }
-.cat-card .cico svg { width: 20px; height: 20px; }
-.cat-card .cbody { min-width: 0; }
-.cat-card .cname { display: block; font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 800; color: #3A544E; letter-spacing: -.3px; }
-.cat-card .ccnt { display: block; margin-top: 4px; font-size: 11.5px; font-weight: 700; color: #8D83A8; }
-.cat-card:disabled { cursor: not-allowed; box-shadow: none; }
-.cat-card:disabled:hover { transform: none; border-color: #F1F6F4; }
-.cat-card:disabled .cico { color: #C0C6C1; background: #F8F9F7; }
-.cat-card:disabled .cname { color: #A9B1AB; }
-.cat-card:disabled .ccnt { color: #B7BFB9; }
-.cat-back { display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 10px; font: inherit; font-size: 13px; font-weight: 700; color: #6A716C; background: none; border: none; cursor: pointer; padding: 4px 2px; -webkit-tap-highlight-color: transparent; }
+.cat-card { display: flex; flex-direction: column; gap: 11px; background: #fff; border: none; border-radius: 16px; padding: 15px 16px; text-align: left; cursor: pointer; font: inherit; transition: transform .14s ease; -webkit-tap-highlight-color: transparent; }
+.cat-card:hover { transform: translateY(-2px); }
+.cat-card .ctop { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.cat-card .cname { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 700; color: #2A332F; letter-spacing: -.3px; }
+.cat-card .cstars { display: flex; gap: 3px; flex: none; }
+.cat-card .cstars i { width: 11px; height: 11px; display: block; background: #EEF1EF; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+.cat-card .cstars i.on { background: #FFC21F; }
+.cat-card .ccnt { font-size: 11.5px; color: #4F5C56; }
+.cat-card .cbar { height: 6px; border-radius: 99px; background: #EEF2EF; overflow: hidden; }
+.cat-card .cbar i { display: block; height: 100%; border-radius: 99px; background: #B9A5CC; width: 0; }
+.cat-card .cstat { font-size: 11px; color: #5C6A64; }
+.cats-soon { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.6); border-radius: 16px; padding: 13px 16px; margin-top: 10px; }
+.cats-soon svg { width: 14px; height: 14px; flex: none; color: #5C6A64; }
+.cats-soon .names { font-size: 12.5px; line-height: 1.45; color: #3F4A44; }
+.cats-soon .sub { font-size: 12px; color: #4F5C56; margin-top: 2px; }
+.cat-back { display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 10px; font: inherit; font-size: 13px; font-weight: 700; color: #4F5C56; background: none; border: none; cursor: pointer; padding: 4px 2px; -webkit-tap-highlight-color: transparent; }
 .cat-back svg { width: 15px; height: 15px; }
 .lvl-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 2px 12px; }
-.lvl-tab { font: inherit; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 999px; background: #fff; border: 1px solid #E5EDE8; color: #65726B; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.lvl-tab .n { font-weight: 400; color: #9BA8A1; margin-left: 5px; font-size: 12px; }
-.lvl-tab.on { background: #EDE4F4; border-color: #D6C9E4; color: #6B5B7B; }
-.lvl-tab.on .n { color: #8D83A8; }
-.sec-title { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 800; color: #3A544E; margin: 6px 2px 10px; }
-.sec-title .sec-meta { font-family: 'Gowun Dodum', sans-serif; font-weight: 400; color: #9BA8A1; font-size: 12px; margin-left: 6px; }
+.lvl-tab { font: inherit; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 999px; background: #fff; border: none; color: #4F5C56; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.lvl-tab .n { font-weight: 400; color: #5C6A64; margin-left: 5px; font-size: 12px; }
+.lvl-tab.on { background: #EDE4F4; color: #5A4A6A; }
+.lvl-tab.on .n { color: #5A4A6A; }
+.sec-title { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 700; color: #2A332F; margin: 6px 2px 10px; }
+.sec-title .sec-meta { font-family: 'Gowun Dodum', sans-serif; font-weight: 400; color: #4F5C56; font-size: 12px; margin-left: 6px; }
 /* 스테이지 맵 — 세트 카드(스테이지 5개) */
 .setlist { display: flex; flex-direction: column; gap: 10px; }
 .setcard { background: white; border: 1px solid #E5EDE8; border-radius: 16px; padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 12px; }
 .setcard.cur { border-color: #D6C9E4; }
 .setcard.locked { opacity: .8; }
 .set-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.set-head .sn { font-family: 'Gowun Batang', serif; font-size: 14px; font-weight: 800; color: #3A544E; }
-.setcard.locked .set-head .sn { color: #A9B1AB; }
-.set-head .sr { font-size: 11.5px; color: #8B928C; }
-.set-head .sg { font-size: 11px; color: #9BA8A1; }
-.set-head .right { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: #6B5B7B; }
+.set-head .sn { font-family: 'Gowun Batang', serif; font-size: 14px; font-weight: 700; color: #2A332F; }
+.setcard.locked .set-head .sn { color: #5C6A64; }
+.set-head .sr { font-size: 11.5px; color: #4F5C56; }
+.set-head .sg { font-size: 11px; color: #5C6A64; }
+.set-head .right { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: #5A4A6A; }
 .set-head .right.star { background: #EDE4F4; border-radius: 999px; padding: 5px 10px; }
-.set-head .right.lock { color: #B7BFB9; font-weight: 400; }
+.set-head .right.lock { color: #5C6A64; font-weight: 400; }
 .set-head .right svg { width: 12px; height: 12px; }
 .nodes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
 .node { display: flex; flex-direction: column; align-items: center; gap: 5px; border: none; background: none; padding: 0; font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.node .nb { width: 50px; height: 50px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-family: 'Do Hyeon', 'Gowun Dodum', sans-serif; font-size: 19px; background: #F0F3F1; color: #B7BFB9; }
+.node .nb { width: 50px; height: 50px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-family: 'Do Hyeon', 'Gowun Dodum', sans-serif; font-size: 19px; background: #F0F3F1; color: #5C6A64; }
 .node .nb svg { width: 22px; height: 22px; }
-.node .nl { font-size: 11px; font-weight: 700; color: #B7BFB9; }
+.node .nl { font-size: 11px; font-weight: 700; color: #5C6A64; }
 .node.pass .nb { background: #E4F1EA; color: #3E9B74; } .node.pass .nl { color: #3E9B74; }
-.node.open .nb { background: #EDE4F4; color: #6B5B7B; } .node.open .nl { color: #6B5B7B; }
-.node.cur .nb { background: #6B5B7B; color: #fff; box-shadow: 0 4px 12px rgba(107,91,123,.35); } .node.cur .nl { color: #6B5B7B; }
-.node.lock { cursor: default; } .node.lock .nb svg { width: 18px; height: 18px; }
+.node.open .nb { background: #EDE4F4; color: #5A4A6A; } .node.open .nl { color: #5A4A6A; }
+.node.cur .nb { background: #6B5B7B; color: #fff; } .node.cur .nl { color: #5A4A6A; }
+.node.lock { cursor: default; } .node.lock .nb { color: #B7BFB9; } .node.lock .nb svg { width: 18px; height: 18px; }
 .now { display: flex; align-items: center; gap: 12px; background: #FAF7FC; border-radius: 12px; padding: 11px 12px; }
 .now .nt { flex: 1; min-width: 0; }
-.now .nt b { display: block; font-size: 13px; color: #2C2F2D; }
-.now .nt span { font-size: 11.5px; color: #8B928C; }
-.now .go { flex: none; display: inline-flex; align-items: center; gap: 5px; background: #6B5B7B; color: #fff; border: none; border-radius: 10px; padding: 11px 15px; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; min-height: 44px; -webkit-tap-highlight-color: transparent; }
+.now .nt b { display: block; font-size: 13px; color: #2A332F; }
+.now .nt span { font-size: 11.5px; color: #4F5C56; }
+.now .go { flex: none; display: inline-flex; align-items: center; gap: 5px; background: #EDE4F4; color: #5A4A6A; border: none; border-radius: 999px; padding: 11px 16px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; min-height: 44px; -webkit-tap-highlight-color: transparent; }
+.now .go:hover { background: #E3D7EE; } .now .go:active { background: #D9CAE7; }
 .now .go svg { width: 14px; height: 14px; }
-.stage-note { font-size: 11.5px; color: #6A716C; text-align: center; line-height: 1.7; }
+.stage-note { font-size: 11.5px; color: #4F5C56; text-align: center; line-height: 1.7; }
+.back-top { display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 10px; font-size: 13px; font-weight: 700; color: #4F5C56; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+.back-top svg { width: 15px; height: 15px; }
 .hidden { display: none !important; }
-footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; line-height: 1.9; }
+footer { text-align: center; margin-top: 28px; color: #5C6A64; font-size: 12px; line-height: 1.9; }
 </style>
 </head>
 <body>
 <div class="container">
+    <a class="back-top hidden" id="back-top" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>내 페이지로</a>
     <div class="header">
-        <div class="logo">SHUEGUK</div>
-        <h1>문법 스테이지</h1>
-        <p class="intro">이름·학교·학년·전화번호를 입력하고<br>단원을 골라 스테이지를 하나씩 깨요. 선생님이 배정한 테스트도 함께 보여요.</p>
-        <div class="tiles">
-            <div class="tile"><span class="k">통과 기준</span><span class="v">정답률 70%</span></div>
-            <div class="tile"><span class="k">세트 클리어</span><span class="v lav">별 +1</span></div>
-            <a class="tile link" id="top30-link" href="top30.html"><span class="k">문법 슈스</span><span class="v lav">탑30 보기</span></a>
+        <div class="h-left">
+            <div class="logo">SHUEGUK</div>
+            <h1>문법 스테이지</h1>
+            <p class="intro">단원을 골라 스테이지를 하나씩 깨요. 정답률 70%를 넘기면 통과, 세트 5개를 다 모으면 별 +1.</p>
         </div>
-        <div class="mystars hidden" id="mystars"></div>
+        <div class="h-right">
+            <svg class="bigstar" id="bigstar" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>
+            <div class="mystars" id="mystars">문법 별 0개</div>
+            <a class="pill-btn" id="top30-link" href="top30.html">탑30 보기</a>
+        </div>
     </div>
 
-    <div class="student-info">
-        <div class="si-title">학생 정보</div>
-        <div class="si-row">
-            <div class="si-field"><label for="si-name">이름</label><input type="text" id="si-name" placeholder="박보검" autocomplete="off"></div>
+    <div class="student-info" id="student-info">
+        <div class="si-sum" id="si-sum">
+            <img class="none" id="si-img" alt="" />
+            <div class="si-txt"><span class="si-nm" id="si-sum-text"></span><span class="si-sub" id="si-sum-sub">내 진행 확인을 누르면 스테이지 진행 상황이 보여요.</span></div>
+            <button type="button" class="si-go" id="sum-btn">내 진행 확인</button>
+            <button type="button" class="si-edit" id="si-edit">수정</button>
         </div>
-        <div class="si-row">
-            <div class="si-field"><label for="si-school">학교</label><input type="text" id="si-school" placeholder="○○중 또는 ○○고" autocomplete="off"></div>
-            <div class="si-field small"><label for="si-grade">학년</label>
-                <select id="si-grade"><option value="">선택</option><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option></select>
+        <div class="si-body">
+            <div class="si-title">학생 정보 <button type="button" class="si-edit hidden" id="si-fold">접기</button></div>
+            <div class="si-row">
+                <div class="si-field"><label for="si-name">이름</label><input type="text" id="si-name" placeholder="박보검" autocomplete="off"></div>
             </div>
+            <div class="si-row">
+                <div class="si-field"><label for="si-school">학교</label><input type="text" id="si-school" placeholder="○○중 또는 ○○고" autocomplete="off"></div>
+                <div class="si-field small"><label for="si-grade">학년</label>
+                    <select id="si-grade"><option value="">선택</option><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option></select>
+                </div>
+            </div>
+            <div class="si-row">
+                <div class="si-field"><label for="si-phone8">학부모님 휴대전화번호 8자리</label><input type="text" id="si-phone8" inputmode="numeric" maxlength="8" placeholder="12345678" autocomplete="off"></div>
+            </div>
+            <button type="button" class="go-btn" id="check-btn">내 진행 확인하기</button>
         </div>
-        <div class="si-row">
-            <div class="si-field"><label for="si-phone8">학부모님 휴대전화번호 8자리</label><input type="text" id="si-phone8" inputmode="numeric" maxlength="8" placeholder="12345678" autocomplete="off"></div>
-        </div>
-        <button type="button" class="go-btn" id="check-btn">내 테스트 확인하기</button>
     </div>
 
-    <div id="status" class="status empty hidden"></div>
-    <div id="list"></div>
-
-    <!-- 자유 응시 — 배정과 무관하게 활성화된 단원·레벨·회차를 골라 응시 (2026-09-14 사용자 요청) -->
+    <!-- 단원 고르기 — 활성화된 단원·레벨·회차를 골라 응시 (2026-09-14 사용자 요청 "모든 학생이 자유롭게"). 배정 목록은 2026-09-16 티쳐스 배정 기능 중단으로 뺐다. -->
     <div id="free">
-        <div class="sec-head"><h2>문법 스테이지</h2><span class="sec-note">단원 → 레벨 → 스테이지를 차례로</span></div>
+        <div class="sec-head"><h2>단원 고르기</h2><span class="sec-note">단원 → 레벨 → 스테이지</span></div>
         <div id="cat-view">
             <div class="cats" id="cats"></div>
+            <div class="cats-soon hidden" id="cats-soon"></div>
         </div>
         <div id="round-view" class="hidden">
             <button type="button" class="cat-back" id="cat-back">
@@ -171,8 +186,6 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
 <script src="stage.js"></script>
 <script>
 (function() {
-    // 문법 결과·배정을 담당하는 Apps Script 배포 주소 (apps-script/Code.gs)
-    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzikteq7gR2ezi_NXc2of8PTvUj5XouJ5ZcZOEWv0YWgjQjs8dZqogQjSr0-LSqneXF/exec';
     var LS_KEY = 'gramma_student';
     // 별 획득 여부 표시 — 수파베이스 gramma_status(이름+8자리로 내 결과만). 실패해도 목록은 그대로.
     var SB_URL = 'https://bangdbhqpphqqdwcledg.supabase.co';
@@ -180,28 +193,27 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
 
     function $(id) { return document.getElementById(id); }
     function esc(s) { return ('' + (s == null ? '' : s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-    function ic(inner) { return '<svg class="s-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>'; }
-    var IC_ALERT = ic('<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>');
 
     var CATS = {};
     var CAT_LIST = (window.GRAMMA && GRAMMA.categories) || [];
     var TESTS = (window.GRAMMA && GRAMMA.tests) || {};
     CAT_LIST.forEach(function(c) { CATS[c.code] = c.label; });
-    var STARS = {};   // 'unit|round' → gramma_status 항목 (배정 카드 배지용)
+    var STARS = {};   // 'unit|round' → gramma_status 항목
     var STATUS = null; // gramma_status 응답 원문 (스테이지 맵 진행 상태 — STAGE.progress가 읽는다)
     var PASS = window.STAGE ? STAGE.PASS_PCT : 70;
 
-    // 마감일 '2026-09-05' → '9월 5일 (토)'
-    function fmtDue(s) {
-        var m = ('' + s).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-        if (!m) return '' + s;
-        var d = new Date(+m[1], +m[2] - 1, +m[3]);
-        var day = ['일', '월', '화', '수', '목', '금', '토'][d.getDay()];
-        return (+m[2]) + '월 ' + (+m[3]) + '일 (' + day + ')';
-    }
-
     // 지난 입력 기억 + 개인 페이지 등에서 주소로 넘어온 값 우선
     var params = new URLSearchParams(location.search);
+    // 상위 메뉴(학생 개인 페이지 s.html)로 돌아가기 — 개인 페이지 카드가 같은 탭에서 여니까 돌아갈 길이 필요하다(2026-09-16 사용자 "상위 메뉴로 가기 버튼이 없나요?").
+    // 주소는 ?back= 이 있으면 그것, 없으면 넘어온 주소(referrer — 같은 사이트라 접근 코드까지 온다)를 sessionStorage에 기억해 play.html에 다녀와도 유지한다.
+    (function() {
+        var BACK_KEY = 'gramma_back', back = params.get('back') || '';
+        var ref = document.referrer || '';
+        if (!back && /coke4497-sys\.github\.io\/shueguk-report\/s\.html/.test(ref)) back = ref;
+        if (!back && /localhost|127\.0\.0\.1/.test(location.host) && /\/s\.html\?/.test(ref)) back = ref;   // 검사용
+        try { if (back) sessionStorage.setItem(BACK_KEY, back); else back = sessionStorage.getItem(BACK_KEY) || ''; } catch (e) {}
+        if (back && /^https?:\/\//.test(back)) { $('back-top').href = back; $('back-top').classList.remove('hidden'); }
+    })();
     var saved = {};
     try { saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (e) {}
     $('si-name').value = (params.get('name') || saved.name || '').trim();
@@ -211,75 +223,44 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
     $('si-phone8').value = ((params.get('p8') || saved.phone8 || '') + '').replace(/[^0-9]/g, '').slice(0, 8);
     $('si-phone8').addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8); });
 
-    function showStatus(type, html) {
-        var el = $('status');
-        el.className = 'status ' + type;
-        el.innerHTML = html;
+    /* 학생 정보 카드 — 이미 입력한 학생은 요약 한 줄(2026-09-16 지시서). [수정]으로 펼침. */
+    function siSummary() {
+        var w = readInfo(), ok = infoOk(w);
+        $('si-sum-text').textContent = ok ? (w.name + ' · ' + w.school + ' ' + w.grade) : '학생 정보를 입력해 주세요';
+        return ok;
     }
-
+    function siOpen(open) {
+        var card = $('student-info');
+        card.classList.toggle('collapsed', !open);
+        $('si-fold').classList.toggle('hidden', !open || !infoOk(readInfo()));
+    }
+    function siImg() { var img = $('si-img'); if (img.getAttribute('src')) return; img.onload = function() { img.classList.remove('none'); }; img.onerror = function() { img.classList.add('none'); }; img.src = 'assets/sk-school.png'; }
+    // [내 진행 확인] — 정보를 기억하고 진행 상황(gramma_status)을 받아 온다. 배정 목록은 없다(2026-09-16 티쳐스 배정 기능 중단).
     function check() {
-        var name = ($('si-name').value || '').trim();
-        var school = ($('si-school').value || '').trim();
-        var grade = $('si-grade').value || '';
-        var phone8 = ($('si-phone8').value || '').trim();
-        if (!name || !school || !grade || !/^[0-9]{8}$/.test(phone8)) { alert('이름·학교·학년·학부모님 휴대전화번호 8자리를 모두 입력해 주세요!'); return; }
-        try { localStorage.setItem(LS_KEY, JSON.stringify({ name: name, school: school, grade: grade, phone8: phone8 })); } catch (e) {}
-
-        var btn = $('check-btn');
-        btn.disabled = true;
-        showStatus('loading', '배정된 테스트를 확인하는 중…');
-        $('list').innerHTML = '';
-
-        fetch(SCRIPT_URL + '?action=myAssign&grade=' + encodeURIComponent(grade) + '&school=' + encodeURIComponent(school) + '&name=' + encodeURIComponent(name) + '&t=' + Date.now(), { cache: 'no-store' })
-            .then(function(r) { return r.json(); })
-            .then(function(res) {
-                btn.disabled = false;
-                if (!res || res.ok !== true || res.kind !== 'assign') {
-                    showStatus('fail', IC_ALERT + '배정 확인 기능이 아직 준비되지 않았어요.<br>선생님이 보내 준 링크로 응시해 주세요.');
-                    return;
-                }
-                render(res.items || [], { name: name, school: school, grade: grade, phone8: phone8 });
-                loadStars({ name: name, phone8: phone8 });
-            })
-            .catch(function() {
-                btn.disabled = false;
-                showStatus('fail', IC_ALERT + '확인에 실패했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.');
-            });
+        var w = readInfo();
+        if (!infoOk(w)) { alert('이름·학교·학년·학부모님 휴대전화번호 8자리를 모두 입력해 주세요!'); siOpen(true); return; }
+        try { localStorage.setItem(LS_KEY, JSON.stringify(w)); } catch (e) {}
+        siSummary(); siOpen(false); siImg();
+        $('si-sum-sub').textContent = '진행 상황을 불러오는 중…';
+        loadStars({ name: w.name, phone8: w.phone8 });
     }
 
-    // 테스트별 최고 정답률 → 배정 카드·회차 줄에 '별 획득' / '최고 n%' 표시
+    // 진행 상황 — 수파베이스 gramma_status(이름+8자리로 내 결과만). 히어로 별·요약 줄·단원 카드·스테이지 맵이 이 응답을 쓴다.
     function loadStars(who) {
         fetch(SB_URL + '/rest/v1/rpc/gramma_status', {
             method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
             body: JSON.stringify({ p: { name: who.name, phone8: who.phone8 } })
         }).then(function(r) { return r.json(); }).then(function(res) {
-            if (!res || res.ok !== true) return;
+            if (!res || res.ok !== true) { $('si-sum-sub').textContent = '진행 상황을 불러오지 못했어요. 다시 눌러 주세요.'; return; }
             STARS = {}; STATUS = res;
             (res.items || []).forEach(function(it) { STARS[it.unit + '|' + it.round] = it; });
-            var n = markStars('.assign-card[data-key]', '.assign-title');
-            var st = $('status');
-            if (n && st) st.insertAdjacentHTML('beforeend', '<br>이 중 통과한 테스트 <b>' + n + '개</b>');
-            var ms = $('mystars');
-            ms.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>문법 별 ' + (res.stars || 0) + '개 · 세트 ' + ((res.sets || []).length) + '개 클리어';
-            ms.classList.remove('hidden');
+            var stars = res.stars || 0, sets = (res.sets || []).length, passed = (res.items || []).filter(function(it) { return it.pass != null ? it.pass : Number(it.best) >= PASS; }).length;
+            $('mystars').textContent = '문법 별 ' + stars + '개';
+            $('bigstar').classList.toggle('on', stars > 0);
+            $('si-sum-sub').textContent = passed ? '통과한 스테이지 ' + passed + '개 · 세트 ' + sets + '개 클리어 · 문법 별 ' + stars + '개' : '아직 통과한 스테이지가 없어요. 단원을 골라 첫 스테이지에 도전해요.';
+            renderCats();
             if (current) renderStages();
-        }).catch(function() {});
-    }
-    function starBadge(it) {
-        var pass = it.pass != null ? it.pass : (Number(it.best) >= PASS);
-        return pass ? '<span class="assign-star">통과 ' + it.best + '%</span>'
-                    : '<span class="assign-star no">최고 ' + it.best + '% · ' + PASS + '% 이상이면 통과</span>';
-    }
-    function markStars(sel, slotSel) {
-        var n = 0;
-        document.querySelectorAll(sel).forEach(function(el) {
-            var it = STARS[el.getAttribute('data-key')];
-            var slot = el.querySelector(slotSel);
-            if (!it || !slot || slot.querySelector('.assign-star')) return;
-            if (it.pass != null ? it.pass : (Number(it.best) >= PASS)) { n++; el.classList.add('star'); }
-            slot.insertAdjacentHTML('beforeend', starBadge(it));
-        });
-        return n;
+        }).catch(function() { $('si-sum-sub').textContent = '진행 상황을 불러오지 못했어요. 다시 눌러 주세요.'; });
     }
 
     /* ===== 자유 응시 — 단원 카드 → 레벨 탭 → 회차 (assign.html과 같은 규칙: menu/level/group) ===== */
@@ -299,27 +280,37 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
         var top = catOf(menuOf(c));
         return (top.label || c.label) + ' · ' + c.level;
     }
-    var CAT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
-        '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
+    var IC_LOCK_S = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
     var current = '';
-    (function buildCats() {
-        var wrap = $('cats');
+    // 단원 카드 — 이름 + 별 4개(클리어한 세트 수) + 회차 정보 + 진행 막대(통과 스테이지 비율) + 상태 한 줄. 준비 중 단원은 아래 한 줄로.
+    function renderCats() {
+        var wrap = $('cats'), soon = [];
         if (!wrap) return;
+        var html = '';
         CAT_LIST.forEach(function(c) {
             if (c.menu) return;                              // 다른 카드 안의 레벨
-            var levels = levelsOf(c.code), total = 0, parts = [];
-            levels.forEach(function(l) { var n = roundsOf(l.code).length; total += n; if (n && levels.length > 1) parts.push(esc(l.level || l.label) + ' ' + n + '회'); });
-            var b = document.createElement('button');
-            b.type = 'button';
-            b.className = 'cat-card';
-            b.setAttribute('data-code', c.code);
-            b.disabled = !total;
-            b.innerHTML = '<span class="cico">' + CAT_ICON + '</span><span class="cbody"><span class="cname">' + esc(c.label) + '</span>' +
-                '<span class="ccnt">' + (total ? (parts.length ? parts.join(' · ') : '전체 ' + total + '회') : '준비 중') + '</span></span>';
-            b.addEventListener('click', function() { openMenu(c.code); });
-            wrap.appendChild(b);
+            var levels = levelsOf(c.code), total = 0, parts = [], passed = 0, stars = 0;
+            levels.forEach(function(l) {
+                var n = roundsOf(l.code).length; total += n;
+                if (n && levels.length > 1) parts.push(esc(l.level || l.label) + ' ' + n + '회');
+                if (n && STATUS) { var pg = STAGE.progress(l.code, CATS[l.code] || l.label, STATUS); roundsOf(l.code).forEach(function(r) { if (pg.pass[r]) passed++; }); stars += Object.keys(pg.cleared).length; }
+            });
+            if (!total) { soon.push(c.label); return; }
+            var pct = total ? Math.round(passed / total * 100) : 0;
+            var starsHtml = ''; for (var i = 0; i < 4; i++) starsHtml += '<i class="' + (i < stars ? 'on' : '') + '"></i>';
+            html += '<button type="button" class="cat-card" data-code="' + escAttr(c.code) + '">' +
+                '<span class="ctop"><span class="cname">' + esc(c.label) + '</span><span class="cstars" title="클리어한 세트 ' + stars + '개">' + starsHtml + '</span></span>' +
+                '<span class="ccnt">' + (parts.length ? parts.join(' · ') : '전체 ' + total + '회') + '</span>' +
+                '<span class="cbar"><i style="width:' + pct + '%"></i></span>' +
+                '<span class="cstat">' + (passed ? passed + ' / ' + total + ' 통과' : '아직 시작하지 않았어요') + '</span></button>';
         });
-    })();
+        wrap.innerHTML = html;
+        var box = $('cats-soon');
+        if (soon.length) { box.innerHTML = IC_LOCK_S + '<div><div class="names">' + esc(soon.join(' · ')) + '</div><div class="sub">준비 중이에요</div></div>'; box.classList.remove('hidden'); }
+        else box.classList.add('hidden');
+    }
+    $('cats').addEventListener('click', function(ev) { var b = ev.target.closest('.cat-card'); if (b) openMenu(b.getAttribute('data-code')); });
+    renderCats();
     function openMenu(menu) {
         var levels = levelsOf(menu).filter(function(l) { return roundsOf(l.code).length; });
         openCat(levels.length ? levels[0].code : menu);
@@ -394,11 +385,6 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
         return { name: ($('si-name').value || '').trim(), school: ($('si-school').value || '').trim(), grade: $('si-grade').value || '', phone8: ($('si-phone8').value || '').trim() };
     }
     function infoOk(w) { return !!(w.name && w.school && w.grade && /^[0-9]{8}$/.test(w.phone8)); }
-    function testUrl(cat, round, who, free) {
-        return 'test.html?c=' + encodeURIComponent(cat) + '&r=' + encodeURIComponent(round) + (free ? '&free=1' : '') +
-            '&name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) +
-            '&p8=' + encodeURIComponent(who.phone8 || '');
-    }
     $('stages').addEventListener('click', function(ev) {
         var b = ev.target.closest('button.go, button.node');
         if (!b) return;
@@ -406,7 +392,7 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
         var who = readInfo();
         if (!infoOk(who)) {
             alert('응시 전에 위 학생 정보(이름·학교·학년·학부모님 휴대전화번호 8자리)를 먼저 입력해 주세요!');
-            document.querySelector('.student-info').scrollIntoView({ block: 'center', behavior: 'smooth' });
+            siOpen(true); document.querySelector('.student-info').scrollIntoView({ block: 'center', behavior: 'smooth' });
             var miss = !who.name ? 'si-name' : !who.school ? 'si-school' : !who.grade ? 'si-grade' : 'si-phone8';
             try { $(miss).focus(); } catch (e) {}
             return;
@@ -419,45 +405,17 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
             '&name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) + '&p8=' + encodeURIComponent(who.phone8 || '');
     }
 
-    function render(items, who) {
-        if (!items.length) {
-            showStatus('empty', '지금 선생님이 배정한 문법 테스트는 없어요.<br>아래 <b>전체 문법 테스트</b>에서 원하는 회차를 골라 응시할 수 있어요.');
-            return;
-        }
-        showStatus('empty', '선생님이 배정한 테스트 <b>' + items.length + '개</b> — 아래에서 응시해 주세요.');
-        var html = '';
-        items.forEach(function(a) {
-            var label = CATS[a.cat] || a.catLabel || a.cat;
-            var key = a.cat + '-' + a.round;
-            var reg = window.GRAMMA && GRAMMA.tests && GRAMMA.tests[key];
-            var title = (reg && reg.title) ? reg.title : (label + ' ' + a.round + '회');
-            var url = testUrl(a.cat, a.round, who, false);
-            var subs = [];
-            if (a.due) subs.push('마감 ' + fmtDue(a.due) + '까지');
-            if (a.memo) subs.push(a.memo);
-            html += '<div class="assign-card" data-key="' + esc(label) + '|' + esc(a.round) + '">' +
-                '<span class="assign-cat">' + esc(label) + '</span>' +
-                '<div class="assign-body">' +
-                    '<div class="assign-title">' + esc(label) + ' ' + esc(a.round) + '회 · ' + esc(title) + '</div>' +
-                    (subs.length ? '<div class="assign-sub">' + esc(subs.join(' · ')) + '</div>' : '') +
-                '</div>' +
-                '<a class="assign-go" href="' + url + '">응시하기' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
-                '</div>';
-        });
-        $('list').innerHTML = html;
-    }
-
     $('check-btn').addEventListener('click', check);
-    $('status').classList.remove('hidden');
-    showStatus('empty', '학생 정보를 입력하고 [내 테스트 확인하기]를 누르면 선생님이 배정한 테스트가 보여요.<br>아래 <b>전체 문법 테스트</b>는 언제든 골라서 응시할 수 있어요.');
+    $('sum-btn').addEventListener('click', check);
+    $('si-edit').addEventListener('click', function() { siOpen(true); try { $('si-name').focus(); } catch (e) {} });
+    $('si-fold').addEventListener('click', function() { if (infoOk(readInfo())) { siSummary(); siOpen(false); } });
     function syncTop30() { var w = readInfo(); $('top30-link').href = 'top30.html' + (infoOk(w) ? '?name=' + encodeURIComponent(w.name) + '&school=' + encodeURIComponent(w.school) + '&grade=' + encodeURIComponent(w.grade) + '&p8=' + encodeURIComponent(w.phone8) : ''); }
     // 정보 칸이 바뀌면 안내 글·탑30 링크만 갱신한다 — 여기서 스테이지 맵을 다시 그리면 안 된다(change는 칸을 떠날 때 나므로
     // [도전하기]를 누르는 순간 버튼이 새로 만들어져 클릭이 사라진다. E2E에서 실제로 잡힘)
     function stageNote() { if (!current) return; var hasInfo = infoOk(readInfo()); $('stage-note').textContent = !hasInfo ? '학생 정보를 입력하면 내 진행 상황이 보여요. 지금은 첫 스테이지만 열려 있어요.' : (!STATUS ? '진행 상황을 불러오는 중…' : ''); }
-    ['si-name', 'si-school', 'si-grade', 'si-phone8'].forEach(function(id) { $(id).addEventListener('input', function() { syncTop30(); stageNote(); }); $(id).addEventListener('change', function() { syncTop30(); stageNote(); }); });
+    ['si-name', 'si-school', 'si-grade', 'si-phone8'].forEach(function(id) { $(id).addEventListener('input', function() { syncTop30(); stageNote(); siSummary(); }); $(id).addEventListener('change', function() { syncTop30(); stageNote(); siSummary(); }); });
     syncTop30();
-    (function() { var w = readInfo(); if (infoOk(w)) loadStars({ name: w.name, phone8: w.phone8 }); })();
+    (function() { var w = readInfo(); if (infoOk(w)) { siSummary(); siOpen(false); siImg(); loadStars({ name: w.name, phone8: w.phone8 }); } else { siSummary(); siOpen(true); } })();
     (function() {   // play.html에서 돌아올 때 #c=코드 — 그 단원의 스테이지 맵을 바로 연다
         var m = (location.hash || '').match(/^#c=([^&]+)/);
         if (m) { var code = decodeURIComponent(m[1]), c = catOf(code); if (c.code && STAGE.roundsOf(code).length) { openMenu(menuOf(c)); if (code !== current) openCat(code); } }
