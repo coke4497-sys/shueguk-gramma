@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHUEGUK 문법 슈스 탑30</title>
+<meta name="description" content="이수경국어 문법 테스트 — 문법 슈스 탑30(클리어 스테이지 · 플레이 점수)" />
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Do+Hyeon&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif; background: #C6D5D2; min-height: 100vh; padding: 14px; padding-bottom: 60px; color: #2C2F2D; -webkit-text-size-adjust: 100%; }
+.container { max-width: 580px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.header { padding: 16px 16px 14px; background: white; border-radius: 20px; box-shadow: 0 4px 16px rgba(45,128,104,0.08); border: 2px solid #C6D5D2; display: flex; flex-direction: column; gap: 6px; }
+.header .logo { font-family: 'Gowun Batang', serif; font-size: 11px; font-weight: 800; letter-spacing: 5px; color: #A6C1BB; }
+.header h1 { font-family: 'Gowun Batang', serif; font-size: 21px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; }
+.header .intro { font-size: 12px; color: #6A716C; line-height: 1.6; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.ftab { font: inherit; font-size: 12px; font-weight: 700; padding: 7px 13px; border-radius: 999px; background: #fff; color: #65726B; border: 1px solid #E5EDE8; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ftab.on { background: #EDE4F4; color: #6B5B7B; border-color: #D6C9E4; }
+.me { background: #EDE4F4; border-radius: 16px; padding: 13px 15px; display: flex; align-items: center; gap: 12px; }
+.me .rk { font-family: 'Do Hyeon', sans-serif; font-size: 26px; color: #6B5B7B; min-width: 48px; }
+.me .nm { font-size: 14px; font-weight: 700; color: #2C2F2D; }
+.me .nm span { font-weight: 400; font-size: 12px; color: #6B5B7B; }
+.me .d { font-size: 12px; color: #6B5B7B; margin-top: 2px; }
+.list { background: #fff; border: 1px solid #E5EDE8; border-radius: 16px; padding: 6px 0; }
+.row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #F0F4F1; }
+.row:last-child { border-bottom: none; }
+.row.mine { background: #FAF7FC; }
+.rk { width: 34px; height: 34px; border-radius: 10px; background: #EBF0ED; color: #65726B; display: flex; align-items: center; justify-content: center; font-family: 'Do Hyeon', sans-serif; font-size: 16px; flex: none; }
+.rk.r1 { background: #6B5B7B; color: #fff; } .rk.r2 { background: #8D83A8; color: #fff; } .rk.r3 { background: #B9A5CC; color: #fff; }
+.body { flex: 1; min-width: 0; }
+.nm { font-size: 14px; font-weight: 700; color: #2C2F2D; }
+.nm span { font-weight: 400; font-size: 12px; color: #8B928C; margin-left: 4px; }
+.d { font-size: 11.5px; color: #8B928C; margin-top: 2px; }
+.pt { font-family: 'Do Hyeon', sans-serif; font-size: 17px; color: #3A544E; }
+.status { font-size: 13px; padding: 14px; border-radius: 12px; text-align: center; line-height: 1.7; background: #fff; color: #6A716C; border: 1.5px solid #E8EAE7; }
+.status.fail { background: #FADED9; color: #992F20; border-color: #EFA9A5; }
+.note { font-size: 11.5px; color: #6A716C; text-align: center; line-height: 1.7; }
+.back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #6A716C; text-decoration: none; }
+.back svg { width: 15px; height: 15px; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">SHUEGUK</div>
+    <h1>문법 슈스 탑30</h1>
+    <div class="intro">클리어한 스테이지 수 → 플레이 점수 순 · 슈퍼스타 랭킹과는 별개예요</div>
+    <div class="filters">
+      <button type="button" class="ftab on" data-level="all">전체</button>
+      <button type="button" class="ftab" data-level="mid">중등</button>
+      <button type="button" class="ftab" data-level="high">고등</button>
+      <button type="button" class="ftab" data-month="1">이번 달</button>
+    </div>
+  </div>
+  <div id="me" class="me hidden"></div>
+  <div id="status" class="status">순위를 불러오는 중…</div>
+  <div id="list" class="list hidden"></div>
+  <div class="note" id="note"></div>
+  <a class="back" id="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>문법 스테이지로</a>
+</div>
+<script>
+(function() {
+    var SB_URL = 'https://bangdbhqpphqqdwcledg.supabase.co';
+    var SB_KEY = 'sb_publishable_dE9d1KIbpgYaQkaS2MSrlg_-7SiRJuT';
+    var LS_KEY = 'gramma_student';
+    function $(id) { return document.getElementById(id); }
+    function esc(s) { return ('' + (s == null ? '' : s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function fmt(n) { return ('' + (n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+    var params = new URLSearchParams(location.search), saved = {};
+    try { saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (e) {}
+    var who = { name: (params.get('name') || saved.name || '').trim(), school: (params.get('school') || saved.school || '').trim(), grade: (params.get('grade') || saved.grade || '').trim(), phone8: ((params.get('p8') || saved.phone8 || '') + '').replace(/[^0-9]/g, '').slice(0, 8) };
+    if (who.name) $('back').href = 'index.html?name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) + '&p8=' + encodeURIComponent(who.phone8);
+    var level = 'all', month = false;
+    function monthStr() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2); }
+    function load() {
+        $('status').className = 'status'; $('status').textContent = '순위를 불러오는 중…'; $('status').classList.remove('hidden');
+        $('list').classList.add('hidden'); $('me').classList.add('hidden');
+        var p = { level: level, month: month ? monthStr() : '' };
+        if (who.name && /^[0-9]{8}$/.test(who.phone8)) { p.name = who.name; p.phone8 = who.phone8; }
+        fetch(SB_URL + '/rest/v1/rpc/gramma_top', { method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p: p }) })
+            .then(function(r) { return r.json(); }).then(render)
+            .catch(function() { $('status').className = 'status fail'; $('status').textContent = '순위를 불러오지 못했어요. 인터넷을 확인하고 다시 열어 주세요.'; });
+    }
+    function render(res) {
+        if (!res || res.ok !== true) { $('status').className = 'status fail'; $('status').textContent = '순위를 불러오지 못했어요.'; return; }
+        var rows = res.rows || [];
+        if (!rows.length) { $('status').textContent = (month ? '이번 달' : '아직') + ' 기록이 없어요. 스테이지를 클리어하면 여기에 올라와요.'; return; }
+        $('status').classList.add('hidden');
+        var me = res.me;
+        if (me) {
+            $('me').innerHTML = '<div class="rk">' + me.rank + '위</div><div><div class="nm">' + esc(who.name) + ' <span>' + esc(who.school) + ' ' + esc(who.grade) + '</span></div><div class="d">스테이지 ' + me.stages + ' · ' + fmt(me.points) + '점 · 별 ' + me.stars + (me.rank > 1 && rows[Math.min(me.rank, rows.length) - 2] ? ' · ' + (me.rank - 1) + '위까지 ' + fmt(Math.max(0, rows[Math.min(me.rank, rows.length) - 2].points - me.points)) + '점' : '') + '</div></div>';
+            $('me').classList.remove('hidden');
+        }
+        $('list').innerHTML = rows.map(function(r) {
+            var mine = me && r.rank === me.rank && r.name === who.name;
+            return '<div class="row' + (mine ? ' mine' : '') + '"><div class="rk' + (r.rank <= 3 ? ' r' + r.rank : '') + '">' + r.rank + '</div>' +
+                '<div class="body"><div class="nm">' + esc(r.name) + '<span>' + esc(r.school) + ' ' + esc(r.grade) + '</span></div><div class="d">스테이지 ' + r.stages + ' · 별 ' + r.stars + '</div></div>' +
+                '<div class="pt">' + fmt(r.points) + '</div></div>';
+        }).join('');
+        $('list').classList.remove('hidden');
+        $('note').textContent = '전체 ' + res.total + '명 중 30명까지 · 통과 기준 정답률 ' + (res.pass_pct || 70) + '%' + (month ? ' · 이번 달 제출만' : '');
+    }
+    document.querySelectorAll('.ftab').forEach(function(b) {
+        b.addEventListener('click', function() {
+            if (b.getAttribute('data-month')) { month = !month; b.classList.toggle('on', month); }
+            else { level = b.getAttribute('data-level'); document.querySelectorAll('.ftab[data-level]').forEach(function(x) { x.classList.toggle('on', x === b); }); }
+            load();
+        });
+    });
+    load();
+})();
+</script>
+</body>
+</html>
