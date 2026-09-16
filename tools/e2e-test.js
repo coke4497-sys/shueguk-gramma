@@ -306,6 +306,11 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p4.waitForSelector('#fb:not(.hidden)');
   ok((await p4.textContent('#fb .fb-top')).includes('아쉬워요') && await p4.$eval('#abox .big[data-v="' + q1[0].answer + '"]', e => e.classList.contains('ans')) && await p4.$eval('#abox .big[data-v="' + wrong1 + '"]', e => e.classList.contains('ng')), '틀리면 바로 정답(초록)·내 답(붉은) 표시');
   ok(await p4.$eval('#segs .seg:nth-child(1)', e => e.classList.contains('ng')) && (await p4.textContent('#tb-pts')) === '0점', '진행 바 1칸 붉게 · 0점');
+  // 슈콩 피드백 연출(2026-09-16 지시서): 오답 = 응원 슈콩(흔들림) + 꽃 6개, 파티클은 캐릭터 칸에만
+  const fxNg = await p4.evaluate(() => { const a = document.querySelector('#fb .fb-avatar'), img = document.querySelector('#fb .fb-img'); return { panel: !!document.querySelector('#fb .fb-panel.ng'), n: a.querySelectorAll('.fx-layer span').length, ring: !!a.querySelector('.fx-layer span[style*="border-radius"]'), src: img.getAttribute('src'), wobble: img.style.animation.includes('fxWobble'), outside: !!document.querySelector('#fb > .fx-layer, .fb-text .fx-layer') }; });
+  ok(fxNg.panel && fxNg.n === 7 && fxNg.ring && fxNg.src === 'assets/sk-cheer.png' && fxNg.wobble && !fxNg.outside, '오답: 응원 슈콩 + 꽃 파티클 6개·링, 캐릭터 칸에만');
+  await p4.waitForFunction(() => !document.querySelector('#fb .fx-layer'), null, { timeout: 4000 });
+  ok(true, '파티클은 1회 재생 뒤 DOM에서 제거');
   await p4.click('#next');
   await p4.waitForFunction(() => document.getElementById('tb-n').textContent === '2 / 15');
   ok(await p4.$eval('#fb', e => e.classList.contains('hidden')) && await p4.$eval('#segs .seg:nth-child(2)', e => e.classList.contains('now')), '다음 문항으로 넘어감(한 문항 = 한 페이지)');
@@ -318,6 +323,8 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   }
   await answer(q1[1]);
   ok((await p4.textContent('#fb .fb-top')).includes('정답') && (await p4.textContent('#fb .fb-top .pts')).match(/\+1[0-9][0-9]점/), '맞히면 정답 + 점수(100 + 남은 초×2)');
+  const fxOk = await p4.evaluate(() => { const a = document.querySelector('#fb .fb-avatar'), img = document.querySelector('#fb .fb-img'); return { panel: !!document.querySelector('#fb .fb-panel.ok'), n: a.querySelectorAll('.fx-layer span').length, src: img.getAttribute('src'), still: !img.style.animation.includes('fxWobble') }; });
+  ok(fxOk.panel && fxOk.n === 10 && fxOk.src === 'assets/sk-heart.png' && fxOk.still, '정답: 하트 슈콩 + 하트 파티클 9개·링(오답보다 많게)');
   await p4.click('#next'); await answer(q1[2]); await p4.click('#next'); await answer(q1[3]);
   ok((await p4.textContent('#tb-combo-n')) === '콤보 3' && (await p4.textContent('#fb .fb-top')).includes('콤보 3'), '3연속 정답 → 콤보 3');
   for (let i = 4; i < 15; i++) { await p4.click('#next'); await answer(q1[i]); }
@@ -350,6 +357,8 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p4.waitForSelector('#result:not(.hidden)');
   await p4.waitForFunction(() => document.getElementById('star-slot').textContent.includes('별 +1'));
   ok((await p4.textContent('#star-slot')).includes('세트 1 클리어') && (await p4.textContent('#star-slot')).includes('더해졌어요'), '세트 마지막 스테이지 클리어 → 세트 1 클리어 · 별 +1 카드');
+  const fxStar = await p4.evaluate(() => { const st = document.querySelector('#star-slot .star-done .star-stage'); return st ? { h: st.getBoundingClientRect().height, n: st.querySelectorAll('.fx-layer span').length, ov: getComputedStyle(st).overflow, src: st.querySelector('img').getAttribute('src'), title: document.querySelector('#star-slot .star-done .t').textContent } : null; });
+  ok(fxStar && fxStar.h === 118 && fxStar.n === 13 && fxStar.ov === 'hidden' && fxStar.src === 'assets/sk-best.png' && fxStar.title === '별 하나 완성!', '별 완성: 최고슈콩 + 노란 반짝이 12개, 118px 별 영역 안에만');
   // 미리보기는 기록 없음
   const nSb = sbCalls.length;
   await p4.goto(`http://localhost:${PORT}/play.html?c=ort&r=2&preview=1`);
