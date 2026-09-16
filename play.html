@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SHUEGUK 문법 · 플레이</title>
+<meta name="description" content="이수경국어 문법 테스트 — 스테이지 플레이 모드(문항마다 한 페이지, 30초)" />
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Do+Hyeon&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif; background: #C6D5D2; color: #2C2F2D; -webkit-text-size-adjust: 100%; min-height: 100vh; }
+.wrap { max-width: 560px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+.hidden { display: none !important; }
+.dh { font-family: 'Do Hyeon', 'Gowun Dodum', sans-serif; font-weight: 400; }
+.serif { font-family: 'Gowun Batang', serif; }
+button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+
+/* ===== 상단: 스테이지 진행 바 + 시간 ===== */
+#topbar { position: sticky; top: 0; z-index: 5; background: #fff; border-bottom: 1px solid #E5EDE8; padding: 12px 16px 11px; display: flex; flex-direction: column; gap: 9px; }
+.tb-row { display: flex; align-items: center; gap: 10px; }
+.tb-x { width: 30px; height: 30px; border: none; background: none; color: #8B928C; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; margin-left: -6px; }
+.tb-x svg { width: 20px; height: 20px; }
+.tb-title { flex: 1; min-width: 0; font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 700; color: #3A544E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb-combo { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: #6B5B7B; background: #EDE4F4; border-radius: 999px; padding: 5px 10px; white-space: nowrap; }
+.tb-combo svg { width: 12px; height: 12px; }
+.tb-combo.off { color: #9BA8A1; background: #F0F3F1; }
+.tb-pts { font-family: 'Do Hyeon', sans-serif; font-size: 18px; color: #3A544E; white-space: nowrap; }
+.segs { flex: 1; display: grid; gap: 3px; }
+.seg { height: 10px; border-radius: 5px; background: #E9EDEB; }
+.seg.ok { background: #3E9B74; } .seg.ng { background: #C64F63; } .seg.now { background: #6B5B7B; }
+.tb-n { font-size: 13px; font-weight: 700; color: #65726B; white-space: nowrap; }
+.tbar { flex: 1; height: 6px; border-radius: 3px; background: #F0F3F1; overflow: hidden; }
+.tbar i { display: block; height: 6px; border-radius: 3px; background: #B9A5CC; width: 100%; transition: width .95s linear; }
+.tbar i.low { background: #C64F63; }
+.tb-sec { font-family: 'Do Hyeon', sans-serif; font-size: 16px; color: #6B5B7B; min-width: 34px; text-align: right; }
+.tb-sec.low { color: #C64F63; }
+
+/* ===== 문항 ===== */
+#qbox { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px; padding: 22px 22px 16px; }
+.q-meta { display: flex; align-items: center; gap: 8px; }
+.q-num { font-family: 'Gowun Batang', serif; font-size: 13px; font-weight: 700; color: #8D83A8; }
+.q-bar { display: block; width: 22px; height: 2px; border-radius: 9px; background: #B9A5CC; }
+.q-kind { font-size: 12px; color: #6A716C; }
+.q-stem { font-family: 'Gowun Batang', serif; font-size: 26px; font-weight: 700; line-height: 1.55; color: #2C2F2D; letter-spacing: -.3px; text-wrap: pretty; word-break: keep-all; }
+.q-stem.long { font-size: 21px; }
+.q-example { font-size: 15px; color: #6A716C; background: rgba(255,255,255,.55); padding: 10px 13px; border-radius: 10px; line-height: 1.6; }
+.q-example .blank { display: inline-block; min-width: 3em; border-bottom: 2px solid #8D83A8; }
+.boxki { background: #E9F0EF; border: 1.5px dashed #A6C1BB; border-radius: 12px; padding: 10px 12px; font-size: 13px; color: #3A544E; }
+.boxki b { display: block; margin-bottom: 6px; font-size: 11px; }
+.boxki-words { display: flex; flex-wrap: wrap; gap: 6px; }
+.boxki-word { background: white; border: 1.5px solid #A6C1BB; color: #3A544E; padding: 5px 11px; border-radius: 7px; font-weight: 700; font-size: 14px; }
+.q-hint { font-size: 13px; color: #6B5B7B; background: #EDE4F4; padding: 8px 12px; border-radius: 9px; line-height: 1.5; }
+.q-hint b { font-weight: 800; margin-right: 4px; }
+.psg-btn { align-self: flex-start; border: 1px solid #D6C9E4; background: #fff; color: #6B5B7B; font-size: 12.5px; font-weight: 700; padding: 8px 13px; border-radius: 999px; cursor: pointer; }
+.psg { font-size: 14px; line-height: 1.75; color: #2C2F2D; background: #fff; border-radius: 12px; padding: 12px 14px; max-height: 38vh; overflow: auto; }
+.psg p { margin-bottom: 8px; }
+.q-start { font-family: 'Gowun Batang', serif; font-size: 30px; font-weight: 700; color: #2A332F; }
+.steps { display: flex; flex-direction: column; gap: 10px; }
+.step-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #fff; border-radius: 12px; padding: 9px 10px; }
+.step-arrow { flex: none; font-size: 14px; color: #BCC8C2; }
+.hy { flex: none; width: 12px; text-align: center; font-weight: 800; color: #6B5B7B; font-size: 16px; }
+.rule-select { flex: 1; min-width: 120px; padding: 11px 30px 11px 12px; font-size: 15px; font-family: inherit; border: 1px solid #E1E7E3; border-radius: 10px; outline: none; color: #2A332F; background: #fff; -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239BA8A1' stroke-width='2.4'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 10px center; background-size: 13px; }
+.rule-select.hid { display: none; }
+.form-input { flex: 1; min-width: 96px; padding: 11px 12px; font-size: 17px; font-family: inherit; font-weight: 700; text-align: center; border-radius: 10px; background: #F4F7F5; border: 1px solid #E1E7E3; color: #2A332F; outline: none; -webkit-appearance: none; }
+.form-input:focus { border-color: #D6C9E4; background: #fff; }
+.form-input.ok { border-color: #3E9B74; background: #E4F1EA; } .form-input.ng { border-color: #EFA9A5; background: #FADED9; }
+.rule-select.ok { border-color: #3E9B74; background-color: #E4F1EA; } .rule-select.ng { border-color: #EFA9A5; background-color: #FADED9; }
+.pillset { display: flex; flex-wrap: wrap; gap: 6px 12px; flex-basis: 100%; align-items: center; }
+.pills { display: inline-flex; align-items: center; gap: 5px; }
+.pills .pl-lab { font-size: 11px; color: #9BA8A1; margin-right: 3px; white-space: nowrap; }
+.pill { font-size: 14px; font-weight: 700; line-height: 1; padding: 10px 15px; border-radius: 999px; border: none; background: #EDE4F4; color: #6B5B7B; cursor: pointer; min-height: 40px; }
+.pill.on, .pill.on:hover { background: #6B5B7B; color: #fff; }
+.pills.done .pill { cursor: default; } .pills.done .pill:not(.on) { background: #F0F3F1; color: #B7BFB9; }
+.pills.ok .pill.on { background: #3E9B74; } .pills.ng .pill.on { background: #C64F63; } .pills.ng.none .pl-lab { color: #C64F63; }
+
+/* ===== 답 ===== */
+#abox { padding: 0 16px 24px; display: flex; flex-direction: column; gap: 12px; }
+.ox { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.big { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 124px; border-radius: 20px; background: #fff; border: 1px solid #E5EDE8; color: #3A544E; cursor: pointer; font-family: 'Do Hyeon', sans-serif; font-size: 60px; line-height: 1; }
+.big .tag { font-family: 'Gowun Dodum', sans-serif; font-size: 12px; font-weight: 700; display: none; }
+.big.ans { background: #E4F1EA; border-color: #3E9B74; color: #2E7D5B; } .big.ans .tag { display: block; }
+.big.ng { background: #FADED9; border-color: #EFA9A5; color: #992F20; } .big.ng .tag { display: block; }
+.big.dim { color: #C0C6C1; }
+.opts { display: flex; flex-direction: column; gap: 9px; }
+.opt { display: flex; align-items: center; gap: 12px; text-align: left; min-height: 58px; padding: 12px 16px; border-radius: 16px; background: #fff; border: 1px solid #E5EDE8; color: #2C2F2D; font-size: 18px; line-height: 1.4; cursor: pointer; }
+.opt .on { flex: none; font-family: 'Gowun Batang', serif; font-weight: 700; color: #8D83A8; font-size: 18px; }
+.opt .tag { margin-left: auto; font-size: 11.5px; font-weight: 800; white-space: nowrap; }
+.opt.ans { background: #E4F1EA; border-color: #3E9B74; color: #276B4E; } .opt.ans .on { color: #276B4E; }
+.opt.ng { background: #FADED9; border-color: #EFA9A5; color: #992F20; } .opt.ng .on { color: #992F20; }
+.opt.dim { color: #A9B1AB; }
+.ans-line { display: flex; gap: 10px; }
+.answer-input { flex: 1; padding: 15px 16px; font-size: 20px; font-family: inherit; font-weight: 700; border: 1px solid #E1E7E3; border-radius: 14px; outline: none; color: #2A332F; background: #fff; -webkit-appearance: none; min-height: 58px; }
+.answer-input:focus { border-color: #D6C9E4; }
+.answer-input.ok { border-color: #3E9B74; background: #E4F1EA; color: #276B4E; } .answer-input.ng { border-color: #EFA9A5; background: #FADED9; color: #992F20; }
+.btn { display: flex; align-items: center; justify-content: center; gap: 6px; border: none; border-radius: 14px; padding: 15px 18px; font-size: 16px; font-weight: 700; cursor: pointer; min-height: 54px; text-decoration: none; }
+.btn svg { width: 16px; height: 16px; }
+.btn.pri { background: #6B5B7B; color: #fff; }
+.btn.pri:disabled { background: #CFC6D9; cursor: default; }
+.btn.sec { background: #fff; color: #65726B; border: 1px solid #E5EDE8; }
+.btn.lav { background: #EDE4F4; color: #6B5B7B; }
+.btn.chk { flex: none; min-width: 96px; }
+
+/* ===== 정답 표시 ===== */
+#fb { background: #fff; border-radius: 22px 22px 0 0; padding: 18px 18px 26px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 -6px 20px rgba(45,128,104,.08); }
+.fb-top { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; }
+.fb-top svg { width: 19px; height: 19px; }
+.fb-top.ok { color: #2E7D5B; } .fb-top.ng { color: #992F20; }
+.fb-top .pts { margin-left: auto; font-family: 'Do Hyeon', sans-serif; font-size: 18px; font-weight: 400; }
+.fb-ans { font-size: 15px; line-height: 1.6; color: #2C2F2D; }
+.fb-ans b { color: #6B5B7B; }
+.fb-why { font-size: 15px; line-height: 1.7; color: #2C2F2D; }
+.fb-chain { display: flex; flex-direction: column; gap: 6px; }
+.fb-srow { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-size: 14px; }
+.fb-srow .n { width: 20px; height: 20px; border-radius: 6px; background: #EBF0ED; color: #65726B; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; }
+.ch-r { background: #EDE4F4; color: #6B5B7B; border-radius: 999px; padding: 4px 10px; font-size: 12.5px; font-weight: 700; }
+.ch-f { font-weight: 700; } .ch-f.fin { background: #EDE4F4; color: #6B5B7B; border-radius: 8px; padding: 3px 8px; }
+.fb-art { display: inline-flex; align-self: flex-start; font-size: 12px; font-weight: 700; color: #6B5B7B; background: #EDE4F4; border-radius: 999px; padding: 5px 11px; }
+
+/* ===== 시작·결과 ===== */
+.card { background: #fff; border: 2px solid #C6D5D2; border-radius: 20px; padding: 22px 18px 18px; box-shadow: 0 4px 16px rgba(45,128,104,.08); display: flex; flex-direction: column; gap: 10px; }
+.card.plain { border: 1px solid #E5EDE8; box-shadow: none; padding: 14px 16px; }
+.page { padding: 14px 14px 40px; display: flex; flex-direction: column; gap: 12px; }
+.logo { font-family: 'Gowun Batang', serif; font-size: 11px; font-weight: 700; letter-spacing: 5px; color: #A6C1BB; }
+.h1 { font-family: 'Gowun Batang', serif; font-size: 21px; font-weight: 700; color: #3A544E; letter-spacing: -.5px; }
+.sub { font-size: 12.5px; color: #6A716C; line-height: 1.65; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tile { display: flex; flex-direction: column; gap: 3px; background: #F4F5F3; border-radius: 12px; padding: 9px 11px; }
+.tile .k { font-size: 11px; color: #8B928C; } .tile .v { font-family: 'Do Hyeon', sans-serif; font-size: 18px; color: #3A544E; }
+.tile .v.lav { color: #6B5B7B; }
+.res-head { align-items: center; text-align: center; gap: 8px; padding-top: 26px; }
+.res-big { font-family: 'Do Hyeon', sans-serif; font-size: 44px; color: #3A544E; line-height: 1; }
+.res-big.fail { color: #992F20; }
+.res-pct { display: flex; align-items: baseline; gap: 6px; }
+.res-pct .p { font-family: 'Do Hyeon', sans-serif; font-size: 34px; color: #6B5B7B; line-height: 1; }
+.res-pct .s { font-size: 13px; color: #6A716C; }
+.pass-tag { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 7px 13px; font-size: 12.5px; font-weight: 700; }
+.pass-tag.ok { background: #E4F1EA; color: #2E7D5B; } .pass-tag.no { background: #FADED9; color: #992F20; }
+.pass-tag svg { width: 14px; height: 14px; }
+.star-card { background: #EDE4F4; border-radius: 16px; padding: 16px 16px 14px; display: flex; align-items: center; gap: 14px; }
+.star-card .ic { width: 52px; height: 52px; border-radius: 16px; background: #fff; color: #6B5B7B; display: flex; align-items: center; justify-content: center; flex: none; }
+.star-card .ic svg { width: 28px; height: 28px; }
+.star-card .t { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 700; color: #6B5B7B; }
+.star-card .d { font-size: 12px; color: #6B5B7B; line-height: 1.6; margin-top: 3px; }
+.wrong-title { font-family: 'Gowun Batang', serif; font-size: 14px; font-weight: 700; color: #3A544E; }
+.wrong { display: flex; align-items: flex-start; gap: 10px; background: #FBEEEB; border-radius: 10px; padding: 9px 11px; }
+.wrong .n { font-family: 'Gowun Batang', serif; font-size: 12px; font-weight: 700; color: #992F20; min-width: 18px; padding-top: 2px; }
+.wrong .t { flex: 1; font-size: 12.5px; color: #2C2F2D; line-height: 1.5; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.send { font-size: 12px; color: #6A716C; text-align: center; line-height: 1.6; }
+.send.fail { color: #992F20; }
+.loading { padding: 40px 20px; text-align: center; color: #6A716C; font-size: 14px; line-height: 1.8; }
+.loading.fail { color: #992F20; }
+@media (max-width: 400px) { .q-stem { font-size: 23px; } .q-stem.long { font-size: 19px; } .big { min-height: 108px; font-size: 52px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="loading" class="loading">문항을 불러오는 중…</div>
+
+  <!-- 시작 화면 -->
+  <div id="start" class="page hidden">
+    <div class="card">
+      <div class="logo">SHUEGUK</div>
+      <div class="h1" id="st-title"></div>
+      <div class="sub" id="st-sub"></div>
+      <div class="tiles">
+        <div class="tile"><span class="k">문항</span><span class="v" id="st-n"></span></div>
+        <div class="tile"><span class="k">문항당</span><span class="v">30초</span></div>
+        <div class="tile"><span class="k">통과 기준</span><span class="v lav" id="st-pass"></span></div>
+      </div>
+      <div class="sub" id="st-who"></div>
+      <button type="button" class="btn pri" id="st-go">시작하기</button>
+      <a class="btn sec" id="st-back" href="#">스테이지 맵으로</a>
+    </div>
+  </div>
+
+  <!-- 플레이 -->
+  <div id="game" class="hidden" style="display:flex;flex-direction:column;min-height:100vh;">
+    <div id="topbar">
+      <div class="tb-row">
+        <button type="button" class="tb-x" id="tb-x" aria-label="그만두기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+        <div class="tb-title" id="tb-title"></div>
+        <div class="tb-combo off" id="tb-combo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg><span id="tb-combo-n">콤보 0</span></div>
+        <div class="tb-pts" id="tb-pts">0점</div>
+      </div>
+      <div class="tb-row"><div class="segs" id="segs"></div><div class="tb-n" id="tb-n"></div></div>
+      <div class="tb-row"><div class="tbar"><i id="tbar"></i></div><div class="tb-sec" id="tb-sec">30초</div></div>
+    </div>
+    <div id="qbox"></div>
+    <div id="abox"></div>
+    <div id="fb" class="hidden"></div>
+  </div>
+
+  <!-- 결과 -->
+  <div id="result" class="page hidden"></div>
+</div>
+
+<script src="manifest.js"></script>
+<script src="stage.js"></script>
+<script>
+(function() {
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzikteq7gR2ezi_NXc2of8PTvUj5XouJ5ZcZOEWv0YWgjQjs8dZqogQjSr0-LSqneXF/exec';
+    var SB_URL = 'https://bangdbhqpphqqdwcledg.supabase.co';
+    var SB_KEY = 'sb_publishable_dE9d1KIbpgYaQkaS2MSrlg_-7SiRJuT';
+    var SEC = 30;                 // 문항당 시간(초)
+    var PT_HIT = 100, PT_SEC = 2, PT_COMBO = 20;   // 맞히면 100 + 남은 초×2, 콤보 3부터 +20씩
+    var PASS = window.STAGE ? STAGE.PASS_PCT : 70;
+
+    function $(id) { return document.getElementById(id); }
+    function esc(s) { return ('' + (s == null ? '' : s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function pad2(n) { n = '' + n; return n.length < 2 ? '0' + n : n; }
+    function circ(n) { var s = '①②③④⑤⑥⑦⑧⑨⑩'; n = parseInt(n, 10); return (n >= 1 && n <= 10) ? s.charAt(n - 1) : ('(' + n + ')'); }
+    function nowStr() { var d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
+    function fmt(n) { return ('' + n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+    function ic(inner) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>'; }
+    var IC_OK = ic('<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>'), IC_NG = ic('<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/>'),
+        IC_ARROW = ic('<path d="M5 12h14M13 6l6 6-6 6"/>'), IC_STAR = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>';
+
+    /* ----- 채점 규칙 (test.html과 동일) ----- */
+    function normalize(s) {
+        s = (s || '').replace(/\s/g, '').replace(/[,，、]/g, '').trim();
+        var map = { '①':'1','②':'2','③':'3','④':'4','⑤':'5','⑥':'6','⑦':'7','⑧':'8','⑨':'9','⑩':'10' };
+        return s.replace(/[①-⑩]/g, function(c) { return map[c] || c; });
+    }
+    function normForm(s) { return (s || '').replace(/[\[\]\s]/g, '').replace(/[‐-―－−]/g, '-').trim(); }
+    function formOK(user, form) {
+        var bare = function(x) { return PUI.hyphenMarks ? x.replace(/^-+|-+$/g, '') : x; };
+        var u = bare(normForm(user));
+        if (!u) return false;
+        if (u === bare(normForm(form))) return true;
+        var alts = ('' + form).split('/');
+        if (alts.length < 2) return false;
+        return alts.some(function(a) { return bare(normForm(a)) && bare(normForm(a)) === u; });
+    }
+    function shortOK(user, q) {
+        var u = normalize(user);
+        var accept = (q.answers && q.answers.length) ? q.answers : [q.answer];
+        var ok = !!u && accept.some(function(a) { return normalize(a) === u; });
+        if (!ok && q.contains && u.indexOf(normalize(q.contains)) !== -1) ok = true;
+        if (!ok && u) ok = accept.some(function(a) {
+            var groups = ('' + (a == null ? '' : a)).split(/[,，]/).map(normalize).filter(function(g) { return g; });
+            return groups.length >= 2 && groups.every(function(g) { return u.indexOf(g) !== -1; });
+        });
+        return ok;
+    }
+    function dispForm(form) { return PUI.firstForm ? ('' + form).split('/')[0] : form; }
+    function correctChain(q) {
+        return (q.steps || []).map(function(st) { return '[' + st.accept.join('/') + (st.accept2 ? '·' + st.accept2.join('/') : '') + '] ' + dispForm(st.form); }).join(' → ');
+    }
+
+    /* ----- 상태 ----- */
+    var params = new URLSearchParams(location.search);
+    var catCode = params.get('c') || '', round = params.get('r') || '', preview = params.get('preview') === '1';
+    var who = { name: (params.get('name') || '').trim(), school: (params.get('school') || '').trim(), grade: (params.get('grade') || '').trim(), phone8: (params.get('p8') || '').replace(/[^0-9]/g, '').slice(0, 8) };
+    var CAT_LABEL = '', DATA = null, QS = [], RULES = [], RULES2 = [], PUI = {};
+    var idx = 0, results = [], combo = 0, comboMax = 0, points = 0, answered = false, timer = null, left = SEC, tStart = 0, secUsed = [];
+    var backUrl = 'index.html' + (who.name ? '?name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) + '&p8=' + encodeURIComponent(who.phone8) : '') + '#c=' + encodeURIComponent(catCode);
+
+    function fail(msg) { var l = $('loading'); l.className = 'loading fail'; l.innerHTML = msg + '<br><a href="' + esc(backUrl) + '">스테이지 맵으로</a>'; }
+    if (window.GRAMMA) GRAMMA.categories.forEach(function(c) { if (c.code === catCode) CAT_LABEL = c.label; });
+    var reg = window.GRAMMA && GRAMMA.tests && GRAMMA.tests[catCode + '-' + round];
+    if (!catCode || !round || !reg) { fail('아직 등록되지 않은 테스트예요.'); return; }
+
+    fetch('data/' + encodeURIComponent(catCode) + '-' + encodeURIComponent(round) + '.json', { cache: 'no-store' })
+        .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function(d) {
+            DATA = d; QS = d.questions || []; RULES = d.ruleOptions || []; RULES2 = d.ruleOptions2 || [];
+            PUI = Object.assign({ select: '— 변동 종류 —', select2: '— 구분 —', formFirst: false, mid: '바뀐 형태', last: '최종 발음', arrow: '→', firstForm: false, hyphenMarks: false }, d.processUI || {});
+            if (!QS.length) { fail('문항이 비어 있어요.'); return; }
+            document.title = 'SHUEGUK 문법 · ' + CAT_LABEL + ' ' + round + '회 플레이';
+            showStart();
+        })
+        .catch(function() { fail('문항을 불러오지 못했어요. 인터넷을 확인하고 다시 열어 주세요.'); });
+
+    /* ----- 시작 화면 ----- */
+    function showStart() {
+        var set = STAGE.setOf(catCode, round);
+        $('loading').classList.add('hidden');
+        $('st-title').textContent = '스테이지 ' + round + ' · ' + (reg.title || CAT_LABEL + ' ' + round + '회');
+        $('st-sub').textContent = CAT_LABEL + (set ? ' · 세트 ' + set.no + ' (스테이지 ' + set.rounds[0] + '~' + set.rounds[set.rounds.length - 1] + ')' : '') + (DATA.subtitle ? ' · ' + DATA.subtitle : '');
+        $('st-n').textContent = QS.length + '문항';
+        $('st-pass').textContent = '정답률 ' + PASS + '%';
+        $('st-who').innerHTML = preview ? '티쳐스 미리보기 — 결과는 기록되지 않아요.' :
+            (who.name ? '<b>' + esc(who.name) + '</b> · ' + esc(who.school) + ' ' + esc(who.grade) + ' — 문항마다 한 화면씩, 답을 고르면 바로 정답이 보여요. 시간이 다 되면 오답으로 넘어가요.' :
+                        '학생 정보가 없어요. 스테이지 맵에서 정보를 입력하고 다시 들어와 주세요.');
+        $('st-back').href = backUrl;
+        var go = $('st-go');
+        if (!preview && !(who.name && who.school && who.grade && /^[0-9]{8}$/.test(who.phone8))) go.disabled = true;
+        go.addEventListener('click', startGame);
+        $('start').classList.remove('hidden');
+    }
+
+    /* ----- 플레이 ----- */
+    function startGame() {
+        $('start').classList.add('hidden');
+        $('game').classList.remove('hidden');
+        $('tb-title').textContent = '스테이지 ' + round + ' · ' + (reg.title || CAT_LABEL);
+        var segs = $('segs'); segs.style.gridTemplateColumns = 'repeat(' + QS.length + ', minmax(0, 1fr))';
+        segs.innerHTML = QS.map(function() { return '<div class="seg"></div>'; }).join('');
+        $('tb-x').addEventListener('click', function() { if (confirm('그만두면 이 스테이지 기록은 남지 않아요. 그만둘까요?')) location.href = backUrl; });
+        idx = 0; results = []; combo = 0; comboMax = 0; points = 0;
+        showQ();
+    }
+    function updateBar() {
+        var segs = $('segs').children;
+        for (var i = 0; i < segs.length; i++) segs[i].className = 'seg' + (i < results.length ? (results[i].ok ? ' ok' : ' ng') : (i === idx ? ' now' : ''));
+        $('tb-n').textContent = (Math.min(idx + 1, QS.length)) + ' / ' + QS.length;
+        $('tb-pts').textContent = fmt(points) + '점';
+        $('tb-combo-n').textContent = '콤보 ' + combo;
+        $('tb-combo').className = 'tb-combo' + (combo >= 2 ? '' : ' off');
+    }
+    function setTimeUI() {
+        var bar = $('tbar'), sec = $('tb-sec');
+        bar.style.width = (left / SEC * 100) + '%';
+        bar.className = left <= 5 ? 'low' : '';
+        sec.textContent = left + '초';
+        sec.className = 'tb-sec' + (left <= 5 ? ' low' : '');
+    }
+    function startTimer() {
+        clearInterval(timer); left = SEC; tStart = Date.now();
+        var bar = $('tbar'); bar.style.transition = 'none'; bar.style.width = '100%'; void bar.offsetWidth; bar.style.transition = '';
+        setTimeUI();
+        timer = setInterval(function() { left--; setTimeUI(); if (left <= 0) { clearInterval(timer); if (!answered) grade(null, true); } }, 1000);
+    }
+    function kindLabel(q) { return q.type === 'ox' ? 'O / X' : q.type === 'choice' ? '고르기' : q.type === 'short' ? '단답' : (PUI.chainTitle === '정답 분석' ? '형태소 나누기' : '음운 변동'); }
+    function blankify(text) { return esc(text).replace(/___+/g, '<span class="blank">　　　</span>'); }
+
+    function showQ() {
+        answered = false;
+        var q = QS[idx];
+        $('fb').classList.add('hidden'); $('fb').innerHTML = '';
+        updateBar();
+        var h = '<div class="q-meta"><span class="q-num">' + esc(pad2(q.num || (idx + 1))) + '</span><i class="q-bar"></i><span class="q-kind">' + kindLabel(q) + '</span></div>';
+        if (DATA.passage && DATA.passage.text) h += '<button type="button" class="psg-btn" id="psg-btn">지문 보기</button><div class="psg hidden" id="psg">' + passageHTML(DATA.passage) + '</div>';
+        if (q.boxki && q.boxki.length) h += '<div class="boxki"><b>&lt;보기&gt;</b><div class="boxki-words">' + q.boxki.map(function(w) { return '<span class="boxki-word">' + esc(w) + '</span>'; }).join('') + '</div></div>';
+        var a = '';
+        if (q.type === 'process') {
+            h += '<div class="q-start">' + esc(q.start) + '</div>';
+            if (q.hint) h += '<div class="q-hint"><b>힌트</b>' + esc(q.hint) + '</div>';
+            h += '<div class="steps" id="steps">' + (q.steps || []).map(function(st, si) { return stepRowHTML(si, st, (q.steps || []).length); }).join('') + '</div>';
+            a = '<button type="button" class="btn pri" id="chk">확인</button>';
+        } else {
+            var stem = '' + (q.stem || '');
+            h += '<div class="q-stem' + (stem.length > 60 ? ' long' : '') + '">' + esc(stem) + '</div>';
+            if (q.example) h += '<div class="q-example">' + blankify(q.example) + '</div>';
+            if (q.hint) h += '<div class="q-hint"><b>힌트</b>' + esc(q.hint) + '</div>';
+            if (q.type === 'ox') a = '<div class="ox"><button type="button" class="big" data-v="O">O<span class="tag"></span></button><button type="button" class="big" data-v="X">X<span class="tag"></span></button></div>';
+            else if (q.type === 'choice') a = '<div class="opts">' + (q.options || []).map(function(o, k) { return '<button type="button" class="opt" data-v="' + (k + 1) + '"><span class="on">' + circ(k + 1) + '</span><span>' + esc(o) + '</span><span class="tag"></span></button>'; }).join('') + '</div>';
+            else a = '<div class="ans-line"><input type="text" class="answer-input" id="ans" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="답을 쓰세요"><button type="button" class="btn pri chk" id="chk">확인</button></div>';
+        }
+        $('qbox').innerHTML = h; $('abox').innerHTML = a;
+        if ($('psg-btn')) $('psg-btn').addEventListener('click', function() { var p = $('psg'); p.classList.toggle('hidden'); this.textContent = p.classList.contains('hidden') ? '지문 보기' : '지문 접기'; });
+        if ($('chk')) $('chk').addEventListener('click', function() { grade(collect(), false); });
+        if ($('ans')) { $('ans').focus(); $('ans').addEventListener('keydown', function(ev) { if (ev.key === 'Enter') grade(collect(), false); }); }
+        $('qbox').querySelectorAll('.form-input').forEach(function(inp, k, all) { inp.addEventListener('keydown', function(ev) { if (ev.key === 'Enter') { if (k + 1 < all.length) all[k + 1].focus(); else grade(collect(), false); } }); });
+        var first = $('qbox').querySelector('.form-input, .rule-select:not(.hid)'); if (first) first.focus();
+        window.scrollTo(0, 0);
+        startTimer();
+    }
+    function passageHTML(p) {
+        var h = p.text ? '<p><b>' + esc(p.text) + '</b></p>' : '';
+        (p.paras || []).forEach(function(x) { h += typeof x === 'string' ? '<p>' + esc(x) + '</p>' : '<p>' + (x.ex || []).map(esc).join('<br>') + '</p>'; });
+        return h;
+    }
+    function ruleOptionsHTML(list, ph) { var h = '<option value="">' + esc(ph) + '</option>'; list.forEach(function(r) { h += '<option value="' + esc(r) + '">' + esc(r) + '</option>'; }); return h; }
+    function selHTML(list, ph, id, cls) {
+        var pills = list.length > 0 && list.length <= 3;
+        var sel = '<select class="' + cls + (pills ? ' hid' : '') + '" id="' + id + '">' + ruleOptionsHTML(list, ph) + '</select>';
+        if (!pills) return { sel: sel, pills: '' };
+        var h = '<span class="pills" data-for="' + id + '"><span class="pl-lab">' + esc(ph) + '</span>';
+        list.forEach(function(r) { h += '<button type="button" class="pill" data-v="' + esc(r).replace(/"/g, '&quot;') + '">' + esc(r) + '</button>'; });
+        return { sel: sel, pills: h + '</span>' };
+    }
+    function stepRowHTML(si, st, n) {
+        var f0 = st ? ('' + st.form).split('/')[0] : '';
+        var hyL = PUI.hyphenMarks ? '<span class="hy">' + (/^-/.test(f0) ? '-' : '') + '</span>' : '';
+        var hyR = PUI.hyphenMarks ? '<span class="hy">' + (/-$/.test(f0) ? '-' : '') + '</span>' : '';
+        var s1 = selHTML(RULES, PUI.select, 'sel-' + si, 'rule-select');
+        var s2 = RULES2.length ? selHTML(RULES2, PUI.select2, 'sel2-' + si, 'rule-select sel2') : { sel: '', pills: '' };
+        var sel = s1.sel + s2.sel + ((s1.pills || s2.pills) ? '<span class="pillset">' + s1.pills + s2.pills + '</span>' : '');
+        var inp = hyL + '<input type="text" class="form-input" id="frm-' + si + '" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="' + esc(si === n - 1 ? PUI.last : PUI.mid) + '">' + hyR;
+        return '<div class="step-row"><span class="step-arrow">' + esc(PUI.arrow) + '</span>' + (PUI.formFirst ? inp + sel : sel + inp) + '</div>';
+    }
+    document.addEventListener('click', function(ev) {
+        var b = ev.target.closest('.pill');
+        if (b && !answered) {
+            var g = b.closest('.pills'), sel = $(g.getAttribute('data-for'));
+            if (!sel || sel.disabled) return;
+            sel.value = (sel.value === b.getAttribute('data-v')) ? '' : b.getAttribute('data-v');
+            g.querySelectorAll('.pill').forEach(function(x) { x.classList.toggle('on', x.getAttribute('data-v') === sel.value); });
+            return;
+        }
+        var big = ev.target.closest('.big, .opt');
+        if (big && !answered && big.closest('#abox')) grade(big.getAttribute('data-v'), false);
+    });
+    function collect() {
+        var q = QS[idx];
+        if (q.type === 'process') return (q.steps || []).map(function(st, si) { var s = $('sel-' + si), s2 = $('sel2-' + si), f = $('frm-' + si); return { rule: s ? s.value : '', rule2: s2 ? s2.value : null, form: f ? f.value : '' }; });
+        if (q.type === 'short') return $('ans') ? $('ans').value : '';
+        return null;
+    }
+
+    /* ----- 채점 + 정답 표시 ----- */
+    function grade(user, timeout) {
+        if (answered) return;
+        answered = true; clearInterval(timer);
+        var q = QS[idx], ok = false, mine = '', gained = 0, used = Math.min(SEC, Math.round((Date.now() - tStart) / 1000));
+        secUsed.push(used);
+        if (q.type === 'ox') {
+            ok = user === q.answer; mine = user || '';
+            $('abox').querySelectorAll('.big').forEach(function(b) { var v = b.getAttribute('data-v'); b.disabled = true; if (v === q.answer) { b.classList.add('ans'); b.querySelector('.tag').textContent = '정답'; } else if (v === user) { b.classList.add('ng'); b.querySelector('.tag').textContent = '내 답'; } else b.classList.add('dim'); });
+        } else if (q.type === 'choice') {
+            ok = user === ('' + q.answer); mine = user ? circ(user) : '';
+            $('abox').querySelectorAll('.opt').forEach(function(b) { var v = b.getAttribute('data-v'); b.disabled = true; if (v === ('' + q.answer)) { b.classList.add('ans'); b.querySelector('.tag').textContent = '정답'; } else if (v === user) { b.classList.add('ng'); b.querySelector('.tag').textContent = '내 답'; } else b.classList.add('dim'); });
+        } else if (q.type === 'short') {
+            mine = (user || '').trim(); ok = shortOK(mine, q);
+            var inp = $('ans'); if (inp) { inp.disabled = true; inp.className = 'answer-input ' + (ok ? 'ok' : 'ng'); }
+            if ($('chk')) $('chk').disabled = true;
+        } else {
+            var rows = user || [];
+            ok = rows.length === (q.steps || []).length;
+            rows.forEach(function(r, si) {
+                var st = (q.steps || [])[si];
+                var rOK = !!st && st.accept.indexOf(r.rule) >= 0, r2OK = r.rule2 == null || (!!st && (st.accept2 || []).indexOf(r.rule2) >= 0), fOK = !!st && formOK(r.form, st.form);
+                var s = $('sel-' + si), s2 = $('sel2-' + si), f = $('frm-' + si);
+                if (s) { s.disabled = true; s.classList.add(rOK ? 'ok' : 'ng'); pillSync(s, rOK); }
+                if (s2) { s2.disabled = true; s2.classList.add(r2OK ? 'ok' : 'ng'); pillSync(s2, r2OK); }
+                if (f) { f.disabled = true; f.classList.add(fOK ? 'ok' : 'ng'); }
+                if (!(rOK && r2OK && fOK)) ok = false;
+            });
+            mine = rows.map(function(r) { return (r.rule || '?') + (r.rule2 != null ? '·' + (r.rule2 || '?') : '') + ' ' + (r.form || '?'); }).join(' → ');
+            if ($('chk')) $('chk').disabled = true;
+        }
+        if (ok) { combo++; if (combo > comboMax) comboMax = combo; gained = PT_HIT + left * PT_SEC + (combo >= 3 ? PT_COMBO * (combo - 2) : 0); }
+        else combo = 0;
+        points += gained;
+        results.push({ ok: ok, mine: timeout ? '(시간 초과)' : (mine || '(미입력)'), timeout: timeout, gained: gained, q: q });
+        updateBar();
+        // 정답 표시
+        var top = ok ? (combo >= 3 ? '정답! 콤보 ' + combo : '정답!') : (timeout ? '시간 초과 · 콤보가 끊겼어요' : (combo === 0 && results.length > 1 && results[results.length - 2].ok ? '아쉬워요 · 콤보가 끊겼어요' : '아쉬워요'));
+        var h = '<div class="fb-top ' + (ok ? 'ok' : 'ng') + '">' + (ok ? IC_OK : IC_NG) + esc(top) + '<span class="pts">' + (ok ? '+' + fmt(gained) + '점' : '') + '</span></div>';
+        if (q.type === 'short') h += '<div class="fb-ans">정답: <b>' + esc(q.answer) + '</b>' + (q.answers && q.answers.length > 1 ? ' <span style="color:#8B928C;font-size:13px;">(' + q.answers.filter(function(a) { return a !== q.answer; }).map(esc).join(', ') + ' 도 정답)</span>' : '') + '</div>';
+        if (q.type === 'process' && !ok) h += '<div class="fb-chain">' + (q.steps || []).map(function(st, si) { return '<div class="fb-srow"><span class="n">' + (si + 1) + '</span><span class="ch-r">' + esc(st.accept.join(' 또는 ')) + '</span>' + (st.accept2 ? '<span class="ch-r">' + esc(st.accept2.join(' 또는 ')) + '</span>' : '') + '<span class="step-arrow">' + esc(PUI.arrow) + '</span><span class="ch-f' + (si === (q.steps || []).length - 1 ? ' fin' : '') + '">' + esc(dispForm(st.form)) + '</span></div>'; }).join('') + '</div>';
+        if (q.explanation) h += whyHTML(q.explanation);
+        h += '<button type="button" class="btn pri" id="next">' + (idx + 1 < QS.length ? '다음 문항' : '결과 보기') + IC_ARROW + '</button>';
+        var fb = $('fb'); fb.innerHTML = h; fb.classList.remove('hidden');
+        $('next').addEventListener('click', function() { idx++; if (idx < QS.length) showQ(); else finish(); });
+        $('next').focus();
+        setTimeout(function() { fb.scrollIntoView({ block: 'end', behavior: 'smooth' }); }, 60);
+    }
+    function pillSync(sel, okv) {
+        var g = sel.closest('.step-row') ? sel.closest('.step-row').querySelector('.pills[data-for="' + sel.id + '"]') : null;
+        if (!g) return;
+        g.classList.add('done', okv ? 'ok' : 'ng'); if (!sel.value) g.classList.add('none');
+        g.querySelectorAll('.pill').forEach(function(b) { b.disabled = true; b.classList.toggle('on', b.getAttribute('data-v') === sel.value); });
+    }
+    // 해설 — 끝의 (제N항)·조항만 있는 해설은 칩으로 (test.html splitWhy와 같은 규칙)
+    function whyHTML(text) {
+        var t = ('' + text).trim(), m = t.match(/^(.*?)\s*\(?(제\d+항(?:\s*(?:붙임\s*\d*|다만))?)\.?\)?\.?$/);
+        if (m && m[1].trim() === '') return '<div class="fb-art">' + esc(m[2]) + '</div>';
+        if (m && m[1].length > 0 && /[.다요]$/.test(m[1].trim())) return '<div class="fb-why">' + esc(m[1].trim()) + '</div><div class="fb-art">' + esc(m[2]) + '</div>';
+        return '<div class="fb-why">' + esc(t) + '</div>';
+    }
+
+    /* ----- 결과 ----- */
+    function finish() {
+        $('game').classList.add('hidden');
+        var got = results.filter(function(r) { return r.ok; }).length, total = QS.length, pct = Math.round(got / total * 100), pass = pct >= PASS;
+        var set = STAGE.setOf(catCode, round), next = STAGE.nextRound(catCode, round);
+        var avg = secUsed.length ? Math.round(secUsed.reduce(function(a, b) { return a + b; }, 0) / secUsed.length) : 0;
+        var wrongs = results.filter(function(r) { return !r.ok; });
+        var h = '<div class="card res-head">' +
+            '<div class="sub">스테이지 ' + esc(round) + ' · ' + esc(reg.title || CAT_LABEL) + '</div>' +
+            '<div class="res-big' + (pass ? '' : ' fail') + '">' + (pass ? '클리어!' : '아쉬워요') + '</div>' +
+            '<div class="res-pct"><span class="p">' + pct + '%</span><span class="s">' + got + ' / ' + total + ' 정답 · ' + fmt(points) + '점</span></div>' +
+            (pass ? '<div class="pass-tag ok">' + IC_OK + '통과 기준 ' + PASS + '% 넘음' + (next ? ' · 스테이지 ' + next + ' 열림' : ' · 마지막 스테이지') + '</div>'
+                  : '<div class="pass-tag no">' + IC_NG + '통과 기준 ' + PASS + '% — 다시 도전해요</div>') +
+            '</div>' +
+            '<div id="star-slot"></div>' +
+            '<div class="card plain tiles"><div class="tile"><span class="k">최다 콤보</span><span class="v">' + comboMax + '</span></div><div class="tile"><span class="k">평균 답 시간</span><span class="v">' + avg + '초</span></div><div class="tile"><span class="k">이번 판 점수</span><span class="v lav">' + fmt(points) + '</span></div></div>';
+        if (wrongs.length) h += '<div class="card plain" style="gap:8px;"><div class="wrong-title">틀린 ' + wrongs.length + '문항 다시 보기</div>' + wrongs.map(function(r) {
+            var q = r.q, ans = q.type === 'process' ? correctChain(q) : q.type === 'choice' ? circ(q.answer) + ' ' + ((q.options || [])[parseInt(q.answer, 10) - 1] || '') : q.answer;
+            var stem = q.type === 'process' ? q.start : (q.stem || '');
+            return '<div class="wrong"><span class="n">' + esc(pad2(q.num || '')) + '</span><span class="t">' + esc(stem.length > 70 ? stem.slice(0, 70) + '…' : stem) + '<br><span style="color:#6A716C;">내 답 ' + esc(r.mine) + ' → 정답 ' + esc(ans) + '</span></span></div>';
+        }).join('') + '</div>';
+        h += '<div class="grid2"><a class="btn sec" href="' + esc(location.href) + '">다시 도전</a>' +
+            (pass && next ? '<a class="btn pri" href="' + esc(playUrl(next)) + '">다음 스테이지' + IC_ARROW + '</a>' : '<a class="btn lav" href="' + esc(backUrl) + '">스테이지 맵으로</a>') + '</div>' +
+            (pass && next ? '<a class="btn lav" href="' + esc(backUrl) + '">스테이지 맵으로</a>' : '') +
+            '<div class="send" id="send"></div>';
+        $('result').innerHTML = h; $('result').classList.remove('hidden');
+        window.scrollTo(0, 0);
+        if (preview) { $('send').textContent = '미리보기 — 결과는 기록되지 않아요.'; return; }
+        var details = ['플레이 모드 · ' + fmt(points) + '점 · 최다 콤보 ' + comboMax].concat(results.map(function(r) {
+            var q = r.q, n = q.num || '';
+            if (r.ok) return n + '. ✓' + (q.type === 'short' ? ' ' + r.mine : '');
+            var ans = q.type === 'process' ? correctChain(q) : q.type === 'choice' ? circ(q.answer) : q.answer;
+            return n + '. ✗ ' + r.mine + ' → 정답: ' + ans;
+        })).join('\n');
+        var payload = { time: nowStr(), name: who.name, school: who.school, grade: who.grade, phone8: who.phone8, unit: CAT_LABEL, round: round, score: got + ' / ' + total, details: details, mode: 'play', points: points };
+        sendResult(payload);
+        sendStar(payload, got, total, set);
+    }
+    function playUrl(r) { return 'play.html?c=' + encodeURIComponent(catCode) + '&r=' + encodeURIComponent(r) + '&name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) + '&p8=' + encodeURIComponent(who.phone8); }
+
+    // 시트 사본(결과 확인 페이지) — no-cors, 실패해도 별 기록은 따로 간다
+    function sendResult(payload) {
+        var box = $('send'); box.textContent = '선생님께 결과 전송 중…';
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+            .then(function() { box.textContent = '선생님께 결과가 전송되었어요.'; })
+            .catch(function() { box.className = 'send fail'; box.textContent = '결과 전송에 실패했어요 — 인터넷을 확인하고 다시 도전해 주세요.'; });
+    }
+    // 수파베이스 — 통과·세트 클리어(별) 판정은 서버가 한다(029 gramma_submit)
+    function sendStar(payload, got, total, set) {
+        var body = { time: payload.time, name: payload.name, school: payload.school, grade: payload.grade, phone8: payload.phone8, unit: payload.unit, round: '' + payload.round,
+                     score: payload.score, got: got, total: total, details: payload.details, mode: 'play', points: payload.points,
+                     set: set ? { no: set.no, rounds: set.rounds.map(String) } : null };
+        var slot = $('star-slot');
+        slot.innerHTML = '<div class="sub" style="text-align:center;">세트 기록 확인 중…</div>';
+        fetch(SB_URL + '/rest/v1/rpc/gramma_submit', { method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p: body }) })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                if (!res || res.ok !== true) { slot.innerHTML = '<div class="sub" style="text-align:center;color:#992F20;">기록에 실패했어요 — 선생님께 말씀해 주세요.</div>'; return; }
+                if (res.set_cleared && set) {
+                    slot.innerHTML = '<div class="star-card"><div class="ic">' + IC_STAR + '</div><div><div class="t">세트 ' + set.no + ' 클리어' + (res.set_first ? ' · 슈퍼스타 별 +1' : '') + '</div><div class="d">' +
+                        (res.set_first ? '스테이지 ' + set.rounds[0] + '~' + set.rounds[set.rounds.length - 1] + '을 모두 ' + PASS + '% 이상으로 마쳤어요. 내 별에 더해졌어요(지금 문법 별 ' + res.stars + '개).'
+                                       : '이 세트의 별은 이미 받았어요(세트마다 한 번). 지금 문법 별 ' + res.stars + '개.') + '</div></div></div>';
+                } else if (set) {
+                    var need = set.rounds.length;
+                    slot.innerHTML = '<div class="card plain sub" style="text-align:center;">세트 ' + set.no + '(스테이지 ' + set.rounds[0] + '~' + set.rounds[need - 1] + ')을 모두 ' + PASS + '% 이상으로 마치면 슈퍼스타 별 +1 · 지금 문법 별 ' + (res.stars || 0) + '개</div>';
+                } else slot.innerHTML = '';
+            })
+            .catch(function() { slot.innerHTML = '<div class="sub" style="text-align:center;color:#992F20;">기록에 실패했어요 — 선생님께 말씀해 주세요.</div>'; });
+    }
+})();
+</script>
+</body>
+</html>

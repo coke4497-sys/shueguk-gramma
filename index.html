@@ -44,8 +44,13 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .assign-go { flex: none; display: inline-flex; align-items: center; gap: 4px; background: #EDE4F4; color: #635A7D; border: 1.5px solid #D9CCE8; text-decoration: none; font-size: 12px; font-weight: 800; padding: 9px 14px; border-radius: 9px; -webkit-tap-highlight-color: transparent; }
 .assign-go svg { width: 13px; height: 13px; }
 
-.star-rule { display: inline-block; margin-top: 10px; padding: 7px 13px; border-radius: 999px; background: #EDE4F4; color: #6B5B7B; font-size: 12px; line-height: 1.5; }
-.star-rule b { font-weight: 800; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; text-align: left; }
+.tile { display: flex; flex-direction: column; gap: 3px; background: #F4F5F3; border-radius: 12px; padding: 9px 11px; text-decoration: none; }
+.tile.link { background: #EDE4F4; }
+.tile .k { font-size: 11px; color: #8B928C; } .tile.link .k { color: #8D83A8; }
+.tile .v { font-family: 'Do Hyeon', 'Gowun Dodum', sans-serif; font-size: 17px; color: #3A544E; } .tile .v.lav { color: #6B5B7B; }
+.mystars { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 6px 12px; border-radius: 999px; background: #EDE4F4; color: #6B5B7B; font-size: 12px; font-weight: 700; }
+.mystars svg { width: 13px; height: 13px; }
 .assign-star { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: #EDE4F4; color: #6B5B7B; font-size: 10.5px; font-weight: 800; vertical-align: 1px; }
 .assign-star.no { background: #F4F7F5; color: #9BA8A1; font-weight: 700; }
 /* ===== 자유 응시 — 단원 카드 → 레벨 탭 → 회차 (배정하기 페이지와 같은 구성) ===== */
@@ -74,22 +79,36 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .lvl-tab.on .n { color: #8D83A8; }
 .sec-title { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 800; color: #3A544E; margin: 6px 2px 10px; }
 .sec-title .sec-meta { font-family: 'Gowun Dodum', sans-serif; font-weight: 400; color: #9BA8A1; font-size: 12px; margin-left: 6px; }
-.rlist { display: grid; grid-template-columns: 1fr; gap: 8px; }
-.row { display: flex; align-items: center; gap: 12px; background: white; border: 1px solid #E5EDE8; border-radius: 14px; padding: 11px 12px; min-width: 0; }
-.row .rd { flex: none; width: 34px; height: 34px; border-radius: 10px; background: #EBF0ED; color: #65726B; font-family: 'Gowun Batang', serif; font-weight: 800; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; }
-.row.star .rd { background: #EDE4F4; color: #6B5B7B; }
-.row .ttl { flex: 1; min-width: 0; font-size: 13px; color: #2C2F2D; line-height: 1.45; }
-.row .go { flex: none; display: inline-flex; align-items: center; gap: 4px; font: inherit; font-size: 12px; font-weight: 800; background: #EDE4F4; color: #635A7D; border: 1.5px solid #D9CCE8; border-radius: 9px; padding: 8px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.row .go svg { width: 13px; height: 13px; }
-details.grp { background: white; border: 1px solid #E5EDE8; border-radius: 14px; padding: 2px 10px 4px; }
-details.grp > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 10px 2px; cursor: pointer; font-family: 'Gowun Batang', serif; font-size: 14px; font-weight: 800; color: #3A544E; -webkit-tap-highlight-color: transparent; }
-details.grp > summary::-webkit-details-marker { display: none; }
-details.grp > summary .gn { flex: 1; }
-details.grp > summary .gc { font-family: 'Gowun Dodum', sans-serif; font-size: 12px; font-weight: 700; color: #6A716C; }
-details.grp > summary .gi { width: 16px; height: 16px; flex: none; color: #8B928C; transition: transform .15s; }
-details.grp[open] > summary .gi { transform: rotate(180deg); }
-details.grp .rlist { margin: 0 0 8px; }
-details.grp .row { background: #F8FAF9; }
+/* 스테이지 맵 — 세트 카드(스테이지 5개) */
+.setlist { display: flex; flex-direction: column; gap: 10px; }
+.setcard { background: white; border: 1px solid #E5EDE8; border-radius: 16px; padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 12px; }
+.setcard.cur { border-color: #D6C9E4; }
+.setcard.locked { opacity: .8; }
+.set-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.set-head .sn { font-family: 'Gowun Batang', serif; font-size: 14px; font-weight: 800; color: #3A544E; }
+.setcard.locked .set-head .sn { color: #A9B1AB; }
+.set-head .sr { font-size: 11.5px; color: #8B928C; }
+.set-head .sg { font-size: 11px; color: #9BA8A1; }
+.set-head .right { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: #6B5B7B; }
+.set-head .right.star { background: #EDE4F4; border-radius: 999px; padding: 5px 10px; }
+.set-head .right.lock { color: #B7BFB9; font-weight: 400; }
+.set-head .right svg { width: 12px; height: 12px; }
+.nodes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.node { display: flex; flex-direction: column; align-items: center; gap: 5px; border: none; background: none; padding: 0; font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.node .nb { width: 50px; height: 50px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-family: 'Do Hyeon', 'Gowun Dodum', sans-serif; font-size: 19px; background: #F0F3F1; color: #B7BFB9; }
+.node .nb svg { width: 22px; height: 22px; }
+.node .nl { font-size: 11px; font-weight: 700; color: #B7BFB9; }
+.node.pass .nb { background: #E4F1EA; color: #3E9B74; } .node.pass .nl { color: #3E9B74; }
+.node.open .nb { background: #EDE4F4; color: #6B5B7B; } .node.open .nl { color: #6B5B7B; }
+.node.cur .nb { background: #6B5B7B; color: #fff; box-shadow: 0 4px 12px rgba(107,91,123,.35); } .node.cur .nl { color: #6B5B7B; }
+.node.lock { cursor: default; } .node.lock .nb svg { width: 18px; height: 18px; }
+.now { display: flex; align-items: center; gap: 12px; background: #FAF7FC; border-radius: 12px; padding: 11px 12px; }
+.now .nt { flex: 1; min-width: 0; }
+.now .nt b { display: block; font-size: 13px; color: #2C2F2D; }
+.now .nt span { font-size: 11.5px; color: #8B928C; }
+.now .go { flex: none; display: inline-flex; align-items: center; gap: 5px; background: #6B5B7B; color: #fff; border: none; border-radius: 10px; padding: 11px 15px; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; min-height: 44px; -webkit-tap-highlight-color: transparent; }
+.now .go svg { width: 14px; height: 14px; }
+.stage-note { font-size: 11.5px; color: #6A716C; text-align: center; line-height: 1.7; }
 .hidden { display: none !important; }
 footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; line-height: 1.9; }
 </style>
@@ -98,9 +117,14 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
 <div class="container">
     <div class="header">
         <div class="logo">SHUEGUK</div>
-        <h1>문법 테스트</h1>
-        <p class="intro">이름·학교·학년·전화번호를 입력하고<br>원하는 단원과 회차를 골라 응시해요. 선생님이 배정한 테스트도 함께 보여요.</p>
-        <div class="star-rule">정답률 <b>90% 이상</b>으로 테스트를 마치면 슈퍼스타 별 <b>+1</b> (테스트마다 한 번)</div>
+        <h1>문법 스테이지</h1>
+        <p class="intro">이름·학교·학년·전화번호를 입력하고<br>단원을 골라 스테이지를 하나씩 깨요. 선생님이 배정한 테스트도 함께 보여요.</p>
+        <div class="tiles">
+            <div class="tile"><span class="k">통과 기준</span><span class="v">정답률 70%</span></div>
+            <div class="tile"><span class="k">세트 클리어</span><span class="v lav">별 +1</span></div>
+            <a class="tile link" id="top30-link" href="top30.html"><span class="k">문법 슈스</span><span class="v lav">탑30 보기</span></a>
+        </div>
+        <div class="mystars hidden" id="mystars"></div>
     </div>
 
     <div class="student-info">
@@ -125,7 +149,7 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
 
     <!-- 자유 응시 — 배정과 무관하게 활성화된 단원·레벨·회차를 골라 응시 (2026-09-14 사용자 요청) -->
     <div id="free">
-        <div class="sec-head"><h2>전체 문법 테스트</h2><span class="sec-note">단원 → 레벨·회차를 골라 응시해요</span></div>
+        <div class="sec-head"><h2>문법 스테이지</h2><span class="sec-note">단원 → 레벨 → 스테이지를 차례로</span></div>
         <div id="cat-view">
             <div class="cats" id="cats"></div>
         </div>
@@ -135,7 +159,8 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
                 단원 목록으로</button>
             <div class="lvl-tabs" id="lvl-tabs" hidden></div>
             <div class="sec-title" id="sec-title"></div>
-            <div class="rlist" id="rounds"></div>
+            <div class="stage-note" id="stage-note"></div>
+            <div class="setlist" id="stages"></div>
         </div>
     </div>
 
@@ -143,6 +168,7 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
 </div>
 
 <script src="manifest.js"></script>
+<script src="stage.js"></script>
 <script>
 (function() {
     // 문법 결과·배정을 담당하는 Apps Script 배포 주소 (apps-script/Code.gs)
@@ -151,7 +177,6 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
     // 별 획득 여부 표시 — 수파베이스 gramma_status(이름+8자리로 내 결과만). 실패해도 목록은 그대로.
     var SB_URL = 'https://bangdbhqpphqqdwcledg.supabase.co';
     var SB_KEY = 'sb_publishable_dE9d1KIbpgYaQkaS2MSrlg_-7SiRJuT';
-    var STAR_PCT = 90;
 
     function $(id) { return document.getElementById(id); }
     function esc(s) { return ('' + (s == null ? '' : s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -162,7 +187,9 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
     var CAT_LIST = (window.GRAMMA && GRAMMA.categories) || [];
     var TESTS = (window.GRAMMA && GRAMMA.tests) || {};
     CAT_LIST.forEach(function(c) { CATS[c.code] = c.label; });
-    var STARS = {};   // 'unit|round' → gramma_status 항목 (배정 카드·회차 줄 공용)
+    var STARS = {};   // 'unit|round' → gramma_status 항목 (배정 카드 배지용)
+    var STATUS = null; // gramma_status 응답 원문 (스테이지 맵 진행 상태 — STAGE.progress가 읽는다)
+    var PASS = window.STAGE ? STAGE.PASS_PCT : 70;
 
     // 마감일 '2026-09-05' → '9월 5일 (토)'
     function fmtDue(s) {
@@ -227,17 +254,21 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
             body: JSON.stringify({ p: { name: who.name, phone8: who.phone8 } })
         }).then(function(r) { return r.json(); }).then(function(res) {
             if (!res || res.ok !== true) return;
-            STARS = {};
+            STARS = {}; STATUS = res;
             (res.items || []).forEach(function(it) { STARS[it.unit + '|' + it.round] = it; });
             var n = markStars('.assign-card[data-key]', '.assign-title');
             var st = $('status');
-            if (n && st) st.insertAdjacentHTML('beforeend', '<br>이 중 별을 받은 테스트 <b>' + n + '개</b>');
-            markStars('#rounds .row[data-key]', '.ttl');
+            if (n && st) st.insertAdjacentHTML('beforeend', '<br>이 중 통과한 테스트 <b>' + n + '개</b>');
+            var ms = $('mystars');
+            ms.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>문법 별 ' + (res.stars || 0) + '개 · 세트 ' + ((res.sets || []).length) + '개 클리어';
+            ms.classList.remove('hidden');
+            if (current) renderStages();
         }).catch(function() {});
     }
     function starBadge(it) {
-        return it.star ? '<span class="assign-star">별 획득 ' + it.best + '%</span>'
-                       : '<span class="assign-star no">최고 ' + it.best + '% · ' + STAR_PCT + '% 이상이면 별</span>';
+        var pass = it.pass != null ? it.pass : (Number(it.best) >= PASS);
+        return pass ? '<span class="assign-star">통과 ' + it.best + '%</span>'
+                    : '<span class="assign-star no">최고 ' + it.best + '% · ' + PASS + '% 이상이면 통과</span>';
     }
     function markStars(sel, slotSel) {
         var n = 0;
@@ -245,7 +276,7 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
             var it = STARS[el.getAttribute('data-key')];
             var slot = el.querySelector(slotSel);
             if (!it || !slot || slot.querySelector('.assign-star')) return;
-            if (it.star) { n++; el.classList.add('star'); }
+            if (it.pass != null ? it.pass : (Number(it.best) >= PASS)) { n++; el.classList.add('star'); }
             slot.insertAdjacentHTML('beforeend', starBadge(it));
         });
         return n;
@@ -305,7 +336,7 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
             return '<button type="button" class="lvl-tab' + (l.code === current ? ' on' : '') + '" data-code="' + escAttr(l.code) + '">' +
                 esc(l.level || l.label) + '<span class="n">' + roundsOf(l.code).length + '회</span></button>';
         }).join('');
-        renderRounds();
+        renderStages();
     }
     $('lvl-tabs').addEventListener('click', function(ev) {
         var b = ev.target.closest('.lvl-tab');
@@ -315,39 +346,48 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
         $('round-view').classList.add('hidden');
         $('cat-view').classList.remove('hidden');
     });
-    function rowHtml(n) {
-        var t = TESTS[current + '-' + n];
-        var label = CATS[current] || current;
-        return '<div class="row" data-key="' + escAttr(label) + '|' + n + '">' +
-            '<span class="rd">' + n + '</span>' +
-            '<span class="ttl">' + esc(t && t.title ? t.title : label + ' ' + n + '회') + '</span>' +
-            '<button type="button" class="go" data-cat="' + escAttr(current) + '" data-round="' + n + '">응시하기' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>' +
-            '</div>';
-    }
-    function renderRounds() {
-        var rounds = roundsOf(current);
-        $('sec-title').innerHTML = esc(menuTitle(current)) + '<span class="sec-meta">전체 ' + rounds.length + '회</span>';
+    var IC_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+    var IC_LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+    var IC_STAR = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>';
+    var IC_GO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    function titleOf(cat, n) { var t = TESTS[cat + '-' + n]; return (t && t.title) ? t.title : (CATS[cat] || cat) + ' ' + n + '회'; }
+    // 스테이지 맵 — 세트(5개)마다 카드, 진행 상태는 STAGE.progress(gramma_status 응답)에서
+    function renderStages() {
+        var label = CATS[current] || current, sets = STAGE.setsOf(current), rounds = STAGE.roundsOf(current);
+        var pg = STAGE.progress(current, label, STATUS || {});
+        var passed = rounds.filter(function(r) { return pg.pass[r]; }).length;
+        var hasInfo = infoOk(readInfo());
+        $('sec-title').innerHTML = esc(menuTitle(current)) + '<span class="sec-meta">스테이지 ' + rounds.length + ' · 세트 ' + sets.length + (STATUS ? ' · 통과 ' + passed : '') + '</span>';
+        stageNote();
+        var curRound = null;
+        rounds.forEach(function(r) { if (curRound == null && pg.open[r] && !pg.pass[r]) curRound = r; });
+        if (curRound == null && rounds.length && !pg.pass[rounds[rounds.length - 1]]) curRound = rounds[0];
         var html = '';
-        if (!rounds.some(function(n) { return !!groupOf(current, n); })) {
-            rounds.forEach(function(n) { html += rowHtml(n); });
-        } else {
-            // 장(章)별 접이식 — 한글 맞춤법 레벨2처럼 회차가 많은 카테고리
-            var groups = [], byG = {};
-            rounds.forEach(function(n) {
-                var g = groupOf(current, n) || '기타';
-                if (!byG[g]) { byG[g] = []; groups.push(g); }
-                byG[g].push(n);
+        sets.forEach(function(s) {
+            var cleared = !!pg.cleared[s.no] || s.rounds.every(function(r) { return pg.pass[r]; });
+            var locked = !pg.open[s.rounds[0]];
+            var n = s.rounds.filter(function(r) { return pg.pass[r]; }).length;
+            var groups = []; s.rounds.forEach(function(r) { var g = groupOf(current, r); if (g && groups.indexOf(g) < 0) groups.push(g); });
+            var isCur = s.rounds.indexOf(curRound) >= 0;
+            html += '<div class="setcard' + (isCur ? ' cur' : '') + (locked ? ' locked' : '') + '" data-set="' + s.no + '">' +
+                '<div class="set-head"><span class="sn">세트 ' + s.no + '</span><span class="sr">스테이지 ' + s.rounds[0] + '~' + s.rounds[s.rounds.length - 1] + '</span>' +
+                (groups.length ? '<span class="sg">' + esc(groups.join(' · ')) + '</span>' : '') +
+                (cleared ? '<span class="right star">' + IC_STAR + '별 획득</span>' : locked ? '<span class="right lock">' + IC_LOCK + '앞 세트를 클리어하면 열려요</span>' : '<span class="right">' + n + ' / ' + s.rounds.length + ' 클리어</span>') +
+                '</div><div class="nodes">';
+            s.rounds.forEach(function(r) {
+                var st = pg.pass[r] ? 'pass' : (r === curRound ? 'cur' : (pg.open[r] ? 'open' : 'lock'));
+                var best = pg.best[r];
+                html += '<button type="button" class="node ' + st + '" data-round="' + r + '" title="' + escAttr(titleOf(current, r)) + '">' +
+                    '<span class="nb">' + (st === 'pass' ? IC_CHECK : st === 'lock' ? IC_LOCK : r) + '</span>' +
+                    '<span class="nl">' + (st === 'pass' ? best + '%' : st === 'cur' ? '도전' + (best != null ? ' · ' + best + '%' : '') : st === 'open' ? (best != null ? best + '%' : '열림') : r) + '</span></button>';
             });
-            groups.forEach(function(g) {
-                html += '<details class="grp" data-group="' + escAttr(g) + '">' +
-                    '<summary><span class="gn">' + esc(g) + '</span><span class="gc">' + byG[g].length + '회</span>' +
-                    '<svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>' +
-                    '<div class="rlist">' + byG[g].map(rowHtml).join('') + '</div></details>';
-            });
-        }
-        $('rounds').innerHTML = html;
-        markStars('#rounds .row[data-key]', '.ttl');
+            html += '</div>';
+            if (isCur) html += '<div class="now"><div class="nt"><b>스테이지 ' + curRound + ' · ' + esc(titleOf(current, curRound)) + '</b><span>문항마다 30초 · 통과 ' + PASS + '%' + (pg.best[curRound] != null ? ' · 최고 ' + pg.best[curRound] + '%' : '') + '</span></div>' +
+                '<button type="button" class="go" data-round="' + curRound + '">도전하기' + IC_GO + '</button></div>';
+            html += '</div>';
+        });
+        if (!sets.length) html = '<div class="stage-note">아직 스테이지가 없어요.</div>';
+        $('stages').innerHTML = html;
     }
     // 학생 정보 읽기 — 넷 다 있어야 응시 링크를 만든다(테스트 페이지에 이름·학교·학년·전화 8자리가 채워져 열리게)
     function readInfo() {
@@ -359,9 +399,10 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
             '&name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) +
             '&p8=' + encodeURIComponent(who.phone8 || '');
     }
-    $('rounds').addEventListener('click', function(ev) {
-        var b = ev.target.closest('button.go');
+    $('stages').addEventListener('click', function(ev) {
+        var b = ev.target.closest('button.go, button.node');
         if (!b) return;
+        if (b.classList.contains('lock')) { alert('앞 스테이지를 ' + PASS + '% 이상으로 통과하면 열려요.'); return; }
         var who = readInfo();
         if (!infoOk(who)) {
             alert('응시 전에 위 학생 정보(이름·학교·학년·학부모님 휴대전화번호 8자리)를 먼저 입력해 주세요!');
@@ -371,8 +412,12 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
             return;
         }
         try { localStorage.setItem(LS_KEY, JSON.stringify(who)); } catch (e) {}
-        location.href = testUrl(b.getAttribute('data-cat'), b.getAttribute('data-round'), who, true);
+        location.href = playUrl(current, b.getAttribute('data-round'), who);
     });
+    function playUrl(cat, round, who) {
+        return 'play.html?c=' + encodeURIComponent(cat) + '&r=' + encodeURIComponent(round) +
+            '&name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) + '&p8=' + encodeURIComponent(who.phone8 || '');
+    }
 
     function render(items, who) {
         if (!items.length) {
@@ -406,7 +451,17 @@ footer { text-align: center; margin-top: 28px; color: #8B928C; font-size: 12px; 
     $('check-btn').addEventListener('click', check);
     $('status').classList.remove('hidden');
     showStatus('empty', '학생 정보를 입력하고 [내 테스트 확인하기]를 누르면 선생님이 배정한 테스트가 보여요.<br>아래 <b>전체 문법 테스트</b>는 언제든 골라서 응시할 수 있어요.');
+    function syncTop30() { var w = readInfo(); $('top30-link').href = 'top30.html' + (infoOk(w) ? '?name=' + encodeURIComponent(w.name) + '&school=' + encodeURIComponent(w.school) + '&grade=' + encodeURIComponent(w.grade) + '&p8=' + encodeURIComponent(w.phone8) : ''); }
+    // 정보 칸이 바뀌면 안내 글·탑30 링크만 갱신한다 — 여기서 스테이지 맵을 다시 그리면 안 된다(change는 칸을 떠날 때 나므로
+    // [도전하기]를 누르는 순간 버튼이 새로 만들어져 클릭이 사라진다. E2E에서 실제로 잡힘)
+    function stageNote() { if (!current) return; var hasInfo = infoOk(readInfo()); $('stage-note').textContent = !hasInfo ? '학생 정보를 입력하면 내 진행 상황이 보여요. 지금은 첫 스테이지만 열려 있어요.' : (!STATUS ? '진행 상황을 불러오는 중…' : ''); }
+    ['si-name', 'si-school', 'si-grade', 'si-phone8'].forEach(function(id) { $(id).addEventListener('input', function() { syncTop30(); stageNote(); }); $(id).addEventListener('change', function() { syncTop30(); stageNote(); }); });
+    syncTop30();
     (function() { var w = readInfo(); if (infoOk(w)) loadStars({ name: w.name, phone8: w.phone8 }); })();
+    (function() {   // play.html에서 돌아올 때 #c=코드 — 그 단원의 스테이지 맵을 바로 연다
+        var m = (location.hash || '').match(/^#c=([^&]+)/);
+        if (m) { var code = decodeURIComponent(m[1]), c = catOf(code); if (c.code && STAGE.roundsOf(code).length) { openMenu(menuOf(c)); if (code !== current) openCat(code); } }
+    })();
 })();
 </script>
 </body>
