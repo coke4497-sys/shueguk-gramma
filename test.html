@@ -326,7 +326,14 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         return s.replace(/[①-⑩]/g, function(c) { return map[c] || c; });
     }
     // 과정형: 대괄호·공백 제거 (기존 음운 변동 페이지의 norm과 동일)
-    function normForm(s) { return (s || '').replace(/[\[\]\s]/g, '').replace(/[\u2010-\u2015\uFF0D\u2212]/g, '-').trim(); }
+    function normForm(s) {
+        // 옛 자모(초성·종성 U+1100~)로 들어온 낱자는 호환 자모(ㅂ U+3142 등)로 — 일부 휴대폰 키보드가 '-ㅂ시오'의 ㅂ을 다른 코드로 넣는다(2026-09-17)
+        return jamoCompat(s || '').replace(/[\[\]\s]/g, '').replace(/[\u2010-\u2015\uFF0D\u2212]/g, '-').trim();
+    }
+    var JAMO_C = { 0x1100:'ㄱ',0x1101:'ㄲ',0x1102:'ㄴ',0x1103:'ㄷ',0x1104:'ㄸ',0x1105:'ㄹ',0x1106:'ㅁ',0x1107:'ㅂ',0x1108:'ㅃ',0x1109:'ㅅ',0x110A:'ㅆ',0x110B:'ㅇ',0x110C:'ㅈ',0x110D:'ㅉ',0x110E:'ㅊ',0x110F:'ㅋ',0x1110:'ㅌ',0x1111:'ㅍ',0x1112:'ㅎ',
+        0x1161:'ㅏ',0x1162:'ㅐ',0x1163:'ㅑ',0x1164:'ㅒ',0x1165:'ㅓ',0x1166:'ㅔ',0x1167:'ㅕ',0x1168:'ㅖ',0x1169:'ㅗ',0x116A:'ㅘ',0x116B:'ㅙ',0x116C:'ㅚ',0x116D:'ㅛ',0x116E:'ㅜ',0x116F:'ㅝ',0x1170:'ㅞ',0x1171:'ㅟ',0x1172:'ㅠ',0x1173:'ㅡ',0x1174:'ㅢ',0x1175:'ㅣ',
+        0x11A8:'ㄱ',0x11A9:'ㄲ',0x11AA:'ㄳ',0x11AB:'ㄴ',0x11AC:'ㄵ',0x11AD:'ㄶ',0x11AE:'ㄷ',0x11AF:'ㄹ',0x11B0:'ㄺ',0x11B1:'ㄻ',0x11B2:'ㄼ',0x11B3:'ㄽ',0x11B4:'ㄾ',0x11B5:'ㄿ',0x11B6:'ㅀ',0x11B7:'ㅁ',0x11B8:'ㅂ',0x11B9:'ㅄ',0x11BA:'ㅅ',0x11BB:'ㅆ',0x11BC:'ㅇ',0x11BD:'ㅈ',0x11BE:'ㅊ',0x11BF:'ㅋ',0x11C0:'ㅌ',0x11C1:'ㅍ',0x11C2:'ㅎ' };
+    function jamoCompat(s) { return ('' + s).normalize('NFC').replace(/[\u1100-\u11FF]/g, function(c) { return JAMO_C[c.charCodeAt(0)] || c; }); }
     // "기어서/기여서"처럼 빗금으로 복수 표기된 형태는 어느 쪽을 써도 정답
     function formOK(user, form) {
         var bare = function(x) { return PUI.hyphenMarks ? x.replace(/^-+|-+$/g, '') : x; };   // 붙임표를 빈칸 옆에 보여 주는 파일은 형태소만 대조

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>SHUEGUK 문법 · 플레이</title>
-<meta name="description" content="이수경국어 문법 테스트 — 스테이지 플레이 모드(문항마다 한 페이지, 30초)" />
+<meta name="description" content="이수경국어 문법 테스트 — 스테이지 플레이 모드(문항마다 한 페이지, 문항당 30초·레벨2 문장 분석은 60초)" />
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <style>
@@ -199,7 +199,7 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
       <div class="sub" id="st-sub"></div>
       <div class="tiles">
         <div class="tile"><span class="k">문항</span><span class="v" id="st-n"></span></div>
-        <div class="tile"><span class="k">문항당</span><span class="v">30초</span></div>
+        <div class="tile"><span class="k">문항당</span><span class="v" id="st-sec">30초</span></div>
         <div class="tile"><span class="k">통과 기준</span><span class="v lav" id="st-pass"></span></div>
       </div>
       <div class="sub" id="st-who"></div>
@@ -236,8 +236,8 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
     var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzikteq7gR2ezi_NXc2of8PTvUj5XouJ5ZcZOEWv0YWgjQjs8dZqogQjSr0-LSqneXF/exec';
     var SB_URL = 'https://bangdbhqpphqqdwcledg.supabase.co';
     var SB_KEY = 'sb_publishable_dE9d1KIbpgYaQkaS2MSrlg_-7SiRJuT';
-    var SEC = 30;                 // 문항당 시간(초)
-    var PT_HIT = 100, PT_SEC = 2, PT_COMBO = 20;   // 맞히면 100 + 남은 초×2, 콤보 3부터 +20씩
+    var SEC = 30;                 // 문항당 시간(초) — manifest 카테고리의 sec가 있으면 그 값(레벨2 문장 분석 60초, 2026-09-17)
+    var PT_HIT = 100, PT_SEC = 2, PT_COMBO = 20;   // 맞히면 100 + 남은 초×2(30초 기준으로 환산 — 60초 단원도 최대 60점), 콤보 3부터 +20씩
     var PASS = window.STAGE ? STAGE.PASS_PCT : 70;
 
     function $(id) { return document.getElementById(id); }
@@ -256,7 +256,14 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
         var map = { '①':'1','②':'2','③':'3','④':'4','⑤':'5','⑥':'6','⑦':'7','⑧':'8','⑨':'9','⑩':'10' };
         return s.replace(/[①-⑩]/g, function(c) { return map[c] || c; });
     }
-    function normForm(s) { return (s || '').replace(/[\[\]\s]/g, '').replace(/[‐-―－−]/g, '-').trim(); }
+    function normForm(s) {
+        // 옛 자모(초성·종성 U+1100~)로 들어온 낱자는 호환 자모(ㅂ U+3142 등)로 — 일부 휴대폰 키보드가 '-ㅂ시오'의 ㅂ을 다른 코드로 넣는다(2026-09-17)
+        return jamoCompat(s || '').replace(/[\[\]\s]/g, '').replace(/[‐-―－−]/g, '-').trim();
+    }
+    var JAMO_C = { 0x1100:'ㄱ',0x1101:'ㄲ',0x1102:'ㄴ',0x1103:'ㄷ',0x1104:'ㄸ',0x1105:'ㄹ',0x1106:'ㅁ',0x1107:'ㅂ',0x1108:'ㅃ',0x1109:'ㅅ',0x110A:'ㅆ',0x110B:'ㅇ',0x110C:'ㅈ',0x110D:'ㅉ',0x110E:'ㅊ',0x110F:'ㅋ',0x1110:'ㅌ',0x1111:'ㅍ',0x1112:'ㅎ',
+        0x1161:'ㅏ',0x1162:'ㅐ',0x1163:'ㅑ',0x1164:'ㅒ',0x1165:'ㅓ',0x1166:'ㅔ',0x1167:'ㅕ',0x1168:'ㅖ',0x1169:'ㅗ',0x116A:'ㅘ',0x116B:'ㅙ',0x116C:'ㅚ',0x116D:'ㅛ',0x116E:'ㅜ',0x116F:'ㅝ',0x1170:'ㅞ',0x1171:'ㅟ',0x1172:'ㅠ',0x1173:'ㅡ',0x1174:'ㅢ',0x1175:'ㅣ',
+        0x11A8:'ㄱ',0x11A9:'ㄲ',0x11AA:'ㄳ',0x11AB:'ㄴ',0x11AC:'ㄵ',0x11AD:'ㄶ',0x11AE:'ㄷ',0x11AF:'ㄹ',0x11B0:'ㄺ',0x11B1:'ㄻ',0x11B2:'ㄼ',0x11B3:'ㄽ',0x11B4:'ㄾ',0x11B5:'ㄿ',0x11B6:'ㅀ',0x11B7:'ㅁ',0x11B8:'ㅂ',0x11B9:'ㅄ',0x11BA:'ㅅ',0x11BB:'ㅆ',0x11BC:'ㅇ',0x11BD:'ㅈ',0x11BE:'ㅊ',0x11BF:'ㅋ',0x11C0:'ㅌ',0x11C1:'ㅍ',0x11C2:'ㅎ' };
+    function jamoCompat(s) { return ('' + s).normalize('NFC').replace(/[\u1100-\u11FF]/g, function(c) { return JAMO_C[c.charCodeAt(0)] || c; }); }
     function formOK(user, form) {
         var bare = function(x) { return PUI.hyphenMarks ? x.replace(/^-+|-+$/g, '') : x; };
         var u = bare(normForm(user));
@@ -291,7 +298,8 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
     var backUrl = preview ? 'index.html?preview=1#c=' + encodeURIComponent(catCode) : 'index.html' + (who.name ? '?name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) + '&p8=' + encodeURIComponent(who.phone8) : '') + '#c=' + encodeURIComponent(catCode);
 
     function fail(msg) { var l = $('loading'); l.className = 'loading fail'; l.innerHTML = msg + '<br><a href="' + esc(backUrl) + '">스테이지 맵으로</a>'; }
-    if (window.GRAMMA) GRAMMA.categories.forEach(function(c) { if (c.code === catCode) CAT_LABEL = c.label; });
+    if (window.GRAMMA) GRAMMA.categories.forEach(function(c) { if (c.code === catCode) { CAT_LABEL = c.label; if (c.sec > 0) SEC = c.sec; } });
+    left = SEC; $('st-sec').textContent = SEC + '초'; $('tb-sec').textContent = SEC + '초';
     var reg = window.GRAMMA && GRAMMA.tests && GRAMMA.tests[catCode + '-' + round];
     if (!catCode || !round || !reg) { fail('아직 등록되지 않은 테스트예요.'); return; }
 
@@ -525,7 +533,7 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
             mine = rows.map(function(r) { return (r.rule || '?') + (r.rule2 != null ? '·' + (r.rule2 || '?') : '') + ' ' + (r.form || '?'); }).join(' → ');
             if ($('chk')) $('chk').disabled = true;
         }
-        if (ok) { combo++; if (combo > comboMax) comboMax = combo; gained = PT_HIT + left * PT_SEC + (combo >= 3 ? PT_COMBO * (combo - 2) : 0); }
+        if (ok) { combo++; if (combo > comboMax) comboMax = combo; gained = PT_HIT + Math.round(left * 30 / SEC) * PT_SEC + (combo >= 3 ? PT_COMBO * (combo - 2) : 0); }
         else combo = 0;
         points += gained;
         results.push({ ok: ok, mine: timeout ? '(시간 초과)' : (mine || '(미입력)'), timeout: timeout, gained: gained, q: q });

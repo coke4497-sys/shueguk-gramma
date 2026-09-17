@@ -9,7 +9,7 @@ window.GRAMMA = {
   categories: [
     { code: "pho", label: "음운" },
     { code: "mor", label: "형태소", level: "레벨1" },
-    { code: "mor2", label: "형태소 레벨2", level: "레벨2", menu: "mor" },   // 배정 페이지에서 형태소 카드 안의 레벨 탭
+    { code: "mor2", label: "형태소 레벨2", level: "레벨2", menu: "mor", sec: 60 },   // 배정 페이지에서 형태소 카드 안의 레벨 탭. sec = 플레이 문항당 초(없으면 30 — 문장 전체 분석이라 60초, 2026-09-17)
     { code: "pos", label: "품사" },
     { code: "wfm", label: "단어 형성법" },
     { code: "sen", label: "문장" },

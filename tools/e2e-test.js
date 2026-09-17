@@ -383,6 +383,67 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(await p4.$eval('#st-go', e => e.disabled), '학생 정보 없으면 시작 잠김');
   ok(sbCalls.length === nSb, '미리보기·정보 없음은 기록 호출 없음');
 
+  /* ========== 5f) 형태소 플레이 — 붙임표 없이 정답·자모 코드·정정 문항·레벨2 60초 (2026-09-17 검수 반영) ========== */
+  async function answerMor(q, forms) {   // process: 단계마다 형태소(기본 = 정답의 붙임표를 뗀 것) + 알약 두 개
+    if (q.type !== 'process') return answer(q);
+    for (let si = 0; si < q.steps.length; si++) {
+      const st = q.steps[si];
+      await p4.fill('#frm-' + si, forms && forms[si] != null ? forms[si] : st.form.split('/')[0].replace(/^-+|-+$/g, ''));
+      await p4.click('.pills[data-for="sel-' + si + '"] .pill[data-v="' + st.accept[0] + '"]');
+      await p4.click('.pills[data-for="sel2-' + si + '"] .pill[data-v="' + st.accept2[0] + '"]');
+    }
+    await p4.click('#chk'); await p4.waitForSelector('#next');
+  }
+  const formsOK = () => p4.$$eval('#qbox .form-input, #abox .form-input', els => els.length > 0 && els.every(e => e.classList.contains('ok')));
+  await p4.goto(`http://localhost:${PORT}/play.html?c=mor&r=2&name=박검증&school=화정고&grade=고1&p8=12345678`);
+  await p4.waitForSelector('#start:not(.hidden)');
+  ok((await p4.textContent('#st-sec')) === '30초', '레벨1 시작 화면: 문항당 30초');
+  await p4.click('#st-go'); await p4.waitForSelector('#frm-0');
+  const qm2 = await p4.evaluate(() => fetch('data/mor-2.json').then(r => r.json()).then(d => d.questions));
+  ok(qm2[0].start === '맞먹다' && (await p4.$$eval('.step-row .hy', els => els.map(e => e.textContent).join('|'))) === '|-||-|-|', '맞먹다: 붙임표는 빈칸 옆에 표시');
+  await answerMor(qm2[0]);
+  ok((await p4.textContent('#fb .fb-top')).includes('정답') && await formsOK(), '맞먹다: 붙임표 없이 맞·먹·다만 써도 정답(신고 ①)');
+  await p4.click('#next'); await answerMor(qm2[1]); await p4.click('#next'); await answerMor(qm2[2]);
+  ok((await p4.textContent('#fb .fb-top')).includes('정답') && await formsOK(), '풋사과: 풋·사과 붙임표 없이 정답');
+  await p4.click('#next'); await answerMor(qm2[3], ['가', '시', 'ᄇ시오']);
+  ok(qm2[3].start === '가십시오' && (await p4.textContent('#fb .fb-top')).includes('정답') && await formsOK(), '가십시오: 옛 자모 코드(U+1107)로 넣은 ㅂ시오도 정답');
+  for (let i = 4; i < qm2.length; i++) { await p4.click('#next'); await p4.waitForSelector('#frm-0, #ans, #abox .big, #abox .opt'); await answerMor(qm2[i]); }
+  await p4.click('#next'); await p4.waitForSelector('#result:not(.hidden)');
+  ok((await p4.textContent('#result')).includes('100%'), '스테이지 2 전부 정답(붙임표 없이)');
+  // 스테이지 3 12번 — 단어 ≦ 형태소(정정), 스테이지 5 12번·7 11번 — '음운론'/'형태론적' 둘 다 정답
+  async function playTo(round, idx, typed) {
+    await p4.goto(`http://localhost:${PORT}/play.html?c=mor&r=${round}&name=박검증&school=화정고&grade=고1&p8=12345678`);
+    await p4.waitForSelector('#start:not(.hidden)'); await p4.click('#st-go');
+    const qs = await p4.evaluate((r) => fetch('data/mor-' + r + '.json').then(x => x.json()).then(d => d.questions), round);
+    for (let i = 0; i < idx; i++) { await p4.waitForSelector('#frm-0, #ans, #abox .big, #abox .opt'); await answerMor(qs[i]); await p4.click('#next'); }
+    await p4.waitForSelector('#ans'); await p4.fill('#ans', typed); await p4.click('#chk'); await p4.waitForSelector('#next');
+    return qs[idx];
+  }
+  const q312 = await playTo(3, 11, '적거나 같다');
+  ok(q312.stem.includes('(적거나 같다/많다)') && q312.answer === '적거나 같다' && (await p4.textContent('#fb .fb-top')).includes('정답'), "스테이지 3 12번: 단어는 형태소보다 '적거나 같다'가 정답(정정 ③)");
+  const q512 = await playTo(5, 11, '음운론');
+  ok(q512.stem.includes('○○○적 이형태') && (await p4.textContent('#fb .fb-top')).includes('정답'), "스테이지 5 12번: 빈칸대로 '음운론'만 써도 정답(정정 ④)");
+  const q711 = await playTo(7, 10, '형태론적');
+  ok(q711.stem.includes('○○○적 이형태') && (await p4.textContent('#fb .fb-top')).includes('정답'), "스테이지 7 11번: '형태론적'까지 써도 정답(정정 ⑤)");
+  // 레벨2 = 문항당 60초, 점수 보너스는 30초 기준 환산(최대 +60)
+  await p4.goto(`http://localhost:${PORT}/play.html?c=mor2&r=1&name=박검증&school=화정고&grade=고1&p8=12345678`);
+  await p4.waitForSelector('#start:not(.hidden)');
+  ok((await p4.textContent('#st-sec')) === '60초', '레벨2 시작 화면: 문항당 60초(신고 ⑥)');
+  await p4.click('#st-go'); await p4.waitForSelector('#frm-0');
+  ok((await p4.textContent('#tb-sec')) === '60초' || (await p4.textContent('#tb-sec')) === '59초', '레벨2 플레이 상단 60초에서 시작');
+  const qm21 = await p4.evaluate(() => fetch('data/mor2-1.json').then(r => r.json()).then(d => d.questions));
+  await answerMor(qm21[0]);
+  const pts21 = parseInt(((await p4.textContent('#fb .fb-top .pts')).match(/\+(\d+)점/) || [])[1] || '0', 10);
+  ok((await p4.textContent('#fb .fb-top')).includes('정답') && pts21 >= 140 && pts21 <= 160, '레벨2 정답 점수 = 100 + 남은 시간 보너스(30초 환산, 최대 60) → ' + pts21 + '점');
+  // 스테이지 맵 안내 글도 단원 시간에 맞춤
+  await p4.goto(`http://localhost:${PORT}/index.html?name=박검증&school=화정고&grade=고1&p8=12345678`);
+  await p4.waitForSelector('#cats .cat-card[data-code="mor"]'); await p4.click('#cats .cat-card[data-code="mor"]');
+  await p4.waitForSelector('#round-view:not(.hidden)');
+  ok((await p4.textContent('#stages .now .nt')).includes('문항마다 30초'), '스테이지 맵 레벨1: 문항마다 30초');
+  await p4.click('#lvl-tabs .lvl-tab[data-code="mor2"]');
+  await p4.waitForFunction(() => document.getElementById('sec-title').textContent.includes('레벨2'));
+  ok((await p4.textContent('#stages .now .nt')).includes('문항마다 60초'), '스테이지 맵 레벨2: 문항마다 60초');
+
   /* ========== 5d) test.html free=1 (배정 카드가 아닌 자유 응시 링크) — 배정 확인 생략은 그대로 ========== */
   assignItems = [];
   const prevReqs5 = reqLog.length;
