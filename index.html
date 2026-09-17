@@ -384,7 +384,7 @@ footer { text-align: center; margin-top: 28px; color: #5C6A64; font-size: 12px; 
                     '<span class="nl">' + (st === 'pass' ? best + '%' : st === 'cur' ? '도전' + (best != null ? ' · ' + best + '%' : '') : st === 'open' ? (best != null ? best + '%' : '열림') : r) + '</span></button>';
             });
             html += '</div>';
-            if (isCur) html += '<div class="now"><div class="nt"><b>스테이지 ' + curRound + ' · ' + esc(titleOf(current, curRound)) + '</b><span>문항마다 30초 · 통과 ' + PASS + '%' + (pg.best[curRound] != null ? ' · 최고 ' + pg.best[curRound] + '%' : '') + '</span></div>' +
+            if (isCur) html += '<div class="now"><div class="nt"><b>스테이지 ' + curRound + ' · ' + esc(titleOf(current, curRound)) + '</b><span>문항마다 ' + (catOf(current).sec > 0 ? catOf(current).sec : 30) + '초 · 통과 ' + PASS + '%' + (pg.best[curRound] != null ? ' · 최고 ' + pg.best[curRound] + '%' : '') + '</span></div>' +
                 '<button type="button" class="go" data-round="' + curRound + '">도전하기' + IC_GO + '</button></div>';
             html += '</div>';
         });
