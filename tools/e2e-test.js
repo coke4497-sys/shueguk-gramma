@@ -49,17 +49,25 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
     return route.fulfill({ status: 200, contentType: base.endsWith('.css') ? 'text/css' : 'text/javascript', body: fs.readFileSync(f, 'utf8') });
   });
 
+  const reportPosts = [], editReqSets = []; let editReqRows = [], reportFail = false;   // 문항 오류 제보·수정 요청함 가로채기
   await ctx.route('**://script.google.com/**', async (route) => {
     const req = route.request();
     const url = new URL(req.url());
     const q = Object.fromEntries(url.searchParams);
     if (req.method() === 'POST') {
       lastPost = JSON.parse(req.postData());
+      if (lastPost.action === 'grammaReport') {   // 문항 오류 제보(리포트 백엔드) — 2026-09-18
+        if (reportFail) return route.fulfill({ status: 500, body: 'oops' });
+        reportPosts.push(lastPost); return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ result: 'success' }) });
+      }
+      if (lastPost.action === 'editReqSet') { editReqSets.push(lastPost); return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ result: 'success' }) }); }
       return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) });
     }
     const action = q.action || '';
     reqLog.push(q);
     let payload;
+    if (action === 'editReqList') payload = { result: 'success', reqs: editReqRows };
+    else
     if (action === 'roster') payload = { result: 'success', students: ROSTER };   // 리포트 백엔드 명단
     else if (action === 'myAssign') payload = { ok: true, kind: 'assign', items: assignItems };
     else if (action === 'assignList') payload = { ok: true, kind: 'assign', rows: assignRows };
@@ -815,6 +823,90 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(await p13.$eval('#top30-btn', e => getComputedStyle(e).backgroundColor === 'rgb(237, 228, 244)' && getComputedStyle(e).boxShadow === 'none') && await p13.$eval('.header .h-left', e => /^(left|start)$/.test(getComputedStyle(e).textAlign)), '디자인 규칙: 연보라 알약·그림자 없음·히어로 왼쪽 정렬');
   ok(errs13.length === 0, '페이지 오류 없음');
   await p13.close();
+
+  /* ========== 13) 문항 오류 제보 — play.html·test.html [이 문항 오류 제보] → 리포트 수정 요청함(grammaReport) + stats.html '오류 제보' 탭 (2026-09-18) ========== */
+  const p14 = await ctx.newPage(); p14.on('dialog', d => d.accept());
+  async function answerMor14(q) {
+    if (q.type === 'ox') await p14.click('#abox .big[data-v="' + q.answer + '"]');
+    else if (q.type === 'choice') await p14.click('#abox .opt[data-v="' + q.answer + '"]');
+    else if (q.type === 'short') { await p14.fill('#ans', q.answer); await p14.click('#chk'); }
+    else { for (let si = 0; si < q.steps.length; si++) { const st = q.steps[si]; await p14.fill('#frm-' + si, st.form.split('/')[0].replace(/^-+|-+$/g, '')); await p14.click('.pills[data-for="sel-' + si + '"] .pill[data-v="' + st.accept[0] + '"]'); await p14.click('.pills[data-for="sel2-' + si + '"] .pill[data-v="' + st.accept2[0] + '"]'); } await p14.click('#chk'); }
+    await p14.waitForSelector('#next');
+  }
+  await p14.goto(`http://localhost:${PORT}/play.html?c=mor&r=1&name=박검증&school=화정고&grade=고1&p8=12345678`);
+  await p14.waitForSelector('#start:not(.hidden)'); await p14.click('#st-go'); await p14.waitForSelector('#frm-0');
+  const qm1 = await p14.evaluate(() => fetch('data/mor-1.json').then(r => r.json()).then(d => d.questions));
+  // 1번을 일부러 틀리게(형태소 칸에 엉뚱한 값)
+  for (let si = 0; si < qm1[0].steps.length; si++) { await p14.fill('#frm-' + si, '엉뚱'); await p14.click('.pills[data-for="sel-' + si + '"] .pill[data-v="실질"]'); await p14.click('.pills[data-for="sel2-' + si + '"] .pill[data-v="자립"]'); }
+  await p14.click('#chk'); await p14.waitForSelector('#next');
+  ok((await p14.$$('#fb .rp-link[data-rp="1"]')).length === 1 && (await p14.textContent('#fb .rp-link')) === '이 문항 오류 제보', '정답 확인 패널 아래 [이 문항 오류 제보] 글자 버튼');
+  ok(await p14.$eval('#fb .rp-link', e => { const s = getComputedStyle(e); return s.backgroundColor === 'rgba(0, 0, 0, 0)' && s.borderTopWidth === '0px'; }), '제보 버튼은 배경·테두리 없는 연보라 글자');
+  await p14.click('#fb .rp-link'); await p14.waitForSelector('#rpModal:not(.hidden)');
+  const where = await p14.textContent('#rp-where');
+  ok(where.includes('형태소 레벨1 · 스테이지 1 · 1번') && where.includes(qm1[0].start) && where.includes('내 답') && where.includes('정답'), '창 위에 단원·레벨·스테이지·번호·문항·내 답·정답이 자동으로');
+  ok((await p14.$$('#rp-kinds .rp-kind')).length === 4 && await p14.$eval('#rp-kinds .rp-kind', e => e.classList.contains('on')), '종류 알약 4개, 첫째 기본 선택');
+  reportPosts.length = 0;
+  await p14.click('#rp-send');
+  ok((await p14.textContent('#rp-msg')).includes('적어 주세요') && reportPosts.length === 0, '내용이 비면 보내지 않고 안내');
+  await p14.click('#rp-kinds .rp-kind:nth-child(2)'); await p14.fill('#rp-text', '해설에 오타가 있어요');
+  await p14.click('#rp-send'); await p14.waitForSelector('#rp-done:not(.hidden)');
+  const rp = reportPosts[0];
+  ok(rp && rp.action === 'grammaReport' && rp.name === '박검증' && rp.school === '화정고' && rp.grade === '고1' && rp.cat === '형태소' && rp.level === '레벨1' && '' + rp.round === '1' && '' + rp.qno === '1' && rp.start === qm1[0].start && rp.kind === '문항·해설 오타' && rp.text === '해설에 오타가 있어요' && rp.mine.includes('엉뚱') && rp.answer && rp.preview === false, '보내기 → grammaReport 본문(학생·문항 위치·종류·내용·내 답·정답)');
+  ok(!('p8' in rp) && !('phone8' in rp) && JSON.stringify(rp).indexOf('12345678') < 0 && !('pw' in rp), '8자리 번호·비밀번호는 보내지 않음');
+  ok((await p14.textContent('#rp-done')).includes('전달됐어요') && await p14.$eval('#fb .rp-link', e => e.disabled && e.textContent === '제보 완료'), "완료 안내 + 버튼 '제보 완료' 잠금");
+  await p14.click('#rp-close'); ok(await p14.$eval('#rpModal', e => e.classList.contains('hidden')), '닫기');
+  // 결과 화면의 틀린 문항 줄에도 [오류 제보]
+  for (let i = 1; i < qm1.length; i++) { await p14.click('#next'); await p14.waitForSelector('#frm-0, #ans, #abox .big, #abox .opt'); await answerMor14(qm1[i]); }
+  await p14.click('#next'); await p14.waitForSelector('#result:not(.hidden)');
+  ok((await p14.$$('#result .wrong .rp-link[data-rp="1"]')).length === 1 && await p14.$eval('#result .wrong .rp-link', e => e.disabled), '결과 화면 틀린 문항 줄에 [오류 제보] — 이미 보낸 문항은 잠긴 채');
+  // 보내기 실패 → 안내 + 다시 시도 가능
+  await p14.goto(`http://localhost:${PORT}/play.html?c=mor&r=2&name=박검증&school=화정고&grade=고1&p8=12345678`);
+  await p14.waitForSelector('#start:not(.hidden)'); await p14.click('#st-go'); await p14.waitForSelector('#frm-0');
+  const qm2r = await p14.evaluate(() => fetch('data/mor-2.json').then(r => r.json()).then(d => d.questions));
+  await answerMor14(qm2r[0]);
+  reportFail = true;
+  await p14.click('#fb .rp-link'); await p14.waitForSelector('#rpModal:not(.hidden)'); await p14.fill('#rp-text', '테스트'); await p14.click('#rp-send');
+  await p14.waitForFunction(() => document.getElementById('rp-msg').textContent.includes('지금은 보낼 수 없어요'));
+  ok(!(await p14.$eval('#rp-send', e => e.disabled)) && await p14.$eval('#rp-form', e => !e.classList.contains('hidden')), '서버 오류면 안내하고 다시 보낼 수 있음');
+  reportFail = false;
+  await p14.close();
+  // test.html(미리보기) — 채점 뒤 문항 카드마다 버튼, 작성자는 선생님(미리보기)
+  const p15 = await ctx.newPage(); p15.on('dialog', d => d.accept());
+  await p15.goto(`http://localhost:${PORT}/test.html?c=mor&r=1&preview=1`);
+  await p15.waitForSelector('.q-card'); if (await p15.isVisible('#tab-test')) await p15.click('#tab-test');
+  await p15.click('#student-info'); await p15.fill('#si-name', '이선생'); await p15.fill('#si-school', '슈국'); await p15.selectOption('#si-grade', '고1'); await p15.fill('#si-phone8', '00000000');
+  await p15.click('#submit-btn'); await p15.waitForSelector('.final.show');
+  ok((await p15.$$('.q-card .rp-link')).length === 15, '전체 제출 방식도 채점 뒤 문항마다 [이 문항 오류 제보]');
+  await p15.click('#card-2 .rp-link'); await p15.waitForSelector('#rpModal:not(.hidden)');
+  ok((await p15.textContent('#rp-where')).includes('스테이지 1 · 3번'), '3번 카드 → 3번 문항 정보');
+  reportPosts.length = 0; await p15.fill('#rp-text', '미리보기 제보'); await p15.click('#rp-send'); await p15.waitForSelector('#rp-done:not(.hidden)');
+  ok(reportPosts[0] && reportPosts[0].preview === true && '' + reportPosts[0].qno === '3', '미리보기 제보는 preview:true');
+  await p15.close();
+  // stats.html '오류 제보' 탭
+  editReqRows = [
+    { row: 3, ts: '2026-09-18 21:10', writer: '박검증 (화정고 고1)', screen: '문법 테스트', text: '[형태소 레벨1 · 스테이지 3 · 12번 단어와 형태소의 수를…]\n종류: 정답이 틀린 것 같아요\n내용: 적거나 같다가 맞아요', status: '접수됨', note: '', doneTs: '' },
+    { row: 2, ts: '2026-09-18 20:00', writer: '조교', screen: '전체 시간표', text: '시간표 요청', status: '접수됨', note: '', doneTs: '' },
+    { row: 1, ts: '2026-09-17 10:00', writer: '선생님(미리보기)', screen: '문법 테스트', text: '[음운 · 스테이지 1 · 2번]\n종류: 오타\n내용: 해설 오타', status: '보류', note: '클로슈 확인: 제보가 맞아요', doneTs: '2026-09-17 10:05' },
+  ];
+  const p16 = await ctx.newPage(); p16.on('dialog', d => d.accept());
+  await p16.goto(`http://localhost:${PORT}/stats.html`);
+  await p16.waitForSelector('#vt-report');
+  await p16.click('#vt-report'); await p16.waitForSelector('#v-report:not(.hidden) .rq-item');
+  ok((await p16.$$('#v-report .rq-item')).length === 2 && (await p16.textContent('#rq-cnt')) === '2' && !(await p16.textContent('#v-report')).includes('시간표 요청'), "'오류 제보' 탭 = 화면 '문법 테스트'만 2건, 탭 배지 2(처리 완료 아닌 것)");
+  ok((await p16.$eval('#v-report .rq-item:nth-child(1) .rq-text b', e => e.textContent)).startsWith('[형태소 레벨1') && (await p16.textContent('#v-report .rq-item:nth-child(2) .rq-note')).includes('클로슈 확인'), '위치는 굵게, 보류 건은 확인 결과 메모');
+  await p16.click('#rq-filter .pill[data-st="보류"]');
+  ok((await p16.$$('#v-report .rq-item')).length === 1, '상태 칩으로 거르기');
+  await p16.click('#rq-filter .pill[data-st=""]');
+  editReqSets.length = 0;
+  await p16.click('#v-report .rq-item:nth-child(1) button[data-act="done"]');
+  await p16.fill('#v-report .rq-item:nth-child(1) .rq-memo', '정답을 고쳤어요');
+  editReqRows[0].status = '처리 완료'; editReqRows[0].note = '정답을 고쳤어요';
+  await p16.click('#v-report .rq-item:nth-child(1) button[data-act="save"]');
+  await p16.waitForFunction(() => document.querySelector('#v-report .rq-item:nth-child(1) .rq-st').textContent === '처리 완료');
+  const es = editReqSets[0];
+  ok(es && es.action === 'editReqSet' && es.row === 3 && es.ts === '2026-09-18 21:10' && es.status === '처리 완료' && es.note === '정답을 고쳤어요' && es.del === 0, '[처리 완료] + 메모 저장 → editReqSet(row·ts 대조)');
+  ok((await p16.textContent('#rq-cnt')) === '1', '처리 완료 뒤 배지 1');
+  await p16.close();
 
   await browser.close();
   server.close();

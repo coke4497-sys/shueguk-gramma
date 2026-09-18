@@ -85,6 +85,20 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .vtabs { display: flex; gap: 6px; margin-top: 2px; }
 .vtab { font: inherit; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 999px; background: #F4F5F3; color: #4F5C56; border: none; cursor: pointer; }
 .vtab.on { background: #EDE4F4; color: #5A4A6A; }
+.rq-item { border: 1px solid #E5EDE8; border-radius: 12px; padding: 10px 12px; font-size: 13px; display: flex; flex-direction: column; gap: 6px; }
+.rq-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.rq-top small { color: #5C6A64; font-size: 11.5px; }
+.rq-st { font-size: 11px; font-weight: 700; border-radius: 999px; padding: 2px 9px; }
+.rq-st.wait { background: #F5EBCF; color: #5F4E14; } .rq-st.done { background: #DCE9E2; color: #2F5D46; } .rq-st.hold { background: #EDE4F4; color: #5A4A6A; }
+.rq-text { white-space: pre-wrap; word-break: break-word; line-height: 1.6; color: #2A332F; }
+.rq-text b { color: #5A4A6A; }
+.rq-note { background: #F4F8F6; border-radius: 8px; padding: 7px 9px; font-size: 12px; line-height: 1.55; }
+.rq-note b { color: #2F5D46; font-size: 11px; display: block; margin-bottom: 2px; }
+.rq-act { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+.rq-act .pill { font-size: 11.5px; padding: 5px 10px; }
+.rq-memo { width: 100%; font: inherit; font-size: 13px; border: 1.5px solid #E5EDE8; border-radius: 10px; padding: 8px 10px; min-height: 60px; resize: vertical; }
+.rq-memo:focus { outline: none; border-color: #D6C9E4; }
+.vtab .cnt { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 999px; background: #F5EBCF; color: #5F4E14; font-size: 10.5px; margin-left: 4px; line-height: 17px; }
 .vtab:hover { background: #E3D7EE; color: #5A4A6A; }
 @media (max-width: 480px) { .header { flex-direction: column; align-items: stretch; gap: 14px; padding: 18px 16px; } .header .h-right { flex-direction: row; justify-content: flex-start; gap: 12px; } .header .bigstar { width: 44px; height: 44px; } }
 
@@ -183,6 +197,7 @@ tr.det td { background: #FAFBFA; white-space: normal; padding: 10px 12px 12px; }
       <div class="vtabs">
         <button type="button" class="vtab on" data-view="stats" id="vt-stats">참여 현황</button>
         <button type="button" class="vtab" data-view="top" id="vt-top">문법 슈스 탑30</button>
+        <button type="button" class="vtab" data-view="report" id="vt-report">오류 제보<span class="cnt hidden" id="rq-cnt"></span></button>
       </div>
       <div class="links">
         <a href="shueguk-teacher-dashboard.html">결과 확인(제출 목록)</a>
@@ -262,6 +277,20 @@ tr.det td { background: #FAFBFA; white-space: normal; padding: 10px 12px 12px; }
   </div>
 
   <!-- ===== 탑30 ===== -->
+  <!-- ===== 오류 제보 (2026-09-18) — 학생·선생님이 플레이 화면에서 올린 문항 오류 제보. 리포트 수정 요청함('수정요청' 탭, 화면 '문법 테스트')을 그대로 읽는다 ===== -->
+  <div id="v-report" class="hidden">
+    <div class="card" style="display:flex;flex-direction:column;gap:10px;">
+      <div class="ctitle">문항 오류 제보 <span class="n">플레이 화면의 [이 문항 오류 제보]로 들어온 것 · 클로슈가 먼저 읽고 확인 결과를 '보류'로 남겨요 — 고칠지는 원장님과 결정</span>
+        <span class="right"><button type="button" class="pill" id="rq-reload">새로고침</button></span></div>
+      <div class="pills" id="rq-filter">
+        <button type="button" class="pill on" data-st="">전체</button>
+        <button type="button" class="pill" data-st="접수됨">접수됨</button>
+        <button type="button" class="pill" data-st="보류">확인 필요(보류)</button>
+        <button type="button" class="pill" data-st="처리 완료">처리 완료</button>
+      </div>
+      <div id="rq-list" class="hint">불러오는 중…</div>
+    </div>
+  </div>
   <div id="v-top" class="hidden">
     <div class="card" style="display:flex;flex-direction:column;gap:8px;">
       <div class="ctitle">문법 슈스 탑30 <span class="n">클리어한 스테이지 수 → 플레이 점수 순 · 슈퍼스타 랭킹과는 별개</span></div>
@@ -655,9 +684,62 @@ tr.det td { background: #FAFBFA; white-space: normal; padding: 10px 12px 12px; }
     });
     function showView(v) {
         document.querySelectorAll('.vtab').forEach(function(x) { x.classList.toggle('on', x.getAttribute('data-view') === v); });
-        $('v-stats').classList.toggle('hidden', v !== 'stats'); $('v-top').classList.toggle('hidden', v !== 'top');
+        $('v-stats').classList.toggle('hidden', v !== 'stats'); $('v-top').classList.toggle('hidden', v !== 'top'); $('v-report').classList.toggle('hidden', v !== 'report');
         if (v === 'top' && !topLoaded) { topLoaded = true; loadTop(); }
+        if (v === 'report' && !rqLoaded) rqLoad();
     }
+    /* ----- 오류 제보 탭 — 리포트 수정 요청함(editReqList/editReqSet)에서 화면 '문법 테스트'만 (2026-09-18) ----- */
+    var REPORT_URL = 'https://script.google.com/macros/s/AKfycbzhCncBwn-JlqXARC3wfrWUCuNHzlNK2df0bdhx-w78Xr8mzYUcIYZOJdRi9N4bHtsb/exec', REPORT_PW = 'sh';   // 티쳐스 페이지 공개 수준(슈국 스케쥴과 같음)
+    var rqRows = null, rqLoaded = false, rqFilter = '';
+    function rqLoad() {
+        $('rq-list').innerHTML = '불러오는 중…';
+        fetch(REPORT_URL + '?action=editReqList&pw=' + encodeURIComponent(REPORT_PW) + '&t=' + Date.now())
+            .then(function(r) { return r.json(); })
+            .then(function(d) { rqLoaded = true; rqRows = (d && d.result === 'success') ? (d.reqs || []).filter(function(r) { return r.screen === '문법 테스트'; }) : null; rqRender(); })
+            .catch(function() { rqRows = null; rqRender(); });
+    }
+    function rqStatusCls(s) { return s === '처리 완료' ? 'done' : (s === '보류' ? 'hold' : 'wait'); }
+    function rqRender() {
+        var box = $('rq-list'), cnt = $('rq-cnt');
+        if (rqRows === null) { box.innerHTML = '목록을 불러오지 못했어요. 인터넷을 확인하고 [새로고침]을 눌러 주세요.'; return; }
+        var open = rqRows.filter(function(r) { return r.status !== '처리 완료'; }).length;
+        cnt.textContent = open; cnt.classList.toggle('hidden', !open);
+        var rows = rqFilter ? rqRows.filter(function(r) { return r.status === rqFilter; }) : rqRows;
+        if (!rows.length) { box.innerHTML = rqRows.length ? '이 상태의 제보가 없어요.' : '아직 들어온 제보가 없어요.'; return; }
+        box.className = ''; box.style.display = 'flex'; box.style.flexDirection = 'column'; box.style.gap = '8px';
+        box.innerHTML = rows.map(function(r) {
+            var st = rqStatusCls(r.status), i = rqRows.indexOf(r);
+            var text = esc(r.text).replace(/^\[([^\]]+)\]/, '<b>[$1]</b>');
+            return '<div class="rq-item" data-i="' + i + '"><div class="rq-top"><span class="rq-st ' + st + '">' + esc(r.status) + '</span><small>' + esc(r.ts) + (r.writer ? ' · ' + esc(r.writer) : '') + '</small>' +
+                '<span class="rq-act">' + (st !== 'done' ? '<button type="button" class="pill" data-act="done">처리 완료</button>' : '') + (st !== 'hold' ? '<button type="button" class="pill" data-act="hold">보류</button>' : '') + (st === 'wait' ? '<button type="button" class="pill" data-act="del">지우기</button>' : '') + '</span></div>' +
+                '<div class="rq-text">' + text + '</div>' +
+                (r.note ? '<div class="rq-note"><b>확인 결과' + (r.doneTs ? ' · ' + esc(r.doneTs) : '') + '</b>' + esc(r.note) + '</div>' : '') +
+                '<div class="rq-edit hidden"><textarea class="rq-memo" placeholder="처리 메모 (제보한 학생·선생님도 읽어요)"></textarea><div class="rq-act" style="margin:6px 0 0;"><button type="button" class="pill" data-act="cancel">취소</button><button type="button" class="pill on" data-act="save">저장</button></div></div></div>';
+        }).join('');
+    }
+    function rqSet(r, status, note, del) {
+        return fetch(REPORT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'editReqSet', pw: REPORT_PW, row: r.row, ts: r.ts, status: status, note: note, del: del ? 1 : 0 }) })
+            .then(function(x) { return x.json(); });
+    }
+    $('rq-reload').addEventListener('click', rqLoad);
+    $('rq-filter').addEventListener('click', function(ev) {
+        var b = ev.target.closest('.pill'); if (!b) return;
+        rqFilter = b.getAttribute('data-st') || '';
+        $('rq-filter').querySelectorAll('.pill').forEach(function(x) { x.classList.toggle('on', x === b); });
+        rqRender();
+    });
+    $('rq-list').addEventListener('click', function(ev) {
+        var b = ev.target.closest('button[data-act]'); if (!b) return;
+        var item = b.closest('.rq-item'), r = rqRows[parseInt(item.getAttribute('data-i'), 10)], act = b.getAttribute('data-act');
+        var edit = item.querySelector('.rq-edit'), memo = item.querySelector('.rq-memo');
+        if (act === 'done' || act === 'hold') { item.setAttribute('data-next', act === 'done' ? '처리 완료' : '보류'); memo.value = r.note || ''; edit.classList.remove('hidden'); memo.focus(); return; }
+        if (act === 'cancel') { edit.classList.add('hidden'); return; }
+        if (act === 'del') { if (!confirm('이 제보를 지울까요?')) return; rqSet(r, '', null, true).then(function(j) { if (j && j.result === 'success') rqLoad(); else alert((j && j.message) || '지우지 못했어요.'); }); return; }
+        if (act === 'save') {
+            var next = item.getAttribute('data-next'); b.disabled = true;
+            rqSet(r, next, memo.value.trim(), false).then(function(j) { if (j && j.result === 'success') rqLoad(); else { b.disabled = false; alert((j && j.message) || '저장하지 못했어요.'); } });
+        }
+    });
     $('top30-btn').addEventListener('click', function() { showView('top'); });
     document.querySelectorAll('.vtab').forEach(function(b) { b.addEventListener('click', function() { showView(b.getAttribute('data-view')); }); });
 
