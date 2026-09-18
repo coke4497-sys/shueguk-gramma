@@ -65,26 +65,31 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .container { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
 .card { background: #fff; border-radius: 18px; padding: 16px; }
 .card.plain { border: 1px solid #E5EDE8; }
-/* 히어로 — 학생 입구와 같은 구성(2026-09-16 디자인 지시서): 왼쪽 정렬 글 + 오른쪽 별·탑30 */
-.header { display: flex; align-items: center; gap: 20px; padding: 20px 22px; }
-.header .h-left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+/* 히어로 — 2026-09-18 디자인 지시서: 위(제목 | 숫자 블록+별) / 아래(세그먼트 탭 | 학생 화면 열기). 폰트·배경·별 아이콘은 그대로 */
+.header { display: flex; flex-direction: column; gap: 14px; padding: 18px 22px; }
+.header .h-top { display: flex; align-items: center; gap: 20px; }
+.header .h-left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .header .logo { font-size: 10.5px; font-weight: 400; color: #8B978F; letter-spacing: .24em; }
 .header h1 { font-family: 'Gowun Batang', serif; font-size: 22px; font-weight: 700; color: #2A332F; letter-spacing: -.5px; }
-.header .intro { font-size: 12.5px; color: #4F5C56; line-height: 1.6; }
-.header .h-right { flex: none; display: flex; flex-direction: column; align-items: center; gap: 7px; }
-.header .bigstar { width: 76px; height: 76px; display: block; }
+.header .h-right { flex: none; display: flex; align-items: center; gap: 14px; }
+.header .h-nums { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; text-align: right; }
+.header .h-n1 b { font-size: 20px; font-weight: 700; color: #2A332F; }
+.header .h-n1 span { font-size: 12px; color: #5C6A64; margin-left: 4px; }
+.header .h-n2 { font-size: 11.5px; font-weight: 400; color: #5C6A64; }
+.header .h-n2 b { font-weight: 400; }
+.header .bigstar { width: 40px; height: 40px; display: block; }
 .header .bigstar path { fill: #F2F5F3; stroke: #E2E8E4; stroke-width: 1; stroke-linejoin: round; }
 .header .bigstar.on path { fill: #FFC21F; stroke: #FFC21F; }
-.header .allstars { font-size: 11.5px; font-weight: 700; color: #5C6A64; }
-.pill-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 13px; border-radius: 999px; background: #EDE4F4; color: #5A4A6A; font: inherit; font-size: 11px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.pill-btn:hover { background: #E3D7EE; } .pill-btn:active { background: #D9CAE7; }
-.links { display: flex; flex-wrap: wrap; gap: 6px; }
-.links a { font-size: 12px; font-weight: 700; color: #4F5C56; text-decoration: none; padding: 6px 11px; border-radius: 999px; background: #F4F5F3; display: inline-flex; align-items: center; gap: 5px; }
-.links a:hover { background: #EBEEEC; }
-.links a svg { width: 13px; height: 13px; }
-.vtabs { display: flex; gap: 6px; margin-top: 2px; }
-.vtab { font: inherit; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 999px; background: #F4F5F3; color: #4F5C56; border: none; cursor: pointer; }
-.vtab.on { background: #EDE4F4; color: #5A4A6A; }
+.header .h-bot { border-top: 1px solid #F0F4F1; padding-top: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.header .h-sp { flex: 1; }
+.seg { display: inline-flex; background: #F2F5F3; border-radius: 999px; padding: 3px; }
+.vtab { font: inherit; font-size: 12.5px; font-weight: 400; padding: 8px 15px; border-radius: 999px; background: none; color: #4F5C56; border: none; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+.vtab.on { background: #EDE4F4; color: #5A4A6A; font-weight: 700; }
+.vtab:hover:not(.on) { color: #5A4A6A; }
+.vtab .cnt { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 999px; background: #F5EBCF; color: #5F4E14; font-size: 10.5px; margin-left: 4px; line-height: 17px; text-align: center; }
+.olink { display: inline-flex; align-items: center; gap: 5px; padding: 8px 14px; border-radius: 999px; border: 1px solid #DCE4DF; background: none; color: #3F4A44; font-size: 12px; text-decoration: none; white-space: nowrap; }
+.olink:hover { background: #F7F9F8; }
+.olink svg { width: 12px; height: 12px; }
 .rq-item { border: 1px solid #E5EDE8; border-radius: 12px; padding: 10px 12px; font-size: 13px; display: flex; flex-direction: column; gap: 6px; }
 .rq-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .rq-top small { color: #5C6A64; font-size: 11.5px; }
@@ -98,9 +103,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .rq-act .pill { font-size: 11.5px; padding: 5px 10px; }
 .rq-memo { width: 100%; font: inherit; font-size: 13px; border: 1.5px solid #E5EDE8; border-radius: 10px; padding: 8px 10px; min-height: 60px; resize: vertical; }
 .rq-memo:focus { outline: none; border-color: #D6C9E4; }
-.vtab .cnt { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 999px; background: #F5EBCF; color: #5F4E14; font-size: 10.5px; margin-left: 4px; line-height: 17px; }
-.vtab:hover { background: #E3D7EE; color: #5A4A6A; }
-@media (max-width: 480px) { .header { flex-direction: column; align-items: stretch; gap: 14px; padding: 18px 16px; } .header .h-right { flex-direction: row; justify-content: flex-start; gap: 12px; } .header .bigstar { width: 44px; height: 44px; } }
+@media (max-width: 480px) { .header { padding: 18px 16px; } .header .h-top { flex-direction: column; align-items: stretch; gap: 12px; } .header .h-right { justify-content: flex-start; } .header .h-nums { align-items: flex-start; text-align: left; } .seg { display: flex; flex-wrap: wrap; width: 100%; } .seg .vtab { flex: 1 1 auto; justify-content: center; padding: 8px 10px; } .header .h-sp { display: none; } .olink { margin-left: auto; } }
 
 /* 필터 */
 .frow { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #F0F4F1; flex-wrap: wrap; }
@@ -173,16 +176,49 @@ tr.det td { background: #FAFBFA; white-space: normal; padding: 10px 12px 12px; }
 .empty { font-size: 12.5px; color: #4F5C56; padding: 14px 4px; text-align: center; line-height: 1.7; }
 
 /* 탑30 */
-.list { background: #fff; border: 1px solid #E5EDE8; border-radius: 16px; padding: 6px 0; }
-.row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #F0F4F1; }
-.row:last-child { border-bottom: none; }
-.rk { width: 34px; height: 34px; border-radius: 10px; background: #EBF0ED; color: #4F5C56; display: flex; align-items: center; justify-content: center; font-family: 'Do Hyeon', sans-serif; font-size: 16px; flex: none; }
-.rk.r1 { background: #6B5B7B; color: #fff; } .rk.r2 { background: #8D83A8; color: #fff; } .rk.r3 { background: #B9A5CC; color: #fff; }
-.row .body { flex: 1; min-width: 0; }
-.row .nm { font-size: 14px; font-weight: 700; color: #2A332F; }
-.row .nm span { font-weight: 400; font-size: 12px; color: #5C6A64; margin-left: 4px; }
-.row .d { font-size: 11.5px; color: #5C6A64; margin-top: 2px; }
-.row .pt { font-family: 'Do Hyeon', sans-serif; font-size: 17px; color: #2A332F; }
+/* 탑30 카드 — 2026-09-18 디자인 지시서: 헤더 + 상위 3명 시상대 + 4위 이하 표 + 푸터 */
+.topcard { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.top-hd { padding: 16px 20px 14px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #F0F4F1; flex-wrap: wrap; }
+.top-hl { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.top-t { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 700; color: #2A332F; }
+.top-s { font-size: 11.5px; color: #4F5C56; }
+.top-f { display: flex; gap: 6px; flex-wrap: wrap; }
+.top-f .pill { padding: 7px 13px; font-size: 12px; font-weight: 400; background: #F2F5F3; color: #4F5C56; }
+.top-f .pill.on { background: #EDE4F4; color: #5A4A6A; font-weight: 700; }
+.top-status { padding: 18px 20px; font-size: 13px; color: #4F5C56; text-align: center; }
+.top-status.fail { color: #992F20; }
+.podium { display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 10px; align-items: end; padding: 22px 20px 18px; background: linear-gradient(#FBFAFC, #fff); }
+.pod { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; min-width: 0; }
+.pod .pn { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 700; color: #2A332F; }
+.pod .pn span { font-family: 'Gowun Dodum', sans-serif; font-size: 11px; font-weight: 400; color: #5C6A64; margin-left: 5px; }
+.pod .pd { font-size: 11.5px; color: #4F5C56; }
+.pod-bar { width: 100%; border-radius: 12px 12px 6px 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: #fff; }
+.pod-bar .r { font-size: 22px; font-weight: 700; line-height: 1; }
+.pod-bar .p { font-size: 12.5px; font-weight: 700; }
+.pod-bar .p i { font-style: normal; font-size: 10.5px; font-weight: 400; opacity: .85; }
+.pod.p1 .pod-bar { height: 92px; background: #5A4A6A; }
+.pod.p2 .pod-bar { height: 72px; background: #8E7BA3; }
+.pod.p3 .pod-bar { height: 60px; background: #C9B6DB; color: #3F2F4F; }
+.top-head { display: grid; grid-template-columns: 36px 1fr 140px 90px; gap: 14px; padding: 8px 20px; border-top: 1px solid #F0F4F1; background: #F7F9F8; font-size: 11px; color: #5C6A64; }
+.top-head .r, .row .pt { text-align: right; }
+#top-list .row { display: grid; grid-template-columns: 36px 1fr 140px 90px; align-items: center; gap: 14px; padding: 12px 20px; border-top: 1px solid #F0F4F1; }
+#top-list .row:hover { background: #FBFCFB; }
+.rk { width: 30px; height: 30px; border-radius: 9px; background: #F2F5F3; color: #3F4A44; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 700; }
+.row .nm { font-size: 13.5px; font-weight: 700; color: #2A332F; display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.row .nm span { font-weight: 400; font-size: 11.5px; color: #5C6A64; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .st { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: #4F5C56; white-space: nowrap; }
+.row .bar { flex: 1; height: 5px; border-radius: 99px; background: #EEF2EF; overflow: hidden; }
+.row .bar i { display: block; height: 100%; background: #B9A5CC; border-radius: 99px; }
+.row .pt { font-size: 13.5px; font-weight: 700; color: #2A332F; font-variant-numeric: tabular-nums; }
+.row .pt i { font-style: normal; font-size: 11px; font-weight: 400; color: #5C6A64; }
+.top-foot { padding: 13px 20px; border-top: 1px solid #F0F4F1; display: flex; justify-content: space-between; gap: 10px; font-size: 11.5px; color: #5C6A64; }
+@media (max-width: 560px) {
+  .top-hd { flex-direction: column; align-items: stretch; gap: 10px; }
+  .top-head, #top-list .row { grid-template-columns: 30px 1fr 84px; }
+  .top-head span:nth-child(3), .row .st { display: none; }
+  .podium { gap: 6px; padding: 18px 12px 14px; }
+  .pod .pn { font-size: 13.5px; } .pod .pn span { display: block; margin: 2px 0 0; }
+}
 .note { font-size: 11.5px; color: #4F5C56; text-align: center; line-height: 1.7; }
 .hidden { display: none !important; }
 </style>
@@ -190,24 +226,28 @@ tr.det td { background: #FAFBFA; white-space: normal; padding: 10px 12px 12px; }
 <body>
 <div class="container">
   <div class="card header">
-    <div class="h-left">
-      <div class="logo">SHUEGUK</div>
-      <h1>문법 참여 현황</h1>
-      <div class="intro">학년 · 학교 · 내신반 · 개인을 골라 참여율 · 수행률 · 점수를 봐요. 정답률 <b id="pass-pct">70</b>%를 넘기면 통과, 세트 5개를 다 모으면 별 +1.</div>
-      <div class="vtabs">
-        <button type="button" class="vtab on" data-view="stats" id="vt-stats">참여 현황</button>
-        <button type="button" class="vtab" data-view="top" id="vt-top">문법 슈스 탑30</button>
-        <button type="button" class="vtab" data-view="report" id="vt-report">오류 제보<span class="cnt hidden" id="rq-cnt"></span></button>
+    <div class="h-top">
+      <div class="h-left">
+        <div class="logo">SHUEGUK</div>
+        <h1>문법 참여 현황</h1>
       </div>
-      <div class="links">
-        <a href="shueguk-teacher-dashboard.html">결과 확인(제출 목록)</a>
-        <a href="index.html" target="_blank" rel="noopener">학생 화면 열기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+      <div class="h-right">
+        <div class="h-nums">
+          <div class="h-n1"><b id="part-n">—</b><span>명 참여</span></div>
+          <div class="h-n2"><span id="allstars">전체 별 —</span> · 통과 기준 <b id="pass-pct">70</b>%</div>
+        </div>
+        <svg class="bigstar" id="bigstar" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>
       </div>
     </div>
-    <div class="h-right">
-      <svg class="bigstar" id="bigstar" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>
-      <div class="allstars" id="allstars">전체 별 —</div>
-      <button type="button" class="pill-btn" id="top30-btn">탑30 보기</button>
+    <div class="h-bot">
+      <div class="seg">
+        <button type="button" class="vtab on" data-view="stats" id="vt-stats">참여 현황</button>
+        <button type="button" class="vtab" data-view="top" id="vt-top">슈스 탑30</button>
+        <a class="vtab" href="shueguk-teacher-dashboard.html" id="vt-list">제출 목록</a>
+        <button type="button" class="vtab" data-view="report" id="vt-report">오류 제보<span class="cnt hidden" id="rq-cnt"></span></button>
+      </div>
+      <span class="h-sp"></span>
+      <a class="olink" id="open-student" href="index.html" target="_blank" rel="noopener">학생 화면 열기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
     </div>
   </div>
 
@@ -292,18 +332,22 @@ tr.det td { background: #FAFBFA; white-space: normal; padding: 10px 12px 12px; }
     </div>
   </div>
   <div id="v-top" class="hidden">
-    <div class="card" style="display:flex;flex-direction:column;gap:8px;">
-      <div class="ctitle">문법 슈스 탑30 <span class="n">클리어한 스테이지 수 → 플레이 점수 순 · 슈퍼스타 랭킹과는 별개</span></div>
-      <div class="pills">
-        <button type="button" class="pill on" data-level="all">전체</button>
-        <button type="button" class="pill" data-level="mid">중등</button>
-        <button type="button" class="pill" data-level="high">고등</button>
-        <button type="button" class="pill" data-month="1">이번 달</button>
+    <div class="card topcard">
+      <div class="top-hd">
+        <div class="top-hl"><div class="top-t">문법 슈스 탑30</div><div class="top-s">클리어한 스테이지 수 → 플레이 점수 순 · 슈퍼스타 랭킹과는 별개</div></div>
+        <div class="top-f">
+          <button type="button" class="pill on" data-level="all">전체</button>
+          <button type="button" class="pill" data-level="mid">중등</button>
+          <button type="button" class="pill" data-level="high">고등</button>
+          <button type="button" class="pill" data-month="1">이번 달</button>
+        </div>
       </div>
+      <div id="top-status" class="top-status">순위를 불러오는 중…</div>
+      <div id="top-podium" class="podium hidden"></div>
+      <div id="top-head" class="top-head hidden"><span>순위</span><span>학생</span><span>클리어 스테이지</span><span class="r">플레이 점수</span></div>
+      <div id="top-list" class="hidden"></div>
+      <div id="top-foot" class="top-foot hidden"><span id="top-foot-l"></span><span id="top-foot-r"></span></div>
     </div>
-    <div id="top-status" class="status" style="margin-top:12px;">순위를 불러오는 중…</div>
-    <div id="top-list" class="list hidden" style="margin-top:12px;"></div>
-    <div class="note" id="top-note" style="margin-top:8px;"></div>
   </div>
 </div>
 
@@ -365,6 +409,8 @@ tr.det td { background: #FAFBFA; white-space: normal; padding: 10px 12px 12px; }
             SETS = (r[3] || []).map(function(x) { x.grade = normGrade(x.grade); x.day = String(x.cleared_at || '').slice(0, 10); return x; });
             index();
             $('allstars').textContent = '전체 별 ' + SETS.length + '개';
+            var pk = {}; RESULTS.forEach(function(x) { var st = stuOf(x); pk[st ? st.key : skey(x.name, x.phone8) + '|' + x.school] = 1; });
+            $('part-n').textContent = Object.keys(pk).length;   // 기록이 있는 학생 수(전 단원, 명단 학생은 명단 키로 합침)
             $('bigstar').classList.toggle('on', SETS.length > 0);
             buildFilters();
             $('status').classList.add('hidden'); $('body').classList.remove('hidden');
@@ -658,22 +704,42 @@ tr.det td { background: #FAFBFA; white-space: normal; padding: 10px 12px 12px; }
     var level = 'all', month = false, topLoaded = false;
     function monthStr() { var d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1); }
     function loadTop() {
-        $('top-status').className = 'status'; $('top-status').textContent = '순위를 불러오는 중…'; $('top-status').classList.remove('hidden'); $('top-list').classList.add('hidden');
+        $('top-status').className = 'top-status'; $('top-status').textContent = '순위를 불러오는 중…'; $('top-status').classList.remove('hidden');
+        ['top-podium', 'top-head', 'top-list', 'top-foot'].forEach(function(id) { $(id).classList.add('hidden'); });
         fetch(SB_URL + '/rest/v1/rpc/gramma_top', { method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p: { level: level, month: month ? monthStr() : '' } }) })
             .then(function(r) { return r.json(); }).then(renderTop).catch(function() { renderTop(null); });
     }
+    function levelLabel() { return (level === 'mid' ? '중등' : level === 'high' ? '고등' : '전체') + ' 기준'; }
+    // 시상대(1~3위) + 4위 이하 표 — 2026-09-18 디자인 지시서. 막대 분모 = 목록에서 가장 많은 스테이지 수(1위) — 전 단원 합(294)으로 나누면 막대가 거의 비어 순위 비교가 안 보여서.
     function renderTop(res) {
-        if (!res || res.ok !== true) { $('top-status').className = 'status fail'; $('top-status').textContent = '순위를 불러오지 못했어요.'; return; }
+        if (!res || res.ok !== true) { $('top-status').className = 'top-status fail'; $('top-status').textContent = '순위를 불러오지 못했어요.'; return; }
         var rows = res.rows || [];
-        if (!rows.length) { $('top-status').textContent = (month ? '이번 달' : '아직') + ' 기록이 없어요.'; $('top-note').textContent = ''; return; }
+        if (!rows.length) { $('top-status').textContent = (month ? '이번 달' : '아직') + ' 기록이 없어요.'; return; }
         $('top-status').classList.add('hidden');
-        $('top-list').innerHTML = rows.map(function(r) {
-            return '<div class="row"><div class="rk' + (r.rank <= 3 ? ' r' + r.rank : '') + '">' + r.rank + '</div>' +
-                '<div class="body"><div class="nm">' + esc(r.name) + '<span>' + esc(r.school) + ' ' + esc(r.grade) + '</span></div><div class="d">스테이지 ' + r.stages + ' · 별 ' + r.stars + '</div></div>' +
-                '<div class="pt">' + fmt(r.points) + '</div></div>';
-        }).join('');
-        $('top-list').classList.remove('hidden');
-        $('top-note').textContent = '전체 ' + res.total + '명 중 30명까지 · 통과 기준 정답률 ' + (res.pass_pct || PASS) + '%' + (month ? ' · 이번 달 제출만' : '');
+        var top3 = rows.filter(function(r) { return r.rank <= 3; }), rest = rows.filter(function(r) { return r.rank > 3; });
+        var maxSt = rows.reduce(function(m, r) { return Math.max(m, Number(r.stages) || 0); }, 0) || 1;
+        function pod(r) {
+            if (!r) return '<div class="pod"></div>';
+            return '<div class="pod p' + r.rank + '"><div class="pn">' + esc(r.name) + '<span>' + esc(r.school) + ' ' + esc(r.grade) + '</span></div>' +
+                '<div class="pd">스테이지 ' + r.stages + ' · 별 ' + r.stars + '</div>' +
+                '<div class="pod-bar"><span class="r">' + r.rank + '</span><span class="p">' + fmt(r.points) + '<i> P</i></span></div></div>';
+        }
+        var byRank = {}; top3.forEach(function(r) { byRank[r.rank] = r; });
+        $('top-podium').innerHTML = pod(byRank[2]) + pod(byRank[1]) + pod(byRank[3]);
+        $('top-podium').classList.remove('hidden');
+        if (rest.length) {
+            $('top-list').innerHTML = rest.map(function(r) {
+                var w = Math.round((Number(r.stages) || 0) / maxSt * 100);
+                return '<div class="row"><div class="rk">' + r.rank + '</div>' +
+                    '<div class="nm">' + esc(r.name) + '<span>' + esc(r.school) + ' ' + esc(r.grade) + '</span></div>' +
+                    '<div class="st">스테이지 ' + r.stages + '<span class="bar"><i style="width:' + w + '%"></i></span></div>' +
+                    '<div class="pt">' + fmt(r.points) + '<i> P</i></div></div>';
+            }).join('');
+            $('top-head').classList.remove('hidden'); $('top-list').classList.remove('hidden');
+        }
+        $('top-foot-l').textContent = '전체 ' + res.total + '명 · 30위까지 표시';
+        $('top-foot-r').textContent = (month ? '이번 달 · ' : '') + levelLabel();
+        $('top-foot').classList.remove('hidden');
     }
     document.querySelectorAll('#v-top .pill').forEach(function(b) {
         b.addEventListener('click', function() {
@@ -740,7 +806,6 @@ tr.det td { background: #FAFBFA; white-space: normal; padding: 10px 12px 12px; }
             rqSet(r, next, memo.value.trim(), false).then(function(j) { if (j && j.result === 'success') rqLoad(); else { b.disabled = false; alert((j && j.message) || '저장하지 못했어요.'); } });
         }
     });
-    $('top30-btn').addEventListener('click', function() { showView('top'); });
     document.querySelectorAll('.vtab').forEach(function(b) { b.addEventListener('click', function() { showView(b.getAttribute('data-view')); }); });
 
     $('pass-pct').textContent = PASS;

@@ -778,7 +778,8 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
     const d = u.includes('/students') ? stStudents : u.includes('tt_classes') ? stClasses : u.includes('gramma_results') ? stResults : stSets;
     r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(off ? [] : d) });
   });
-  topRows = [{ rank: 1, name: '김시은', school: '능곡고', grade: '고2', stages: 2, points: 2000, stars: 1 }, { rank: 2, name: '강구현', school: '백양고', grade: '고1', stages: 2, points: 3500, stars: 0 }]; topMe = null;
+  topRows = [{ rank: 1, name: '김시은', school: '능곡고', grade: '고2', stages: 20, points: 12000, stars: 4 }, { rank: 2, name: '강구현', school: '백양고', grade: '고1', stages: 12, points: 3500, stars: 2 }, { rank: 3, name: '박지우', school: '화수고', grade: '고1', stages: 8, points: 5100, stars: 1 },
+    { rank: 4, name: '이서연', school: '능곡고', grade: '고2', stages: 5, points: 4134, stars: 1 }, { rank: 5, name: '최은성', school: '화정고', grade: '고2', stages: 4, points: 4746, stars: 0 }]; topMe = null;
   const p13 = await ctx.newPage();
   const errs13 = []; p13.on('pageerror', e => errs13.push(e.message));
   await p13.goto(`http://localhost:${PORT}/stats.html`);
@@ -787,7 +788,10 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   const tile = i => p13.textContent('#tiles .tile:nth-child(' + i + ')');
   ok((await tile(1)).includes('5명') && (await tile(1)).includes('명단 밖 1명') && (await tile(2)).includes('4명') && (await tile(2)).includes('참여율 60%'), '전체: 대상 5명(퇴원 제외) · 명단 밖 1명 · 참여 4명 60%');
   ok((await tile(4)).includes('5') && (await tile(5)).includes('1') && (await tile(6)).includes('74%'), '클리어 5 · 별 1 · 평균 정답률 74%');
-  ok((await p13.textContent('#allstars')) === '전체 별 1개' && await p13.$eval('#bigstar', e => e.classList.contains('on')), '히어로 오른쪽: 전체 별 1개 · 별 노랑');
+  ok((await p13.textContent('#allstars')) === '전체 별 1개' && await p13.$eval('#bigstar', e => e.classList.contains('on')) && (await p13.textContent('#part-n')) === '4' && (await p13.textContent('.h-n2')).includes('통과 기준 70%'), '히어로 오른쪽 숫자 블록: 4명 참여 · 전체 별 1개 · 통과 기준 70% · 별 노랑');
+  ok(!(await p13.$('.header .intro')) && !(await p13.$('#top30-btn')) && await p13.$eval('#bigstar', e => e.getBoundingClientRect().width === 40), '안내 문장·[탑30 보기] 없음, 별 40px');
+  ok((await p13.$$eval('.header .seg .vtab', els => els.map(e => e.textContent.trim()))).join('/') === '참여 현황/슈스 탑30/제출 목록/오류 제보' && await p13.$eval('#vt-list', e => e.tagName === 'A' && e.getAttribute('href') === 'shueguk-teacher-dashboard.html'), '세그먼트 탭 4개 — 제출 목록은 링크');
+  ok(await p13.$eval('#open-student', e => { const s = getComputedStyle(e); return e.target === '_blank' && s.borderTopWidth === '1px' && s.backgroundColor === 'rgba(0, 0, 0, 0)'; }), '[학생 화면 열기 ↗] = 오른쪽 끝 테두리 버튼');
   const rows13 = await p13.$$eval('#stu-tbl tr.stu', els => els.map(e => e.getAttribute('data-key')));
   ok(rows13[0] === '김시은|22222222' && rows13[1] === '강구현|12345678' && rows13.length === 6, '학생별 표: 클리어 많은 순, 명단 밖·미참여까지 6줄');
   ok((await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('3회') && (await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('2 / 294') && (await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('78%') && (await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('3,500'), '강구현: 응시 3회 · 클리어 2 · 평균 78%(스테이지별 최고) · 플레이 3,500점');
@@ -818,9 +822,20 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await p13.$$eval('#stu-tbl tr.stu', els => els.map(e => e.querySelector('.nm').textContent)))[0] === '강구현', '이름순 정렬');
   await p13.fill('#stu-q', '김시');
   ok((await p13.$$('#stu-tbl tr.stu')).length === 1, '이름 찾기');
-  await p13.click('#top30-btn'); await p13.waitForSelector('#top-list:not(.hidden)');
-  ok(await p13.$eval('#v-stats', e => e.classList.contains('hidden')) && await p13.$eval('#vt-top', e => e.classList.contains('on')) && (await p13.$$('#top-list .row')).length === 2 && (await p13.textContent('#top-list .row:nth-child(1) .nm')).includes('김시은'), '[탑30 보기] → 탑30 탭(순위 2줄)');
-  ok(await p13.$eval('#top30-btn', e => getComputedStyle(e).backgroundColor === 'rgb(237, 228, 244)' && getComputedStyle(e).boxShadow === 'none') && await p13.$eval('.header .h-left', e => /^(left|start)$/.test(getComputedStyle(e).textAlign)), '디자인 규칙: 연보라 알약·그림자 없음·히어로 왼쪽 정렬');
+  await p13.click('#vt-top'); await p13.waitForSelector('#top-list:not(.hidden)');
+  ok(await p13.$eval('#v-stats', e => e.classList.contains('hidden')) && await p13.$eval('#vt-top', e => e.classList.contains('on')), '[슈스 탑30] 탭 → 탑30 화면');
+  const pods = await p13.$$eval('#top-podium .pod', els => els.map(e => ({ cls: e.className, nm: (e.querySelector('.pn') || {}).textContent, h: e.querySelector('.pod-bar') ? e.querySelector('.pod-bar').getBoundingClientRect().height : 0, bg: e.querySelector('.pod-bar') ? getComputedStyle(e.querySelector('.pod-bar')).backgroundColor : '' })));
+  ok(pods.length === 3 && pods[0].cls === 'pod p2' && pods[1].cls === 'pod p1' && pods[2].cls === 'pod p3' && pods[1].nm.includes('김시은') && pods[0].nm.includes('강구현'), '시상대: 왼쪽 2위 · 가운데 1위 · 오른쪽 3위');
+  ok(pods[1].h === 92 && pods[0].h === 72 && pods[2].h === 60 && pods[1].bg === 'rgb(90, 74, 106)' && pods[0].bg === 'rgb(142, 123, 163)' && pods[2].bg === 'rgb(201, 182, 219)', '기둥 92/72/60px · #5A4A6A/#8E7BA3/#C9B6DB');
+  ok((await p13.textContent('#top-podium .pod.p1 .pod-bar')).replace(/\s/g, '') === '112,000P' && (await p13.textContent('#top-podium .pod.p1 .pd')) === '스테이지 20 · 별 4', '1위 기둥: 순위 1 · 12,000 P, 위에 스테이지 20 · 별 4');
+  ok((await p13.$$('#top-list .row')).length === 2 && (await p13.textContent('#top-head')).includes('클리어 스테이지') && (await p13.textContent('#top-list .row:nth-child(1) .nm')).includes('이서연'), '4위 이하 2줄 + 열 제목 줄');
+  const r4 = await p13.$eval('#top-list .row:nth-child(1)', e => ({ rk: getComputedStyle(e.querySelector('.rk')).backgroundColor, bar: e.querySelector('.bar i').style.width, pt: e.querySelector('.pt').textContent.replace(/\s/g, ''), grid: getComputedStyle(e).display }));
+  const r5bar = await p13.$eval('#top-list .row:nth-child(2) .bar i', e => e.style.width);
+  ok(r4.rk === 'rgb(242, 245, 243)' && r4.bar === '25%' && r5bar === '20%' && r4.pt === '4,134P' && r4.grid === 'grid', '4위: 회색 배지 · 막대 25%(5/20) · 4,134 P — 5위 4,746점보다 막대가 길다');
+  ok((await p13.textContent('#top-foot-l')) === '전체 5명 · 30위까지 표시' && (await p13.textContent('#top-foot-r')) === '전체 기준', '푸터: 전체 5명 · 30위까지 표시 / 전체 기준');
+  await p13.click('#v-top .pill[data-level="mid"]'); await p13.waitForFunction(() => document.getElementById('top-foot-r').textContent === '중등 기준');
+  ok(await p13.$eval('#v-top .pill[data-level="mid"]', e => e.classList.contains('on') && getComputedStyle(e).backgroundColor === 'rgb(237, 228, 244)'), '중등 칩 → 푸터 중등 기준, 선택 칩 연보라');
+  ok(await p13.$eval('#vt-top', e => getComputedStyle(e).backgroundColor === 'rgb(237, 228, 244)' && getComputedStyle(e).boxShadow === 'none' && getComputedStyle(e).fontWeight === '700') && await p13.$eval('#vt-stats', e => getComputedStyle(e).backgroundColor === 'rgba(0, 0, 0, 0)') && await p13.$eval('.header .h-left', e => /^(left|start)$/.test(getComputedStyle(e).textAlign)) && await p13.$eval('.topcard', e => getComputedStyle(e).boxShadow === 'none'), '디자인 규칙: 선택 탭 연보라 700·안 선택 배경 없음·그림자 없음·히어로 왼쪽 정렬');
   ok(errs13.length === 0, '페이지 오류 없음');
   await p13.close();
 
