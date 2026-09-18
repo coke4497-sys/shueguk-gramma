@@ -231,6 +231,7 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
 
 <script src="manifest.js"></script>
 <script src="stage.js"></script>
+<script src="report.js"></script>
 <script>
 (function() {
     var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzikteq7gR2ezi_NXc2of8PTvUj5XouJ5ZcZOEWv0YWgjQjs8dZqogQjSr0-LSqneXF/exec';
@@ -293,12 +294,20 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
     var params = new URLSearchParams(location.search);
     var catCode = params.get('c') || '', round = params.get('r') || '', preview = params.get('preview') === '1';
     var who = { name: (params.get('name') || '').trim(), school: (params.get('school') || '').trim(), grade: (params.get('grade') || '').trim(), phone8: (params.get('p8') || '').replace(/[^0-9]/g, '').slice(0, 8) };
-    var CAT_LABEL = '', DATA = null, QS = [], RULES = [], RULES2 = [], PUI = {};
+    var CAT_LABEL = '', CAT_LEVEL = '', DATA = null, QS = [], RULES = [], RULES2 = [], PUI = {};
     var idx = 0, results = [], combo = 0, comboMax = 0, points = 0, answered = false, timer = null, left = SEC, tStart = 0, secUsed = [];
     var backUrl = preview ? 'index.html?preview=1#c=' + encodeURIComponent(catCode) : 'index.html' + (who.name ? '?name=' + encodeURIComponent(who.name) + '&school=' + encodeURIComponent(who.school) + '&grade=' + encodeURIComponent(who.grade) + '&p8=' + encodeURIComponent(who.phone8) : '') + '#c=' + encodeURIComponent(catCode);
 
     function fail(msg) { var l = $('loading'); l.className = 'loading fail'; l.innerHTML = msg + '<br><a href="' + esc(backUrl) + '">스테이지 맵으로</a>'; }
-    if (window.GRAMMA) GRAMMA.categories.forEach(function(c) { if (c.code === catCode) { CAT_LABEL = c.label; if (c.sec > 0) SEC = c.sec; } });
+    if (window.GRAMMA) GRAMMA.categories.forEach(function(c) { if (c.code === catCode) { CAT_LABEL = c.label; CAT_LEVEL = c.level || ''; if (c.sec > 0) SEC = c.sec; } });
+    // 문항 오류 제보(report.js) — 문항 번호(1부터)를 키로, 그 문항의 위치·내 답·정답을 넘긴다. 8자리 번호는 넣지 않는다.
+    function answerText(q) { return q.type === 'process' ? correctChain(q) : q.type === 'choice' ? circ(q.answer) + ' ' + ((q.options || [])[parseInt(q.answer, 10) - 1] || '') : String(q.answer == null ? '' : q.answer); }
+    window.GRAMMA_REPORT = window.GRAMMA_REPORT || {};
+    GRAMMA_REPORT.info = function(key) {
+        var i = parseInt(key, 10) - 1, q = QS[i]; if (!q) return null;
+        var r = results.filter(function(x) { return x.q === q; })[0];
+        return { cat: CAT_LABEL, level: CAT_LEVEL, round: round, qno: q.num || (i + 1), start: q.type === 'process' ? q.start : (q.stem || ''), mine: r ? r.mine : '', answer: answerText(q), preview: preview, who: { name: who.name, school: who.school, grade: who.grade } };
+    };
     left = SEC; $('st-sec').textContent = SEC + '초'; $('tb-sec').textContent = SEC + '초';
     var reg = window.GRAMMA && GRAMMA.tests && GRAMMA.tests[catCode + '-' + round];
     if (!catCode || !round || !reg) { fail('아직 등록되지 않은 테스트예요.'); return; }
@@ -547,6 +556,7 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
         if (q.type === 'process' && !ok) h += '<div class="fb-chain">' + (q.steps || []).map(function(st, si) { return '<div class="fb-srow"><span class="n">' + (si + 1) + '</span><span class="ch-r">' + esc(st.accept.join(' 또는 ')) + '</span>' + (st.accept2 ? '<span class="ch-r">' + esc(st.accept2.join(' 또는 ')) + '</span>' : '') + '<span class="step-arrow">' + esc(PUI.arrow) + '</span><span class="ch-f' + (si === (q.steps || []).length - 1 ? ' fin' : '') + '">' + esc(dispForm(st.form)) + '</span></div>'; }).join('') + '</div>';
         if (q.explanation) h += whyHTML(q.explanation);
         h += '<button type="button" class="btn pri" id="next">' + (idx + 1 < QS.length ? '다음 문항' : '결과 보기') + IC_ARROW + '</button>';
+        h += GRAMMA_REPORT.linkHTML(String(idx + 1), '이 문항 오류 제보');
         var fb = $('fb'); fb.innerHTML = h; fb.classList.remove('hidden');
         fbPanelPlay(fb, ok);
         $('next').addEventListener('click', function() { idx++; if (idx < QS.length) showQ(); else finish(); });
@@ -586,13 +596,14 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
         if (wrongs.length) h += '<div class="card plain" style="gap:8px;"><div class="wrong-title">틀린 ' + wrongs.length + '문항 다시 보기</div>' + wrongs.map(function(r) {
             var q = r.q, ans = q.type === 'process' ? correctChain(q) : q.type === 'choice' ? circ(q.answer) + ' ' + ((q.options || [])[parseInt(q.answer, 10) - 1] || '') : q.answer;
             var stem = q.type === 'process' ? q.start : (q.stem || '');
-            return '<div class="wrong"><span class="n">' + esc(pad2(q.num || '')) + '</span><span class="t">' + esc(stem.length > 70 ? stem.slice(0, 70) + '…' : stem) + '<br><span style="color:#6A716C;">내 답 ' + esc(r.mine) + ' → 정답 ' + esc(ans) + '</span></span></div>';
+            return '<div class="wrong"><span class="n">' + esc(pad2(q.num || '')) + '</span><span class="t">' + esc(stem.length > 70 ? stem.slice(0, 70) + '…' : stem) + '<br><span style="color:#6A716C;">내 답 ' + esc(r.mine) + ' → 정답 ' + esc(ans) + '</span><br>' + GRAMMA_REPORT.linkHTML(String(QS.indexOf(q) + 1), '오류 제보') + '</span></div>';
         }).join('') + '</div>';
         h += '<div class="grid2"><a class="btn sec" href="' + esc(location.href) + '">다시 도전</a>' +
             (pass && next ? '<a class="btn pri" href="' + esc(playUrl(next)) + '">다음 스테이지' + IC_ARROW + '</a>' : '<a class="btn lav" href="' + esc(backUrl) + '">스테이지 맵으로</a>') + '</div>' +
             (pass && next ? '<a class="btn lav" href="' + esc(backUrl) + '">스테이지 맵으로</a>' : '') +
             '<div class="send" id="send"></div>';
         $('result').innerHTML = h; $('result').classList.remove('hidden');
+        GRAMMA_REPORT.sync();   // 이 판에서 이미 제보한 문항은 결과 화면 버튼도 잠금
         window.scrollTo(0, 0);
         if (preview) { $('send').textContent = '미리보기 — 결과는 기록되지 않아요.'; return; }
         var details = ['플레이 모드 · ' + fmt(points) + '점 · 최다 콤보 ' + comboMax].concat(results.map(function(r) {

@@ -299,6 +299,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 
 <script src="manifest.js"></script>
 <script src="stage.js"></script>
+<script src="report.js"></script>
 <script>
 (function() {
     /* ===== 설정 ===== */
@@ -998,7 +999,16 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             }
             card.className = 'q-card ' + (isCorrect ? 'correct' : 'wrong');
             if (isCorrect) score++; else wrongIdx.push(i);
+            fb.innerHTML += '<div style="margin-top:6px;">' + GRAMMA_REPORT.linkHTML(String(i + 1), '이 문항 오류 제보') + '</div>';   // 오류 제보(report.js)
         });
+        window.GRAMMA_REPORT = window.GRAMMA_REPORT || {};
+        GRAMMA_REPORT.info = function(key) {
+            var i = parseInt(key, 10) - 1, q = QUESTIONS[i]; if (!q) return null;
+            var lv = ''; if (window.GRAMMA) GRAMMA.categories.forEach(function(x) { if (x.code === catCode) lv = x.level || ''; });
+            var ans = q.type === 'process' ? correctChain(q) : q.type === 'choice' ? String(q.answer) + '번' : String(q.answer == null ? '' : q.answer);
+            return { cat: CAT_LABEL, level: lv, round: round, qno: q.num || (i + 1), start: q.type === 'process' ? q.start : (q.stem || ''), mine: '', answer: ans, preview: preview,
+                     who: { name: ($('si-name').value || '').trim(), school: ($('si-school').value || '').trim(), grade: $('si-grade').value || '' } };
+        };
 
         var pct = Math.round((score / TOTAL) * 100), msg;
         var starHtml = preview ? '' :
