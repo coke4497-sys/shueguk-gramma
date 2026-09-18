@@ -12,34 +12,56 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif; background: #C6D5D2; min-height: 100vh; padding: 14px; padding-bottom: 60px; color: #2C2F2D; -webkit-text-size-adjust: 100%; }
 .container { max-width: 580px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
-.header { padding: 16px 16px 14px; background: white; border-radius: 20px; box-shadow: 0 4px 16px rgba(45,128,104,0.08); border: 2px solid #C6D5D2; display: flex; flex-direction: column; gap: 6px; }
-.header .logo { font-family: 'Gowun Batang', serif; font-size: 11px; font-weight: 800; letter-spacing: 5px; color: #A6C1BB; }
-.header h1 { font-family: 'Gowun Batang', serif; font-size: 21px; font-weight: 800; color: #3A544E; letter-spacing: -0.5px; }
-.header .intro { font-size: 12px; color: #6A716C; line-height: 1.6; }
-.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-.ftab { font: inherit; font-size: 12px; font-weight: 700; padding: 7px 13px; border-radius: 999px; background: #fff; color: #65726B; border: 1px solid #E5EDE8; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.ftab.on { background: #EDE4F4; color: #6B5B7B; border-color: #D6C9E4; }
+/* 2026-09-18 디자인 지시서(stats.html 탑30과 같은 값) — 학생 홈 색 규칙: 강조 #EDE4F4/#5A4A6A, 본문 #2A332F, 보조 #4F5C56, 캡션 #5C6A64, 그림자 없음 */
+.header { padding: 18px 20px 16px; background: #fff; border-radius: 18px; display: flex; flex-direction: column; gap: 6px; }
+.header .logo { font-size: 10.5px; font-weight: 400; color: #8B978F; letter-spacing: .24em; }
+.header h1 { font-family: 'Gowun Batang', serif; font-size: 22px; font-weight: 700; color: #2A332F; letter-spacing: -.5px; }
+.header .intro { font-size: 11.5px; color: #4F5C56; line-height: 1.6; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.ftab { font: inherit; font-size: 12px; font-weight: 400; padding: 7px 13px; border-radius: 999px; background: #F2F5F3; color: #4F5C56; border: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ftab.on { background: #EDE4F4; color: #5A4A6A; font-weight: 700; }
 .me { background: #EDE4F4; border-radius: 16px; padding: 13px 15px; display: flex; align-items: center; gap: 12px; }
-.me .rk { font-family: 'Do Hyeon', sans-serif; font-size: 26px; color: #6B5B7B; min-width: 48px; }
-.me .nm { font-size: 14px; font-weight: 700; color: #2C2F2D; }
-.me .nm span { font-weight: 400; font-size: 12px; color: #6B5B7B; }
-.me .d { font-size: 12px; color: #6B5B7B; margin-top: 2px; }
-.list { background: #fff; border: 1px solid #E5EDE8; border-radius: 16px; padding: 6px 0; }
-.row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #F0F4F1; }
-.row:last-child { border-bottom: none; }
+.me .rk { font-family: 'Do Hyeon', sans-serif; font-size: 26px; color: #5A4A6A; min-width: 48px; }
+.me .nm { font-size: 14px; font-weight: 700; color: #2A332F; }
+.me .nm span { font-weight: 400; font-size: 12px; color: #5A4A6A; }
+.me .d { font-size: 12px; color: #5A4A6A; margin-top: 2px; }
+.topcard { background: #fff; border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; }
+.status { padding: 18px 16px; font-size: 13px; color: #4F5C56; text-align: center; line-height: 1.7; }
+.status.fail { color: #992F20; }
+.podium { display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 10px; align-items: end; padding: 22px 16px 18px; background: linear-gradient(#FBFAFC, #fff); }
+.pod { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; min-width: 0; }
+.pod .pn { font-family: 'Gowun Batang', serif; font-size: 15px; font-weight: 700; color: #2A332F; }
+.pod .pn span { font-family: 'Gowun Dodum', sans-serif; font-size: 11px; font-weight: 400; color: #5C6A64; display: block; margin-top: 2px; }
+.pod .pd { font-size: 11.5px; color: #4F5C56; }
+.pod .mine-tag { display: inline-block; font-family: 'Gowun Dodum', sans-serif; font-size: 10px; font-weight: 700; color: #5A4A6A; background: #EDE4F4; border-radius: 999px; padding: 1px 6px; margin-left: 4px; vertical-align: middle; }
+.pod-bar { width: 100%; border-radius: 12px 12px 6px 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: #fff; }
+.pod-bar .r { font-size: 22px; font-weight: 700; line-height: 1; }
+.pod-bar .p { font-size: 12.5px; font-weight: 700; }
+.pod-bar .p i { font-style: normal; font-size: 10.5px; font-weight: 400; opacity: .85; }
+.pod.p1 .pod-bar { height: 92px; background: #5A4A6A; }
+.pod.p2 .pod-bar { height: 72px; background: #8E7BA3; }
+.pod.p3 .pod-bar { height: 60px; background: #C9B6DB; color: #3F2F4F; }
+.top-head { display: grid; grid-template-columns: 36px 1fr 120px 84px; gap: 12px; padding: 8px 16px; border-top: 1px solid #F0F4F1; background: #F7F9F8; font-size: 11px; color: #5C6A64; }
+.top-head .r, .row .pt { text-align: right; }
+.row { display: grid; grid-template-columns: 36px 1fr 120px 84px; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid #F0F4F1; }
 .row.mine { background: #FAF7FC; }
-.rk { width: 34px; height: 34px; border-radius: 10px; background: #EBF0ED; color: #65726B; display: flex; align-items: center; justify-content: center; font-family: 'Do Hyeon', sans-serif; font-size: 16px; flex: none; }
-.rk.r1 { background: #6B5B7B; color: #fff; } .rk.r2 { background: #8D83A8; color: #fff; } .rk.r3 { background: #B9A5CC; color: #fff; }
-.body { flex: 1; min-width: 0; }
-.nm { font-size: 14px; font-weight: 700; color: #2C2F2D; }
-.nm span { font-weight: 400; font-size: 12px; color: #8B928C; margin-left: 4px; }
-.d { font-size: 11.5px; color: #8B928C; margin-top: 2px; }
-.pt { font-family: 'Do Hyeon', sans-serif; font-size: 17px; color: #3A544E; }
-.status { font-size: 13px; padding: 14px; border-radius: 12px; text-align: center; line-height: 1.7; background: #fff; color: #6A716C; border: 1.5px solid #E8EAE7; }
-.status.fail { background: #FADED9; color: #992F20; border-color: #EFA9A5; }
-.note { font-size: 11.5px; color: #6A716C; text-align: center; line-height: 1.7; }
-.back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #6A716C; text-decoration: none; }
+.rk { width: 30px; height: 30px; border-radius: 9px; background: #F2F5F3; color: #3F4A44; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 700; }
+.row .nm { font-size: 13.5px; font-weight: 700; color: #2A332F; display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.row .nm span { font-weight: 400; font-size: 11.5px; color: #5C6A64; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .st { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: #4F5C56; white-space: nowrap; }
+.row .bar { flex: 1; height: 5px; border-radius: 99px; background: #EEF2EF; overflow: hidden; }
+.row .bar i { display: block; height: 100%; background: #B9A5CC; border-radius: 99px; }
+.row .pt { font-size: 13.5px; font-weight: 700; color: #2A332F; font-variant-numeric: tabular-nums; }
+.row .pt i { font-style: normal; font-size: 11px; font-weight: 400; color: #5C6A64; }
+.top-foot { padding: 13px 16px; border-top: 1px solid #F0F4F1; display: flex; justify-content: space-between; gap: 10px; font-size: 11.5px; color: #5C6A64; }
+.back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #4F5C56; text-decoration: none; }
 .back svg { width: 15px; height: 15px; }
+@media (max-width: 480px) {
+  .top-head, .row { grid-template-columns: 30px 1fr 84px; }
+  .top-head span:nth-child(3), .row .st { display: none; }
+  .podium { gap: 6px; padding: 18px 10px 14px; }
+  .pod .pn { font-size: 13.5px; }
+}
 .hidden { display: none !important; }
 </style>
 </head>
@@ -57,9 +79,13 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     </div>
   </div>
   <div id="me" class="me hidden"></div>
-  <div id="status" class="status">순위를 불러오는 중…</div>
-  <div id="list" class="list hidden"></div>
-  <div class="note" id="note"></div>
+  <div class="topcard">
+    <div id="status" class="status">순위를 불러오는 중…</div>
+    <div id="podium" class="podium hidden"></div>
+    <div id="head" class="top-head hidden"><span>순위</span><span>학생</span><span>클리어 스테이지</span><span class="r">플레이 점수</span></div>
+    <div id="list" class="hidden"></div>
+    <div id="foot" class="top-foot hidden"><span id="foot-l"></span><span id="foot-r"></span></div>
+  </div>
   <a class="back" id="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>문법 스테이지로</a>
 </div>
 <script>
@@ -78,31 +104,51 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
     function monthStr() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2); }
     function load() {
         $('status').className = 'status'; $('status').textContent = '순위를 불러오는 중…'; $('status').classList.remove('hidden');
-        $('list').classList.add('hidden'); $('me').classList.add('hidden');
+        ['podium', 'head', 'list', 'foot', 'me'].forEach(function(id) { $(id).classList.add('hidden'); });
         var p = { level: level, month: month ? monthStr() : '' };
         if (who.name && /^[0-9]{8}$/.test(who.phone8)) { p.name = who.name; p.phone8 = who.phone8; }
         fetch(SB_URL + '/rest/v1/rpc/gramma_top', { method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p: p }) })
             .then(function(r) { return r.json(); }).then(render)
             .catch(function() { $('status').className = 'status fail'; $('status').textContent = '순위를 불러오지 못했어요. 인터넷을 확인하고 다시 열어 주세요.'; });
     }
+    function levelLabel() { return (level === 'mid' ? '중등' : level === 'high' ? '고등' : '전체') + ' 기준'; }
+    // 시상대(1~3위) + 4위 이하 표 — stats.html 탑30과 같은 디자인(2026-09-18). 막대 분모 = 1위 스테이지 수.
     function render(res) {
-        if (!res || res.ok !== true) { $('status').className = 'status fail'; $('status').textContent = '순위를 불러오지 못했어요.'; return; }
+        if (!res || res.ok !== true) { $('status').className = 'status fail'; $('status').classList.remove('hidden'); $('status').textContent = '순위를 불러오지 못했어요.'; return; }
         var rows = res.rows || [];
-        if (!rows.length) { $('status').textContent = (month ? '이번 달' : '아직') + ' 기록이 없어요. 스테이지를 클리어하면 여기에 올라와요.'; return; }
+        ['podium', 'head', 'list', 'foot'].forEach(function(id) { $(id).classList.add('hidden'); });
+        if (!rows.length) { $('status').className = 'status'; $('status').classList.remove('hidden'); $('status').textContent = (month ? '이번 달' : '아직') + ' 기록이 없어요. 스테이지를 클리어하면 여기에 올라와요.'; $('me').classList.add('hidden'); return; }
         $('status').classList.add('hidden');
         var me = res.me;
         if (me) {
             $('me').innerHTML = '<div class="rk">' + me.rank + '위</div><div><div class="nm">' + esc(who.name) + ' <span>' + esc(who.school) + ' ' + esc(who.grade) + '</span></div><div class="d">스테이지 ' + me.stages + ' · ' + fmt(me.points) + '점 · 별 ' + me.stars + (me.rank > 1 && rows[Math.min(me.rank, rows.length) - 2] ? ' · ' + (me.rank - 1) + '위까지 ' + fmt(Math.max(0, rows[Math.min(me.rank, rows.length) - 2].points - me.points)) + '점' : '') + '</div></div>';
             $('me').classList.remove('hidden');
+        } else $('me').classList.add('hidden');
+        function isMine(r) { return !!(me && r.rank === me.rank && r.name === who.name); }
+        var maxSt = rows.reduce(function(m, r) { return Math.max(m, Number(r.stages) || 0); }, 0) || 1;
+        var byRank = {}; rows.forEach(function(r) { if (r.rank <= 3) byRank[r.rank] = r; });
+        function pod(r) {
+            if (!r) return '<div class="pod"></div>';
+            return '<div class="pod p' + r.rank + (isMine(r) ? ' mine' : '') + '"><div class="pn">' + esc(r.name) + (isMine(r) ? '<span class="mine-tag">나</span>' : '') + '<span>' + esc(r.school) + ' ' + esc(r.grade) + '</span></div>' +
+                '<div class="pd">스테이지 ' + r.stages + ' · 별 ' + r.stars + '</div>' +
+                '<div class="pod-bar"><span class="r">' + r.rank + '</span><span class="p">' + fmt(r.points) + '<i> P</i></span></div></div>';
         }
-        $('list').innerHTML = rows.map(function(r) {
-            var mine = me && r.rank === me.rank && r.name === who.name;
-            return '<div class="row' + (mine ? ' mine' : '') + '"><div class="rk' + (r.rank <= 3 ? ' r' + r.rank : '') + '">' + r.rank + '</div>' +
-                '<div class="body"><div class="nm">' + esc(r.name) + '<span>' + esc(r.school) + ' ' + esc(r.grade) + '</span></div><div class="d">스테이지 ' + r.stages + ' · 별 ' + r.stars + '</div></div>' +
-                '<div class="pt">' + fmt(r.points) + '</div></div>';
-        }).join('');
-        $('list').classList.remove('hidden');
-        $('note').textContent = '전체 ' + res.total + '명 중 30명까지 · 통과 기준 정답률 ' + (res.pass_pct || 70) + '%' + (month ? ' · 이번 달 제출만' : '');
+        $('podium').innerHTML = pod(byRank[2]) + pod(byRank[1]) + pod(byRank[3]);
+        $('podium').classList.remove('hidden');
+        var rest = rows.filter(function(r) { return r.rank > 3; });
+        if (rest.length) {
+            $('list').innerHTML = rest.map(function(r) {
+                var w = Math.round((Number(r.stages) || 0) / maxSt * 100);
+                return '<div class="row' + (isMine(r) ? ' mine' : '') + '"><div class="rk">' + r.rank + '</div>' +
+                    '<div class="nm">' + esc(r.name) + '<span>' + esc(r.school) + ' ' + esc(r.grade) + '</span></div>' +
+                    '<div class="st">스테이지 ' + r.stages + '<span class="bar"><i style="width:' + w + '%"></i></span></div>' +
+                    '<div class="pt">' + fmt(r.points) + '<i> P</i></div></div>';
+            }).join('');
+            $('head').classList.remove('hidden'); $('list').classList.remove('hidden');
+        }
+        $('foot-l').textContent = '전체 ' + res.total + '명 · 30위까지 표시';
+        $('foot-r').textContent = (month ? '이번 달 · ' : '') + levelLabel();
+        $('foot').classList.remove('hidden');
     }
     document.querySelectorAll('.ftab').forEach(function(b) {
         b.addEventListener('click', function() {

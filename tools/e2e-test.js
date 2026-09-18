@@ -463,19 +463,25 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(!reqLog.slice(prevReqs5).some(q => q.action === 'myAssign'), 'free=1 은 배정 확인 생략(배정 없어도 제출)');
 
   /* ========== 5e) top30.html — 문법 슈스 탑30 ========== */
-  topRows = [{ rank: 1, name: '김시은', school: '능곡고', grade: '고2', stages: 41, points: 19860, stars: 8 }, { rank: 2, name: '박검증', school: '화정고', grade: '고1', stages: 8, points: 4120, stars: 1 }];
-  topMe = { rank: 2, stages: 8, points: 4120, stars: 1 };
+  topRows = [{ rank: 1, name: '김시은', school: '능곡고', grade: '고2', stages: 41, points: 19860, stars: 8 }, { rank: 2, name: '이서연', school: '능곡고', grade: '고2', stages: 20, points: 9000, stars: 4 }, { rank: 3, name: '최은성', school: '화정고', grade: '고2', stages: 12, points: 6100, stars: 2 },
+    { rank: 4, name: '박검증', school: '화정고', grade: '고1', stages: 8, points: 4120, stars: 1 }, { rank: 5, name: '문경민', school: '고양중', grade: '중3', stages: 4, points: 5000, stars: 0 }];
+  topMe = { rank: 4, stages: 8, points: 4120, stars: 1 };
   await p4.goto(`http://localhost:${PORT}/top30.html?name=박검증&school=화정고&grade=고1&p8=12345678`);
   await p4.waitForSelector('#list:not(.hidden)');
-  ok((await p4.$$('#list .row')).length === 2 && (await p4.textContent('#list .row:nth-child(1) .nm')).includes('김시은') && (await p4.textContent('#list .row:nth-child(1) .pt')) === '19,860', '순위 목록(이름 그대로·점수)');
-  ok((await p4.textContent('#me')).includes('2위') && (await p4.textContent('#me')).includes('스테이지 8') && (await p4.textContent('#me')).includes('1위까지 15,740점'), '내 순위 카드 + 위 순위까지 점수 차');
-  ok(await p4.$eval('#list .row:nth-child(2)', e => e.classList.contains('mine')), '내 줄 강조');
+  const pods5 = await p4.$$eval('#podium .pod', els => els.map(e => ({ cls: e.className, nm: (e.querySelector('.pn') || {}).textContent, h: e.querySelector('.pod-bar') ? e.querySelector('.pod-bar').getBoundingClientRect().height : 0 })));
+  ok(pods5.length === 3 && pods5[0].cls === 'pod p2' && pods5[1].cls === 'pod p1' && pods5[2].cls === 'pod p3' && pods5[1].nm.includes('김시은') && pods5[1].h === 92 && pods5[0].h === 72 && pods5[2].h === 60, '학생 탑30 시상대: 2·1·3위 배치, 기둥 92/72/60px');
+  ok((await p4.textContent('#podium .pod.p1 .pod-bar')).replace(/\s/g, '') === '119,860P', '1위 기둥 19,860 P');
+  ok((await p4.$$('#list .row')).length === 2 && (await p4.textContent('#list .row:nth-child(1) .nm')).includes('박검증') && (await p4.textContent('#list .row:nth-child(1) .pt')).replace(/\s/g, '') === '4,120P' && (await p4.$eval('#list .row:nth-child(1) .bar i', e => e.style.width)) === '20%' && (await p4.$eval('#list .row:nth-child(1) .rk', e => getComputedStyle(e).backgroundColor)) === 'rgb(242, 245, 243)', '4위 이하 2줄: 회색 배지 · 막대 20%(8/41) · 4,120 P');
+  ok((await p4.textContent('#me')).includes('4위') && (await p4.textContent('#me')).includes('스테이지 8') && (await p4.textContent('#me')).includes('3위까지 1,980점'), '내 순위 카드 + 위 순위까지 점수 차');
+  ok(await p4.$eval('#list .row:nth-child(1)', e => e.classList.contains('mine')) && (await p4.textContent('#foot-l')) === '전체 5명 · 30위까지 표시' && (await p4.textContent('#foot-r')) === '전체 기준', '내 줄 강조 + 푸터');
   const topCall = sbCalls.filter(c => c.fn === 'gramma_top').pop();
   ok(topCall.body.level === 'all' && topCall.body.month === '' && topCall.body.name === '박검증' && topCall.body.phone8 === '12345678', 'gramma_top 호출(전체·이름·8자리)');
   await p4.click('.ftab[data-level="mid"]');
   await p4.waitForFunction(() => document.querySelector('.ftab[data-level="mid"]').classList.contains('on'));
   await p4.waitForTimeout(150);
   ok(sbCalls.filter(c => c.fn === 'gramma_top').pop().body.level === 'mid', '[중등] → level=mid');
+  await p4.waitForFunction(() => document.getElementById('foot-r').textContent === '중등 기준');
+  ok(await p4.$eval('.ftab[data-level="mid"]', e => getComputedStyle(e).backgroundColor === 'rgb(237, 228, 244)' && getComputedStyle(e).borderTopWidth === '0px') && await p4.$eval('.header', e => getComputedStyle(e).boxShadow === 'none'), '푸터 중등 기준 · 선택 칩 연보라 테두리 없음 · 머리 카드 그림자 없음');
   await p4.click('.ftab[data-month]'); await p4.waitForTimeout(150);
   ok(/^\d{4}-\d{2}$/.test(sbCalls.filter(c => c.fn === 'gramma_top').pop().body.month), '[이번 달] → month=YYYY-MM');
   await p4.close();
