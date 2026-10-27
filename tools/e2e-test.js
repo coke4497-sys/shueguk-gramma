@@ -929,6 +929,40 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await p16.textContent('#rq-cnt')) === '1', '처리 완료 뒤 배지 1');
   await p16.close();
 
+  /* ========== 17) 순서를 바꿔도 정답(q.orders — 2026-10-27 원장님 "두 순서 모두 정답") ========== */
+  const p17 = await ctx.newPage(); p17.on('dialog', d => d.accept());
+  await p17.goto(`http://localhost:${PORT}/test.html?c=pho&r=2&free=1&name=박검증&school=화정고&grade=고1&p8=12345678`);
+  await p17.waitForSelector('#app:not(.hidden)'); await p17.click('#tab-test');
+  const q17 = await p17.evaluate(() => fetch('data/pho-2.json').then(r => r.json()).then(d => d.questions));
+  for (let i = 0; i < q17.length; i++) {
+    const seq = q17[i].orders ? q17[i].orders[q17[i].orders.length - 1] : q17[i].steps;   // 순서를 바꿀 수 있는 문항은 다른 순서로
+    for (let k = 0; k < seq.length; k++) { await p17.selectOption(`#sel-${i}-${k}`, seq[k].accept[0]); await p17.fill(`#frm-${i}-${k}`, ('' + seq[k].form).split('/')[0]); }
+  }
+  await p17.click('#submit-btn'); await p17.waitForSelector('.final.show');
+  const i28 = q17.findIndex(q => q.num === 28), i35 = q17.findIndex(q => q.num === 35);
+  ok((await p17.textContent('#final .score-big')) === String(q17.length) && await p17.$eval('#card-' + i28, e => e.classList.contains('correct')) && await p17.$eval('#card-' + i35, e => e.classList.contains('correct')), 'test.html: 솔잎(끝소리 규칙 먼저)·읽지(자음군 단순화 먼저)도 정답 — 전부 정답');
+  ok(await p17.$eval('#frm-' + i35 + '-0', e => e.classList.contains('ok')) && (await p17.inputValue('#frm-' + i35 + '-0')) === '익지', '다른 순서로 쓴 칸도 초록 표시');
+  await p17.goto(`http://localhost:${PORT}/test.html?c=pho&r=2&free=1&name=박검증&school=화정고&grade=고1&p8=12345678`);
+  await p17.waitForSelector('#app:not(.hidden)'); await p17.click('#tab-test');
+  // 읽지를 섞어서(1단계는 기본 순서, 2단계는 다른 순서) 쓰면 오답 + '순서를 바꿔도 정답' 안내
+  await p17.selectOption(`#sel-${i35}-0`, '된소리되기'); await p17.fill(`#frm-${i35}-0`, '읽찌');
+  await p17.selectOption(`#sel-${i35}-1`, '된소리되기'); await p17.fill(`#frm-${i35}-1`, '익찌');
+  await p17.click('#submit-btn'); await p17.waitForSelector('.final.show');
+  ok(await p17.$eval('#card-' + i35, e => e.classList.contains('wrong')) && (await p17.textContent('#feedback-' + i35)).includes('단계 순서를 바꿔 풀어도 정답이에요'), '두 순서를 섞으면 오답 + 정답 과정 아래 안내');
+  // play.html — 읽지까지 가서 다른 순서로
+  await p17.goto(`http://localhost:${PORT}/play.html?c=pho&r=2&name=박검증&school=화정고&grade=고1&p8=12345678`);
+  await p17.waitForSelector('#start:not(.hidden)'); await p17.click('#st-go');
+  for (let i = 0; i <= i35; i++) {
+    await p17.waitForSelector('#frm-0');
+    const seq = (i === i28 || i === i35) ? q17[i].orders[q17[i].orders.length - 1] : q17[i].steps;
+    for (let k = 0; k < seq.length; k++) { await p17.selectOption('#sel-' + k, seq[k].accept[0]); await p17.fill('#frm-' + k, ('' + seq[k].form).split('/')[0]); }
+    await p17.click('#chk'); await p17.waitForSelector('#next');
+    if (i === i28) ok((await p17.textContent('#fb .fb-top')).includes('정답'), 'play.html: 솔잎을 끝소리 규칙 먼저 써도 정답');
+    if (i === i35) ok((await p17.textContent('#fb .fb-top')).includes('정답'), 'play.html: 읽지를 자음군 단순화 먼저 써도 정답');
+    if (i < i35) await p17.click('#next');
+  }
+  await p17.close();
+
   await browser.close();
   server.close();
   console.log(bad ? `\n실패 ${bad}/${n}` : `\n전체 통과 (${n}건)`);

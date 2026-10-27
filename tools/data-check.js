@@ -42,6 +42,15 @@ for (const f of fs.readdirSync(DIR).sort()) {
         if (s.accept2) { if (!Array.isArray(s.accept2) || !s.accept2.length || !d.ruleOptions2) err(f, tag + ' step' + (si + 1) + ' accept2/ruleOptions2 형식');
           else s.accept2.forEach(a => { if (!d.ruleOptions2.includes(a)) err(f, tag + ` accept2 '${a}'가 ruleOptions2에 없음`); }); }
       });
+      // 다른 정답 순서(2026-10-27) — 단계 수·최종 형태가 기본 순서와 같고, 규칙은 ruleOptions 안에서
+      if (q.orders !== undefined) {
+        if (!Array.isArray(q.orders) || !q.orders.length) err(f, tag + ' orders 형식');
+        else q.orders.forEach((seq, oi) => {
+          if (!Array.isArray(seq) || seq.length !== q.steps.length) return err(f, tag + ` orders[${oi}] 단계 수가 기본 순서와 다름`);
+          if (seq[seq.length - 1].form !== q.steps[q.steps.length - 1].form) err(f, tag + ` orders[${oi}] 최종 형태가 다름`);
+          seq.forEach(s => { if (!Array.isArray(s.accept) || !s.form || (d.ruleOptions && s.accept.some(a => !d.ruleOptions.includes(a)))) err(f, tag + ` orders[${oi}] 단계 형식`); });
+        });
+      }
     } else if (q.type === 'ox') {
       if (q.answer !== 'O' && q.answer !== 'X') err(f, tag + ' ox 정답이 O/X가 아님: ' + q.answer);
       if (!q.stem) err(f, tag + ' stem 없음');

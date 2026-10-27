@@ -205,6 +205,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
 .fb-why { margin-top: 9px; padding-top: 9px; border-top: 1px solid rgba(0,0,0,.08); font-size: 13px; line-height: 1.8; color: #3D453F; }
 .fb-art { display: inline-block; margin-top: 7px; font-size: 11px; font-weight: 800; color: #6B5B7B; background: #EDE4F4; border-radius: 999px; padding: 4px 11px; }
 .fb-lab { display: block; font-size: 11px; font-weight: 800; color: #7B807C; margin-bottom: 3px; }
+.fb-ord { margin-top: 6px; font-size: 13px; color: #6B5B7B; }
 .fb-chain + .fb-why { margin-top: 10px; }
 .fb-chain { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
 .fb-srow { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
@@ -344,6 +345,13 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
         var alts = ('' + form).split('/');
         if (alts.length < 2) return false;
         return alts.some(function(a) { return bare(normForm(a)) && bare(normForm(a)) === u; });
+    }
+    // 과정형 정답 순서 고르기 — 기본 순서(q.steps)와 다른 정답 순서(q.orders) 가운데 학생 답과 모두 맞는 것, 없으면 기본 순서
+    function stepMatch(st, v) { return !!st && st.accept.indexOf(v.rule) >= 0 && (v.rule2 == null || (st.accept2 || []).indexOf(v.rule2) >= 0) && formOK(v.form, st.form); }
+    function pickOrder(q, vals) {
+        var seqs = [q.steps || []].concat(q.orders || []);
+        for (var k = 0; k < seqs.length; k++) if (seqs[k].length === vals.length && vals.every(function(v, si) { return stepMatch(seqs[k][si], v); })) return seqs[k];
+        return q.steps || [];
     }
     function circ(n) { var s = '①②③④⑤⑥⑦⑧⑨⑩'; n = parseInt(n, 10); return (n >= 1 && n <= 10) ? s.charAt(n - 1) : ('(' + n + ')'); }
     function pad2(n) { n = '' + n; return n.length < 2 ? '0' + n : n; }
@@ -860,7 +868,7 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             h += '<div class="fb-srow"><span class="fb-sn">' + (si + 1) + '</span>' +
                  (PUI.formFirst ? formEl + arEl + rule : rule + arEl + formEl) + '</div>';
         });
-        return h + '</div>';
+        return h + '</div>' + ((q.orders && q.orders.length) ? '<div class="fb-ord">단계 순서를 바꿔 풀어도 정답이에요.</div>' : '');
     }
     // 단답의 다른 정답 표기
     function altHTML(q) {
@@ -912,9 +920,12 @@ body { font-family: 'Gowun Dodum', -apple-system, BlinkMacSystemFont, sans-serif
             var isCorrect = false;
             if (q.type === 'process') {
                 // 학생이 만든 줄 수와 정답 단계 수가 같고 줄마다 규칙·형태가 맞아야 정답. 남는 줄은 오답, 모자란 단계는 정답 과정에서 보인다.
-                var rows = stepRows(i), itemOK = rows.length === q.steps.length;
+                // 순서를 바꿔도 되는 문항(q.orders — 2026-10-27 원장님 "두 순서 모두 정답")은 학생 답과 맞는 순서로 채점한다.
+                var rows = stepRows(i);
+                var vals = Array.prototype.map.call(rows, function(r, si) { var s2 = $('sel2-' + i + '-' + si); return { rule: $('sel-' + i + '-' + si).value, rule2: s2 ? s2.value : null, form: $('frm-' + i + '-' + si).value }; });
+                var seq = pickOrder(q, vals), itemOK = rows.length === seq.length;
                 rows.forEach(function(r, si) {
-                    var sel = $('sel-' + i + '-' + si), frm = $('frm-' + i + '-' + si), st = q.steps[si], sel2 = $('sel2-' + i + '-' + si);
+                    var sel = $('sel-' + i + '-' + si), frm = $('frm-' + i + '-' + si), st = seq[si], sel2 = $('sel2-' + i + '-' + si);
                     var ruleOK = !!st && st.accept.indexOf(sel.value) >= 0;
                     var rule2OK = !sel2 || (!!st && (st.accept2 || []).indexOf(sel2.value) >= 0);
                     var fOK = !!st && formOK(frm.value, st.form);
