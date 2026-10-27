@@ -254,6 +254,16 @@ for (const f of fs.readdirSync(DIR).sort((a, b) => a.localeCompare(b, 'en', { nu
       }
       prev = s.form;
     });
+    // 다른 정답 순서(q.orders — 2026-10-27 원장님 "두 순서 모두 정답")도 단계마다 규칙·형태가 맞아야 한다
+    (q.orders || []).forEach((seq, oi) => {
+      let pv = normStart(q.start);
+      seq.forEach((s, si) => {
+        const okk = s.accept.some(r => ('' + pv).split('/').some(pa => ('' + s.form).split('/').some(fa => passes(r, dec(pa), dec(fa)) === null)));
+        if (!okk) warn(f, q, `다른 순서 ${oi + 1}의 ${si + 1}단계 [${s.accept.join('/')}] ${pv}→${s.form} 불일치`);
+        pv = s.form;
+      });
+      if (pv !== prev) warn(f, q, `다른 순서 ${oi + 1}의 최종 형태 ${pv}가 ${prev}와 다름`);
+    });
     // 최종 발음 검사
     for (const fa of ('' + prev).split('/')) {
       const bad7 = dec(fa).filter(s => s && FINAL_OK.indexOf(s[2]) < 0).map(s => s[2]);

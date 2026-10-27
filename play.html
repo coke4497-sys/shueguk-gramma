@@ -136,6 +136,7 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
 .fb-ans { font-size: 15px; line-height: 1.6; color: #2C2F2D; }
 .fb-ans b { color: #6B5B7B; }
 .fb-why { font-size: 15px; line-height: 1.7; color: #2C2F2D; }
+.fb-ord { margin-top: 6px; font-size: 13px; color: #6B5B7B; }
 .fb-chain { display: flex; flex-direction: column; gap: 6px; }
 .fb-srow { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-size: 14px; }
 .fb-srow .n { width: 20px; height: 20px; border-radius: 6px; background: #EBF0ED; color: #65726B; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; }
@@ -286,6 +287,13 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
         return ok;
     }
     function dispForm(form) { return PUI.firstForm ? ('' + form).split('/')[0] : form; }
+    // 과정형 정답 순서 고르기 — 기본 순서(q.steps)와 다른 정답 순서(q.orders) 가운데 학생 답과 모두 맞는 것, 없으면 기본 순서(test.html과 같은 규칙)
+    function stepMatch(st, v) { return !!st && st.accept.indexOf(v.rule) >= 0 && (v.rule2 == null || (st.accept2 || []).indexOf(v.rule2) >= 0) && formOK(v.form, st.form); }
+    function pickOrder(q, vals) {
+        var seqs = [q.steps || []].concat(q.orders || []);
+        for (var k = 0; k < seqs.length; k++) if (seqs[k].length === vals.length && vals.every(function(v, si) { return stepMatch(seqs[k][si], v); })) return seqs[k];
+        return q.steps || [];
+    }
     function correctChain(q) {
         return (q.steps || []).map(function(st) { return '[' + st.accept.join('/') + (st.accept2 ? '·' + st.accept2.join('/') : '') + '] ' + dispForm(st.form); }).join(' → ');
     }
@@ -529,9 +537,11 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
             if ($('chk')) $('chk').disabled = true;
         } else {
             var rows = user || [];
-            ok = rows.length === (q.steps || []).length;
+            // 순서를 바꿔도 되는 문항(q.orders — 2026-10-27 원장님 "두 순서 모두 정답")은 학생 답과 맞는 순서로 채점한다.
+            var seq = pickOrder(q, rows);
+            ok = rows.length === seq.length;
             rows.forEach(function(r, si) {
-                var st = (q.steps || [])[si];
+                var st = seq[si];
                 var rOK = !!st && st.accept.indexOf(r.rule) >= 0, r2OK = r.rule2 == null || (!!st && (st.accept2 || []).indexOf(r.rule2) >= 0), fOK = !!st && formOK(r.form, st.form);
                 var s = $('sel-' + si), s2 = $('sel2-' + si), f = $('frm-' + si);
                 if (s) { s.disabled = true; s.classList.add(rOK ? 'ok' : 'ng'); pillSync(s, rOK); }
@@ -553,7 +563,7 @@ button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
                       : (timeout ? '시간이 다 됐어요. 아래에서 정답을 확인하고 다음으로 가요.' : '괜찮아요. 아래에서 정답을 확인하고 다음으로 가요.');
         var h = fbPanelHTML(ok, top, ok ? '+' + fmt(gained) + '점' : '', body);
         if (q.type === 'short') h += '<div class="fb-ans">정답: <b>' + esc(q.answer) + '</b>' + (q.answers && q.answers.length > 1 ? ' <span style="color:#8B928C;font-size:13px;">(' + q.answers.filter(function(a) { return a !== q.answer; }).map(esc).join(', ') + ' 도 정답)</span>' : '') + '</div>';
-        if (q.type === 'process' && !ok) h += '<div class="fb-chain">' + (q.steps || []).map(function(st, si) { return '<div class="fb-srow"><span class="n">' + (si + 1) + '</span><span class="ch-r">' + esc(st.accept.join(' 또는 ')) + '</span>' + (st.accept2 ? '<span class="ch-r">' + esc(st.accept2.join(' 또는 ')) + '</span>' : '') + '<span class="step-arrow">' + esc(PUI.arrow) + '</span><span class="ch-f' + (si === (q.steps || []).length - 1 ? ' fin' : '') + '">' + esc(dispForm(st.form)) + '</span></div>'; }).join('') + '</div>';
+        if (q.type === 'process' && !ok) h += '<div class="fb-chain">' + (q.steps || []).map(function(st, si) { return '<div class="fb-srow"><span class="n">' + (si + 1) + '</span><span class="ch-r">' + esc(st.accept.join(' 또는 ')) + '</span>' + (st.accept2 ? '<span class="ch-r">' + esc(st.accept2.join(' 또는 ')) + '</span>' : '') + '<span class="step-arrow">' + esc(PUI.arrow) + '</span><span class="ch-f' + (si === (q.steps || []).length - 1 ? ' fin' : '') + '">' + esc(dispForm(st.form)) + '</span></div>'; }).join('') + '</div>' + ((q.orders && q.orders.length) ? '<div class="fb-ord">단계 순서를 바꿔 풀어도 정답이에요.</div>' : '');
         if (q.explanation) h += whyHTML(q.explanation);
         h += '<button type="button" class="btn pri" id="next">' + (idx + 1 < QS.length ? '다음 문항' : '결과 보기') + IC_ARROW + '</button>';
         h += GRAMMA_REPORT.linkHTML(String(idx + 1), '이 문항 오류 제보');
