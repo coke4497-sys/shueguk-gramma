@@ -26,7 +26,7 @@ def ch(qid, stem, opts, ans, why, hint=None):
 
 def sh(qid, stem, ans, why, alts=None, hint=None):
     q = {'id': qid, 'type': 'short', 'stem': stem, 'answer': ans, 'explanation': why}
-    if alts: q['answers'] = alts
+    if alts: q['answers'] = [ans] + alts   # 화면은 answers가 있으면 answers만 정답으로 본다 — 원래 정답도 꼭 넣을 것
     if hint: q['hint'] = hint
     return q
 
