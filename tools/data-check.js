@@ -32,6 +32,8 @@ for (const f of fs.readdirSync(DIR).sort()) {
   list.forEach((q, i) => {
     qs++;
     const tag = `${q.num}번`;
+    // 화면(test·play shortOK)은 answers가 있으면 answers만 정답으로 본다 — 대표 정답이 빠지면 정답을 써도 오답 처리(2026-11-01 '먹-' 사고)
+    if (q.type === 'short' && Array.isArray(q.answers) && q.answers.length && q.answer != null && !q.answers.includes(q.answer)) err(f, tag + ` answers에 대표 정답 '${q.answer}'이 없음`);
     if (q.type === 'process') {
       if (!q.start || !Array.isArray(q.steps) || !q.steps.length) err(f, tag + ' process 필드 누락');
       q.steps && q.steps.forEach((s, si) => {
