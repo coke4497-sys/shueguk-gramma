@@ -229,9 +229,9 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
 
   /* ========== 4) 미등록 테스트 안내 ========== */
   const p3 = await ctx.newPage();
-  await p3.goto(`http://localhost:${PORT}/test.html?c=pos&r=1`);
+  await p3.goto(`http://localhost:${PORT}/test.html?c=sen&r=1`);
   await p3.waitForSelector('.loading-msg.fail');
-  ok((await p3.textContent('.loading-msg.fail')).includes('아직 등록되지 않은'), '미등록 테스트(품사 1회) 안내');
+  ok((await p3.textContent('.loading-msg.fail')).includes('아직 등록되지 않은'), '미등록 테스트(문장 1회) 안내');
   await p3.close();
 
   /* ========== 5) index.html — 히어로·학생 정보 요약·단원 카드 (2026-09-16 디자인 지시서, 배정 목록은 없음) ========== */
@@ -250,7 +250,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok((await p4.getAttribute('#si-img', 'src')) === 'assets/sk-school.png', '요약 줄에 등교 슈콩');
   ok((await p4.textContent('.header')).includes('70%') && (await p4.textContent('.header')).includes('별 +1') && (await p4.textContent('#mystars')).includes('문법 별 0개') && !(await p4.$eval('#bigstar', e => e.classList.contains('on'))), "히어로에 통과 70% · 별 +1 · '문법 별 0개' · 별 아이콘 회색");
   ok((await p4.textContent('.sec-head')).includes('단원 고르기') && (await p4.textContent('.sec-note')) === '단원 → 레벨 → 스테이지', "섹션 제목 '단원 고르기' + 짧은 안내");
-  ok((await p4.$$('#cats .cat-card')).length === 10 && (await p4.$$('#cats .cat-card.soon')).length === 7 && await p4.$eval('#cats .cat-card[data-code="pos"]', e => e.disabled && e.classList.contains('soon') && !!e.querySelector('.clock svg') && e.textContent.includes('준비 중이에요') && !e.querySelector('.cstars')), '단원 카드 10장 — 준비 중 7장은 같은 카드에 자물쇠(별 없음)·비활성');
+  ok((await p4.$$('#cats .cat-card')).length === 10 && (await p4.$$('#cats .cat-card.soon')).length === 5 && await p4.$eval('#cats .cat-card[data-code="sen"]', e => e.disabled && e.classList.contains('soon') && !!e.querySelector('.clock svg') && e.textContent.includes('준비 중이에요') && !e.querySelector('.cstars')), '단원 카드 10장 — 준비 중 5장은 같은 카드에 자물쇠(별 없음)·비활성');
   ok((await p4.$$('#cats .cat-card[data-code="pho"] .cstars i')).length === 4 && (await p4.textContent('#cats .cat-card[data-code="pho"] .cstat')) === '1 / 20 통과' && (await p4.$eval('#cats .cat-card[data-code="pho"] .cbar i', e => e.style.width)) === '5%', '음운 카드: 별 4개 자리 · 1 / 20 통과 · 진행 막대 5%');
   ok((await p4.textContent('#cats .cat-card[data-code="mor"] .cstat')) === '아직 시작하지 않았어요' && (await p4.textContent('#cats .cat-card[data-code="mor"] .ccnt')) === '레벨1 10회 · 레벨2 10회', '형태소 카드: 아직 시작 안 함 · 레벨 회차 정보');
   ok(!(await p4.$('#cats .cico')), '체크박스처럼 보이는 아이콘 없음');
@@ -274,7 +274,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
 
   /* ========== 5b) index.html — 스테이지 맵: 단원 카드 → 레벨 탭 → 세트·스테이지 → play.html (2026-09-16) ========== */
   const catCodes = await p4.$$eval('#cats .cat-card:not(.soon)', els => els.map(e => e.getAttribute('data-code')));
-  ok(catCodes.join(',') === 'pho,mor,ort' && !catCodes.includes('ort2') && !catCodes.includes('mor2'), '단원 카드 = 메뉴 단위(레벨2는 카드 안으로), 문항 있는 3장');
+  ok(catCodes.join(',') === 'pho,mor,pos,wfm,ort' && !catCodes.includes('ort2') && !catCodes.includes('mor2'), '단원 카드 = 메뉴 단위(레벨2는 카드 안으로), 문항 있는 5장');
   // 진행 상태: 한글 맞춤법 1~8 통과, 9는 60%, 세트 1 클리어(별 1)
   starStatusItems = [1,2,3,4,5,6,7,8].map(r => ({ unit: '한글 맞춤법', round: '' + r, best: 70 + r, tries: 1, pass: true })).concat([{ unit: '한글 맞춤법', round: '9', best: 60, tries: 2, pass: false }]);
   starSets = [{ unit: '한글 맞춤법', set_no: 1 }]; starStars = 1;
@@ -503,7 +503,7 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   await p7.waitForSelector('#a-tbody tr');
   ok((await p7.textContent('#a-tbody')).includes('학년') && (await p7.textContent('#a-tbody')).includes('음운 1회'), '배정 현황 표시');
   ok((await p7.$$('.cat-card')).length === 10, '카테고리 카드 10개 (레벨2는 한글 맞춤법 카드 안)');
-  ok((await p7.$$('.cat-card[disabled]')).length === 7, '문항 없는 카테고리 7개는 비활성(준비 중)');
+  ok((await p7.$$('.cat-card[disabled]')).length === 5, '문항 없는 카테고리 5개는 비활성(준비 중)');
   ok(!(await p7.$('#round-view:not(.hidden)')), '첫 화면에는 회차 목록 없음');
   // 음운 → 회차 20개 → 뒤로 → 한글 맞춤법 → 32개
   await p7.click('.cat-card[data-code="pho"]');
@@ -800,11 +800,11 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   ok(await p13.$eval('#open-student', e => { const s = getComputedStyle(e); return e.target === '_blank' && s.borderTopWidth === '1px' && s.backgroundColor === 'rgba(0, 0, 0, 0)'; }), '[학생 화면 열기 ↗] = 오른쪽 끝 테두리 버튼');
   const rows13 = await p13.$$eval('#stu-tbl tr.stu', els => els.map(e => e.getAttribute('data-key')));
   ok(rows13[0] === '김시은|22222222' && rows13[1] === '강구현|12345678' && rows13.length === 6, '학생별 표: 클리어 많은 순, 명단 밖·미참여까지 6줄');
-  ok((await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('3회') && (await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('2 / 294') && (await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('78%') && (await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('3,500'), '강구현: 응시 3회 · 클리어 2 · 평균 78%(스테이지별 최고) · 플레이 3,500점');
+  ok((await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('3회') && (await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('2 / 303') && (await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('78%') && (await p13.textContent('#stu-tbl tr.stu[data-key="강구현|12345678"]')).includes('3,500'), '강구현: 응시 3회 · 클리어 2 · 평균 78%(스테이지별 최고) · 플레이 3,500점');
   ok((await p13.textContent('#stu-tbl tr.stu[data-key="44444444"], #stu-tbl tr.stu[data-key="박지우|44444444"]')).includes('미참여'), '미참여 학생도 줄에(미참여 표시)');
   await p13.click('#stu-tbl tr.stu[data-key="강구현|12345678"]');
   ok((await p13.$$('#stu-tbl tr.det .node')).length === 32 && (await p13.$$('#stu-tbl tr.det .node.pass')).length === 2 && (await p13.textContent('#stu-tbl tr.det .det-unit .u')).includes('한글 맞춤법'), '줄을 누르면 스테이지 32칸(통과 2)');
-  ok((await p13.textContent('#unit-tbl')).includes('음운') && (await p13.$$('#unit-tbl tbody tr')).length === 5, '단원별 표 5줄');
+  ok((await p13.textContent('#unit-tbl')).includes('음운') && (await p13.$$('#unit-tbl tbody tr')).length === 7, '단원별 표 7줄');
   // 내신반
   await p13.click('#scope-pills .pill[data-scope="cls"]');
   ok((await p13.$$('#cls-sel option')).length === 3 && (await p13.textContent('#cls-sel option[value="n007"]')).includes('수 5:30 · 고1 화수A(창비 공통국어2) · 현지T (3명)'), '내신반 드롭다운(요일·시간·반이름·담당T·인원)');
