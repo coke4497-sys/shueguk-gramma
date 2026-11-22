@@ -787,10 +787,11 @@ function ok(cond, label) { n++; if (!cond) { bad++; console.error('  ✗', label
   topRows = [{ rank: 1, name: '김시은', school: '능곡고', grade: '고2', stages: 20, points: 12000, stars: 4 }, { rank: 2, name: '강구현', school: '백양고', grade: '고1', stages: 12, points: 3500, stars: 2 }, { rank: 3, name: '박지우', school: '화수고', grade: '고1', stages: 8, points: 5100, stars: 1 },
     { rank: 4, name: '이서연', school: '능곡고', grade: '고2', stages: 5, points: 4134, stars: 1 }, { rank: 5, name: '최은성', school: '화정고', grade: '고2', stages: 4, points: 4746, stars: 0 }]; topMe = null;
   const p13 = await ctx.newPage();
+  await p13.addInitScript(() => { try { localStorage.setItem('shueguk_teacher_session_v2', JSON.stringify({ access_token: 'TEACHER', refresh_token: 'R', expires_at: Math.floor(Date.now() / 1000) + 3600 })); } catch (e) {} });   // 허브 개인 로그인(2026-11-22 공용 교사 계정 폐지)
   const errs13 = []; p13.on('pageerror', e => errs13.push(e.message));
   await p13.goto(`http://localhost:${PORT}/stats.html`);
   await p13.waitForSelector('#body:not(.hidden)');
-  ok(authCalls.length >= 1 && tblAuth.every(h => h === 'Bearer TEACHER'), '표 조회는 교사 인증 토큰으로');
+  ok(tblAuth.length >= 1 && tblAuth.every(h => h === 'Bearer TEACHER'), '표 조회는 허브 개인 로그인 토큰으로');
   const tile = i => p13.textContent('#tiles .tile:nth-child(' + i + ')');
   ok((await tile(1)).includes('5명') && (await tile(1)).includes('명단 밖 1명') && (await tile(2)).includes('4명') && (await tile(2)).includes('참여율 60%'), '전체: 대상 5명(퇴원 제외) · 명단 밖 1명 · 참여 4명 60%');
   ok((await tile(4)).includes('5') && (await tile(5)).includes('1') && (await tile(6)).includes('74%'), '클리어 5 · 별 1 · 평균 정답률 74%');
